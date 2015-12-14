@@ -6,4 +6,4 @@ if not Framer.Device
 	Framer.Device.setupContext();
 	# End from framer.generated.js 
 
-countrySelectionModule = require("countrySelectionModule")
+citySelectionModule = require("citySelectionModule")
