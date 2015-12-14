@@ -1,0 +1,17 @@
+* {
+    margin:0;
+    padding:0;
+    border:none;
+    -webkit-user-select:none;
+}
+
+body {
+    background: #fff;
+    font: 28px/1em "Helvetica";
+    color: #FFF;
+    -webkit-tap-highlight-color: rgba(0,0,0,0)
+}
+
+a {
+    color: #bfbfbf;
+}
