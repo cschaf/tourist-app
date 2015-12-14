@@ -26,7 +26,7 @@ hamburgerMenuIcon = new Layer
   y: 25
   width: 50
   height: 50
-  image: "./app/images/icons/hamburger.png"
+  image: "./images/icons/hamburger.png"
 
 topMenu.addSubLayer(hamburgerMenuIcon)
 
@@ -35,7 +35,7 @@ backIcon = new Layer
   y: 25
   width: 50
   height: 50
-  image: "./app/images/icons/back.png"
+  image: "./images/icons/back.png"
 topMenu.addSubLayer(backIcon)
 
 title = new Layer
@@ -43,7 +43,7 @@ title = new Layer
   y: 0
   width: 500
   height: 100
-  image: "./app/images/titles/stadt_download.png"
+  image: "./images/titles/stadt_download.png"
 topMenu.addSubLayer(title)
 
 # ---- City Selection -----

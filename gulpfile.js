@@ -6,12 +6,13 @@ var gulp      = require('gulp'),
   buffer      = require('vinyl-buffer'); // to transform the browserify results into a 'stream'
   source      = require('vinyl-source-stream'); //to 'rename' your resulting file
   gutil       = require('gulp-util');
+  deploy = require('gulp-deploy-git');
 
 gulp.task('webserver', function() {
   connect.server({
     livereload: true,
     port: 3000,
-    root: [__dirname, __dirname + '/build']
+    root: [__dirname, __dirname + '/deploy']
   });
 });
  
@@ -52,7 +53,11 @@ gulp.task('coffee', function() {
   //   }))
   .pipe(sourcemaps.write("./" /* optional second param here */))
   .pipe(gulp.dest('build'))
-  .pipe(connect.reload());
+  .pipe(connect.reload())
+      .on('end', function () {gulp.run(['built-gh-pages']); });;
+
+
+
 });
  
 gulp.task('watch', function() {
@@ -64,5 +69,21 @@ gulp.task('watch', function() {
 gulp.task('export', function() {
   gulp.src(['app/**/*']).pipe(gulp.dest('export/tourist-app.framer'));
 });
- 
-gulp.task('default', ['coffee', 'webserver', 'html', 'watch']);
+
+gulp.task('built-gh-pages', function() {
+    gulp.src(['./index.html']).pipe(gulp.dest('deploy/'));
+    gulp.src(['app/**/*']).pipe(gulp.dest('deploy/'));
+    gulp.src(['build/**/*']).pipe(gulp.dest('deploy/'));
+    gulp.src(['./node_modules/framerjs-prebuilt/*.js']).pipe(gulp.dest('deploy/node_modules/framerjs-prebuilt'));
+    gulp.src(['./node_modules/framerjs-prebuilt/*.map']).pipe(gulp.dest('deploy/node_modules/framerjs-prebuilt'));
+});
+
+gulp.task('deploy-gh-pages', function() {
+    return gulp.src('dist/**/*')
+        .pipe(deploy({
+            repository: 'https://github.com/cschaf/tourist-app.git',
+            branches:   ['gh-pages']
+        }));
+});
+
+gulp.task('default', ['coffee', 'webserver', 'html', 'css', 'watch']);

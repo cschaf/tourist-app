@@ -45,6 +45,7 @@ build
 
 # Export folder
 export
+deploy
 
 #Images
 app/images/*.psd
