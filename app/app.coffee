@@ -39,5 +39,4 @@ topMenu.addSubLayer(backIcon)
 
 
 # ---- City Selection -----
-
-citySelection = citySelectionModule.CitySelection
+citySelection = new citySelectionModule.CitySelection
