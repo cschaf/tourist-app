@@ -66,8 +66,7 @@ topMenu.addSubLayer(title);
 
 radar = new radarModule.Radar({
   x: 0,
-  y: 100,
-  marginLeft: 15
+  y: 350
 });
 
 radar.getRadarLayer().on(Events.Click, (function(_this) {

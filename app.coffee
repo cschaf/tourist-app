@@ -50,7 +50,7 @@ topMenu.addSubLayer(title)
 #citySelection = new citySelectionModule.CitySelection
 
 # ---- Radar -----
-radar = new radarModule.Radar(x: 0, y:100, marginLeft:15)
+radar = new radarModule.Radar(x: 0, y:350)
 
 radar.getRadarLayer().on Events.Click, =>
   print "radar clicked!"
