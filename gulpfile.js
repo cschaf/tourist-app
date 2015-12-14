@@ -5,7 +5,8 @@ var gulp      = require('gulp'),
   browserify  = require('browserify');
   buffer      = require('vinyl-buffer'); // to transform the browserify results into a 'stream'
   source      = require('vinyl-source-stream'); //to 'rename' your resulting file
-  gutil       = require('gulp-util');git
+  gutil       = require('gulp-util');
+  deploy = require('gulp-gh-pages');
 
 gulp.task('webserver', function() {
   connect.server({
@@ -16,12 +17,12 @@ gulp.task('webserver', function() {
 });
  
 gulp.task('html', function() {
-  gulp.src(['./*.html'])
+  gulp.src(['./*.html']).on('end', function () {gulp.run(['built-gh-pages']); })
     .pipe(connect.reload());
 });
 
 gulp.task('css', function() {
-    gulp.src(['./app/style/*.css'])
+    gulp.src(['./app/style/*.css']).on('end', function () {gulp.run(['built-gh-pages']); })
         .pipe(connect.reload());
 });
 
@@ -44,16 +45,9 @@ gulp.task('coffee', function() {
   .pipe(source('app.js'))
   .pipe(buffer())
   .pipe(sourcemaps.init({loadMaps: true,debug: true}))
-  // .pipe(uglify( {
-  //       debug: true,
-  //       options: {
-  //         sourceMap: true,
-  //       }
-  //   }))
   .pipe(sourcemaps.write("./" /* optional second param here */))
-  .pipe(gulp.dest('build'))
+  .pipe(gulp.dest('build')).on('end', function () {gulp.run(['built-gh-pages']); })
   .pipe(connect.reload())
-      .on('end', function () {gulp.run(['built-gh-pages']); });;
 
 
 
@@ -75,6 +69,11 @@ gulp.task('built-gh-pages', function() {
     gulp.src(['build/**/*']).pipe(gulp.dest('deploy/'));
     gulp.src(['./node_modules/framerjs-prebuilt/*.js']).pipe(gulp.dest('deploy/node_modules/framerjs-prebuilt'));
     gulp.src(['./node_modules/framerjs-prebuilt/*.map']).pipe(gulp.dest('deploy/node_modules/framerjs-prebuilt'));
+});
+
+gulp.task('deploy-gh-pages', function () {
+    return gulp.src('./deploy/**/*')
+        .pipe(deploy());
 });
 
 gulp.task('default', ['coffee', 'webserver', 'html', 'css', 'watch']);
