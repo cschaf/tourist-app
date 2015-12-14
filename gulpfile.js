@@ -20,6 +20,11 @@ gulp.task('html', function() {
     .pipe(connect.reload());
 });
 
+gulp.task('css', function() {
+    gulp.src(['./app/style/*.css'])
+        .pipe(connect.reload());
+});
+
 // Recipe from http://www.uberbrady.com/2015/05/how-to-do-gulp-browserify-coffeescript.html
 gulp.task('coffee', function() {
   browserify({
@@ -52,6 +57,7 @@ gulp.task('coffee', function() {
  
 gulp.task('watch', function() {
   gulp.watch(['./*.html'], ['html']);
+  gulp.watch(['./app/style/*.css'], ['css']);
   gulp.watch('./app/**/*.coffee', ['coffee']);
 });
 

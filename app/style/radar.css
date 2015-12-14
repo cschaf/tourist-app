@@ -1,0 +1,23 @@
+.radar {
+    width: 700px;
+    height: 700px;
+    background: url("../images/radar-pattern.png") #000;
+    border: 10px solid green;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.waveguide {
+    background-image: linear-gradient(225deg, green 15%, transparent 60%);
+    height: 350px;
+    width: 350px;
+    border-right: 3px solid green;
+    transform-origin: bottom right;
+    transform: rotate(0deg) skew(45deg,0);
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg) skew(45deg,0);
+    }
+}

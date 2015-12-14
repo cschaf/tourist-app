@@ -7,6 +7,7 @@ if not Framer.Device
 	# End from framer.generated.js 
 
 citySelectionModule = require("citySelectionModule")
+radarModule = require("radarModule")
 
 # Set background to white
 backgroundLayer = new BackgroundLayer
@@ -37,6 +38,16 @@ backIcon = new Layer
   image: "./app/images/icons/back.png"
 topMenu.addSubLayer(backIcon)
 
+title = new Layer
+  x: 120
+  y: 0
+  width: 500
+  height: 100
+  image: "./app/images/titles/stadt_download.png"
+topMenu.addSubLayer(title)
 
 # ---- City Selection -----
-citySelection = new citySelectionModule.CitySelection
+#citySelection = new citySelectionModule.CitySelection
+
+# ---- Radar -----
+radar = new radarModule.Radar(x:15, y:100)
