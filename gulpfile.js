@@ -56,7 +56,7 @@ gulp.task('watch', function() {
 });
 
 gulp.task('export', function() {
-  gulp.src(['app/**/*']).pipe(gulp.dest('export/framer-boilerplate.framer'));
+  gulp.src(['app/**/*']).pipe(gulp.dest('export/tourist-app.framer'));
 });
  
 gulp.task('default', ['coffee', 'webserver', 'html', 'watch']);
