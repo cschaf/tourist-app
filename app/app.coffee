@@ -66,5 +66,5 @@ bottomMenu = new tabbarModule.Tabbar(x: 0, y: Screen.height-120)
 radar = new radarModule.Radar(y:100)
 title.text = radar.getTitle()
 
-radar.getRadarLayer().on Events.Click, =>
-  print "radar clicked!"
+#radar.getRadarLayer().on Events.Click, =>
+#  print "radar clicked!"
