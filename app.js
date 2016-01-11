@@ -85,12 +85,6 @@ radar = new radarModule.Radar({
 
 title.text = radar.getTitle();
 
-radar.getRadarLayer().on(Events.Click, (function(_this) {
-  return function() {
-    return print("radar clicked!");
-  };
-})(this));
-
 
 },{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
 var Marker,
@@ -104,22 +98,47 @@ exports.Marker = Marker = (function(superClass) {
     if (options == null) {
       options = {};
     }
-    options.width = 50;
-    options.height = 50;
+    if (options.width == null) {
+      options.width = 50;
+    }
+    if (options.height == null) {
+      options.height = 50;
+    }
     options.opacity = 1;
     options.image = "./images/icons/marker-einfach.png";
+    this.isSelected = false;
+    this.isNormal = true;
+    this.isExplored = false;
     Marker.__super__.constructor.call(this, options);
+    this.on(Events.Click, function() {
+      if (this.isNormal) {
+        return this.setSelected();
+      } else {
+        if (!this.isExplored && !this.isNormal) {
+          return this.setNormal();
+        }
+      }
+    });
   }
 
   Marker.prototype.setSelected = function() {
+    this.isExplored = false;
+    this.isSelected = true;
+    this.isNormal = false;
     return this.image = "./images/icons/marker-selektiert.png";
   };
 
   Marker.prototype.setExplored = function() {
+    this.isExplored = true;
+    this.isSelected = false;
+    this.isNormal = false;
     return this.image = "./images/icons/marker-endeckt.png";
   };
 
   Marker.prototype.setNormal = function() {
+    this.isExplored = false;
+    this.isSelected = false;
+    this.isNormal = true;
     return this.image = "./images/icons/marker-einfach.png";
   };
 
