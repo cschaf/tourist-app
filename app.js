@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var backIcon, backgroundLayer, bottomMenu, citySelectionModule, hamburgerMenuIcon, radar, radarModule, tabbarModule, textLayer, title, topMenu;
+var backIcon, backgroundLayer, bottomMenu, citySelectionModule, hamburgerMenuIcon, markerModule, radar, radarModule, tabbarModule, textLayer, title, topMenu;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -25,6 +25,8 @@ textLayer = require('TextLayer');
 tabbarModule = require("tabbarModule");
 
 radarModule = require("radarModule");
+
+markerModule = require('MarkerModule');
 
 backgroundLayer = new BackgroundLayer({
   backgroundColor: "rgba(255,255,255,1)"
@@ -90,7 +92,43 @@ radar.getRadarLayer().on(Events.Click, (function(_this) {
 })(this));
 
 
-},{"TextLayer":2,"citySelectionModule":3,"radarModule":4,"tabbarModule":5}],2:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
+var Marker,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+exports.Marker = Marker = (function(superClass) {
+  extend(Marker, superClass);
+
+  function Marker(options) {
+    if (options == null) {
+      options = {};
+    }
+    options.width = 50;
+    options.height = 50;
+    options.opacity = 1;
+    options.image = "./images/icons/marker-einfach.png";
+    Marker.__super__.constructor.call(this, options);
+  }
+
+  Marker.prototype.setSelected = function() {
+    return this.image = "./images/icons/marker-selektiert.png";
+  };
+
+  Marker.prototype.setExplored = function() {
+    return this.image = "./images/icons/marker-endeckt.png";
+  };
+
+  Marker.prototype.setNormal = function() {
+    return this.image = "./images/icons/marker-einfach.png";
+  };
+
+  return Marker;
+
+})(Layer);
+
+
+},{}],3:[function(require,module,exports){
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -348,7 +386,7 @@ module.exports = (function(superClass) {
 })(Layer);
 
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var CitySelection,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -462,12 +500,14 @@ exports.CitySelection = CitySelection = (function(superClass) {
 })(Layer);
 
 
-},{}],4:[function(require,module,exports){
-var Radar, textLayer,
+},{}],5:[function(require,module,exports){
+var Radar, markerModule, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 textLayer = require('TextLayer');
+
+markerModule = require('MarkerModule');
 
 exports.Radar = Radar = (function(superClass) {
   extend(Radar, superClass);
@@ -487,7 +527,7 @@ exports.Radar = Radar = (function(superClass) {
   }
 
   Radar.prototype.initControls = function() {
-    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, minusIcon, plusIcon, sliderA, sliderLayer, target, targetLabel;
+    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, marker_1, marker_2, marker_3, minusIcon, plusIcon, sliderA, sliderLayer, target, targetLabel;
     dropdown = new Layer({
       x: 10,
       y: 0,
@@ -525,7 +565,24 @@ exports.Radar = Radar = (function(superClass) {
       backgroundColor: "white",
       superLayer: this
     });
-    this.radarLayer.html = "<div class='radar'><div class='waveguide'></div></div>";
+    this.radarLayer.html = "<div class='radar'>></div>";
+    marker_1 = new markerModule.Marker({
+      x: 400,
+      y: 200
+    });
+    marker_2 = new markerModule.Marker({
+      x: 140,
+      y: 170
+    });
+    marker_1.setSelected();
+    marker_3 = new markerModule.Marker({
+      x: 400,
+      y: 490
+    });
+    marker_3.setExplored();
+    this.radarLayer.addSubLayer(marker_1);
+    this.radarLayer.addSubLayer(marker_2);
+    this.radarLayer.addSubLayer(marker_3);
     sliderLayer = new Layer({
       x: 0,
       y: 950,
@@ -650,7 +707,7 @@ exports.Radar = Radar = (function(superClass) {
 })(Layer);
 
 
-},{"TextLayer":2}],5:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":3}],6:[function(require,module,exports){
 var Tabbar,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
