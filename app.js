@@ -524,10 +524,24 @@ exports.Radar = Radar = (function(superClass) {
     this.title = "Radar";
     Radar.__super__.constructor.call(this, options);
     this.initControls();
+    this.bindEvents();
   }
 
+  Radar.prototype.bindEvents = function() {
+    this.plusIcon.on(Events.Click, (function(_this) {
+      return function() {
+        return _this.sliderA.value = _this.sliderA.value + 1;
+      };
+    })(this));
+    return this.minusIcon.on(Events.Click, (function(_this) {
+      return function() {
+        return _this.sliderA.value = _this.sliderA.value - 1;
+      };
+    })(this));
+  };
+
   Radar.prototype.initControls = function() {
-    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, marker_1, marker_2, marker_3, minusIcon, plusIcon, sliderA, sliderLayer, target, targetLabel;
+    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, marker_1, marker_2, marker_3, sliderLayer, target, targetLabel;
     dropdown = new Layer({
       x: 10,
       y: 0,
@@ -590,22 +604,22 @@ exports.Radar = Radar = (function(superClass) {
       height: 100,
       backgroundColor: "white"
     });
-    minusIcon = new Layer({
+    this.minusIcon = new Layer({
       x: 50,
       y: 0,
       width: 75,
       height: 75,
       image: "./images/icons/minus.png"
     });
-    sliderLayer.addSubLayer(minusIcon);
-    plusIcon = new Layer({
+    sliderLayer.addSubLayer(this.minusIcon);
+    this.plusIcon = new Layer({
       x: 615,
       y: 0,
       width: 75,
       height: 75,
       image: "./images/icons/plus.png"
     });
-    sliderLayer.addSubLayer(plusIcon);
+    sliderLayer.addSubLayer(this.plusIcon);
     kmMax = new textLayer({
       x: 520,
       y: 50,
@@ -630,7 +644,7 @@ exports.Radar = Radar = (function(superClass) {
       fontFamily: "Calibri"
     });
     sliderLayer.addSubLayer(kmMin);
-    sliderA = new SliderComponent({
+    this.sliderA = new SliderComponent({
       knobSize: 50,
       min: 0,
       max: 10,
@@ -640,12 +654,12 @@ exports.Radar = Radar = (function(superClass) {
       x: 145,
       y: 30
     });
-    sliderA.fill.backgroundColor = "green";
-    sliderA.backgroundColor = "rgba(129,129,129,0.5)";
-    sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)";
-    sliderA.knob.backgroundColor = "green";
-    sliderA.knob.scale = 0.8;
-    sliderA.knob.on(Events.DragStart, function() {
+    this.sliderA.fill.backgroundColor = "green";
+    this.sliderA.backgroundColor = "rgba(129,129,129,0.5)";
+    this.sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)";
+    this.sliderA.knob.backgroundColor = "green";
+    this.sliderA.knob.scale = 0.8;
+    this.sliderA.knob.on(Events.DragStart, function() {
       return this.animate({
         properties: {
           scale: 1
@@ -653,7 +667,7 @@ exports.Radar = Radar = (function(superClass) {
         curve: "spring(400, 30, 0)"
       });
     });
-    sliderA.knob.on(Events.DragEnd, function() {
+    this.sliderA.knob.on(Events.DragEnd, function() {
       return this.animate({
         properties: {
           scale: 0.8
@@ -661,7 +675,7 @@ exports.Radar = Radar = (function(superClass) {
         curve: "spring(400, 30, 0)"
       });
     });
-    sliderLayer.addSubLayer(sliderA);
+    sliderLayer.addSubLayer(this.sliderA);
     currentSelectionLayer = new Layer({
       x: 50,
       y: 1000,
@@ -745,9 +759,83 @@ exports.Tabbar = Tabbar = (function(superClass) {
     options.image = "./images/tabbar.png";
     Tabbar.__super__.constructor.call(this, options);
     this.initControls();
+    this.bindEvents();
   }
 
+  Tabbar.prototype.bindEvents = function() {
+    this.rankingLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.marker.x = _this.pos1.x;
+        return _this.marker.y = _this.pos1.y;
+      };
+    })(this));
+    this.radarLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.marker.x = _this.pos2.x;
+        return _this.marker.y = _this.pos2.y;
+      };
+    })(this));
+    this.listLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.marker.x = _this.pos3.x;
+        return _this.marker.y = _this.pos3.y;
+      };
+    })(this));
+    this.profileLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.marker.x = _this.pos4.x;
+        return _this.marker.y = _this.pos4.y;
+      };
+    })(this));
+    return this.settingsLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.marker.x = _this.pos5.x;
+        return _this.marker.y = _this.pos5.y;
+      };
+    })(this));
+  };
+
   Tabbar.prototype.initControls = function() {
+    this.rankingLayer = new Layer({
+      x: 17,
+      y: 0,
+      width: 150,
+      height: 100,
+      opacity: 0,
+      superLayer: this
+    });
+    this.radarLayer = new Layer({
+      x: 170,
+      y: 0,
+      width: 150,
+      height: 100,
+      opacity: 0,
+      superLayer: this
+    });
+    this.listLayer = new Layer({
+      x: 320,
+      y: 0,
+      width: 150,
+      height: 100,
+      opacity: 0,
+      superLayer: this
+    });
+    this.profileLayer = new Layer({
+      x: 468,
+      y: 0,
+      width: 150,
+      height: 100,
+      opacity: 0,
+      superLayer: this
+    });
+    this.settingsLayer = new Layer({
+      x: 600,
+      y: 0,
+      width: 150,
+      height: 100,
+      opacity: 0,
+      superLayer: this
+    });
     return this.marker = new Layer({
       x: this.pos2.x,
       y: this.pos2.y,
