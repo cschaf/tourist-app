@@ -1,4 +1,6 @@
 textLayer = require('TextLayer')
+markerModule = require('MarkerModule')
+
 
 exports.Radar = class Radar extends Layer
   constructor: (options = {}) ->
@@ -52,7 +54,18 @@ exports.Radar = class Radar extends Layer
       backgroundColor: "white"
       superLayer : this
 
-    @radarLayer.html = "<div class='radar'><div class='waveguide'></div></div>"
+    @radarLayer.html = "<div class='radar'>></div>"
+
+    #marker
+    marker_1 = new markerModule.Marker(x:400, y:200)
+    marker_2 = new markerModule.Marker(x:140, y:170)
+    marker_1.setSelected()
+    marker_3 = new markerModule.Marker(x:400, y:490)
+    marker_3.setExplored()
+
+    @radarLayer.addSubLayer(marker_1)
+    @radarLayer.addSubLayer(marker_2)
+    @radarLayer.addSubLayer(marker_3)
 
     sliderLayer = new Layer
       x:0

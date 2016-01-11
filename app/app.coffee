@@ -10,6 +10,7 @@ citySelectionModule = require("citySelectionModule")
 textLayer = require('TextLayer')
 tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
+markerModule = require('MarkerModule')
 
 # Set background to white
 backgroundLayer = new BackgroundLayer
