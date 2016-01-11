@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var backIcon, backgroundLayer, citySelectionModule, hamburgerMenuIcon, radar, radarModule, title, topMenu;
+var backIcon, backgroundLayer, bottomMenu, citySelectionModule, hamburgerMenuIcon, radar, radarModule, tabbarModule, textLayer, title, topMenu;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -19,6 +19,10 @@ if (!Framer.Device) {
 }
 
 citySelectionModule = require("citySelectionModule");
+
+textLayer = require('TextLayer');
+
+tabbarModule = require("tabbarModule");
 
 radarModule = require("radarModule");
 
@@ -54,20 +58,30 @@ backIcon = new Layer({
 
 topMenu.addSubLayer(backIcon);
 
-title = new Layer({
+title = new textLayer({
   x: 120,
-  y: 0,
+  y: 10,
   width: 500,
   height: 100,
-  image: "./images/titles/stadt_download.png"
+  text: "Tourist-App",
+  color: "rgb(129,129,129)",
+  textAlign: "center",
+  fontSize: 50,
+  fontFamily: "Calibri"
 });
 
 topMenu.addSubLayer(title);
 
-radar = new radarModule.Radar({
+bottomMenu = new tabbarModule.Tabbar({
   x: 0,
-  y: 350
+  y: Screen.height - 120
 });
+
+radar = new radarModule.Radar({
+  y: 100
+});
+
+title.text = radar.getTitle();
 
 radar.getRadarLayer().on(Events.Click, (function(_this) {
   return function() {
@@ -76,7 +90,265 @@ radar.getRadarLayer().on(Events.Click, (function(_this) {
 })(this));
 
 
-},{"citySelectionModule":2,"radarModule":3}],2:[function(require,module,exports){
+},{"TextLayer":2,"citySelectionModule":3,"radarModule":4,"tabbarModule":5}],2:[function(require,module,exports){
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+module.exports = (function(superClass) {
+  extend(exports, superClass);
+
+  function exports(options) {
+    if (options == null) {
+      options = {};
+    }
+    this.doAutoSize = false;
+    this.doAutoSizeHeight = false;
+    if (options.backgroundColor == null) {
+      options.backgroundColor = options.setup ? "hsla(60, 90%, 47%, .4)" : "transparent";
+    }
+    if (options.color == null) {
+      options.color = "red";
+    }
+    if (options.lineHeight == null) {
+      options.lineHeight = 1.25;
+    }
+    if (options.fontFamily == null) {
+      options.fontFamily = "Helvetica";
+    }
+    if (options.fontSize == null) {
+      options.fontSize = 20;
+    }
+    if (options.text == null) {
+      options.text = "Use layer.text to add text";
+    }
+    exports.__super__.constructor.call(this, options);
+    this.style.whiteSpace = "pre-line";
+  }
+
+  exports.prototype.setStyle = function(property, value, pxSuffix) {
+    if (pxSuffix == null) {
+      pxSuffix = false;
+    }
+    this.style[property] = pxSuffix ? value + "px" : value;
+    this.emit("change:" + property, value);
+    if (this.doAutoSize) {
+      return this.calcSize();
+    }
+  };
+
+  exports.prototype.calcSize = function() {
+    var constraints, size, sizeAffectingStyles;
+    sizeAffectingStyles = {
+      lineHeight: this.style["line-height"],
+      fontSize: this.style["font-size"],
+      fontWeight: this.style["font-weight"],
+      paddingTop: this.style["padding-top"],
+      paddingRight: this.style["padding-right"],
+      paddingBottom: this.style["padding-bottom"],
+      paddingLeft: this.style["padding-left"],
+      textTransform: this.style["text-transform"],
+      borderWidth: this.style["border-width"],
+      letterSpacing: this.style["letter-spacing"],
+      fontFamily: this.style["font-family"],
+      fontStyle: this.style["font-style"],
+      fontVariant: this.style["font-variant"]
+    };
+    constraints = {};
+    if (this.doAutoSizeHeight) {
+      constraints.width = this.width;
+    }
+    size = Utils.textSize(this.text, sizeAffectingStyles, constraints);
+    if (this.style.textAlign === "right") {
+      this.width = size.width;
+      this.x = this.x - this.width;
+    } else {
+      this.width = size.width;
+    }
+    return this.height = size.height;
+  };
+
+  exports.define("autoSize", {
+    get: function() {
+      return this.doAutoSize;
+    },
+    set: function(value) {
+      this.doAutoSize = value;
+      if (this.doAutoSize) {
+        return this.calcSize();
+      }
+    }
+  });
+
+  exports.define("autoSizeHeight", {
+    set: function(value) {
+      this.doAutoSize = value;
+      this.doAutoSizeHeight = value;
+      if (this.doAutoSize) {
+        return this.calcSize();
+      }
+    }
+  });
+
+  exports.define("contentEditable", {
+    set: function(boolean) {
+      this._element.contentEditable = boolean;
+      this.ignoreEvents = !boolean;
+      return this.on("input", function() {
+        if (this.doAutoSize) {
+          return this.calcSize();
+        }
+      });
+    }
+  });
+
+  exports.define("text", {
+    get: function() {
+      return this._element.textContent;
+    },
+    set: function(value) {
+      this._element.textContent = value;
+      this.emit("change:text", value);
+      if (this.doAutoSize) {
+        return this.calcSize();
+      }
+    }
+  });
+
+  exports.define("fontFamily", {
+    get: function() {
+      return this.style.fontFamily;
+    },
+    set: function(value) {
+      return this.setStyle("fontFamily", value);
+    }
+  });
+
+  exports.define("fontSize", {
+    get: function() {
+      return this.style.fontSize.replace("px", "");
+    },
+    set: function(value) {
+      return this.setStyle("fontSize", value, true);
+    }
+  });
+
+  exports.define("lineHeight", {
+    get: function() {
+      return this.style.lineHeight;
+    },
+    set: function(value) {
+      return this.setStyle("lineHeight", value);
+    }
+  });
+
+  exports.define("fontWeight", {
+    get: function() {
+      return this.style.fontWeight;
+    },
+    set: function(value) {
+      return this.setStyle("fontWeight", value);
+    }
+  });
+
+  exports.define("fontStyle", {
+    get: function() {
+      return this.style.fontStyle;
+    },
+    set: function(value) {
+      return this.setStyle("fontStyle", value);
+    }
+  });
+
+  exports.define("fontVariant", {
+    get: function() {
+      return this.style.fontVariant;
+    },
+    set: function(value) {
+      return this.setStyle("fontVariant", value);
+    }
+  });
+
+  exports.define("padding", {
+    set: function(value) {
+      this.setStyle("paddingTop", value, true);
+      this.setStyle("paddingRight", value, true);
+      this.setStyle("paddingBottom", value, true);
+      return this.setStyle("paddingLeft", value, true);
+    }
+  });
+
+  exports.define("paddingTop", {
+    get: function() {
+      return this.style.paddingTop.replace("px", "");
+    },
+    set: function(value) {
+      return this.setStyle("paddingTop", value, true);
+    }
+  });
+
+  exports.define("paddingRight", {
+    get: function() {
+      return this.style.paddingRight.replace("px", "");
+    },
+    set: function(value) {
+      return this.setStyle("paddingRight", value, true);
+    }
+  });
+
+  exports.define("paddingBottom", {
+    get: function() {
+      return this.style.paddingBottom.replace("px", "");
+    },
+    set: function(value) {
+      return this.setStyle("paddingBottom", value, true);
+    }
+  });
+
+  exports.define("paddingLeft", {
+    get: function() {
+      return this.style.paddingLeft.replace("px", "");
+    },
+    set: function(value) {
+      return this.setStyle("paddingLeft", value, true);
+    }
+  });
+
+  exports.define("textAlign", {
+    set: function(value) {
+      return this.setStyle("textAlign", value);
+    }
+  });
+
+  exports.define("textTransform", {
+    get: function() {
+      return this.style.textTransform;
+    },
+    set: function(value) {
+      return this.setStyle("textTransform", value);
+    }
+  });
+
+  exports.define("letterSpacing", {
+    get: function() {
+      return this.style.letterSpacing.replace("px", "");
+    },
+    set: function(value) {
+      return this.setStyle("letterSpacing", value, true);
+    }
+  });
+
+  exports.define("length", {
+    get: function() {
+      return this.text.length;
+    }
+  });
+
+  return exports;
+
+})(Layer);
+
+
+},{}],3:[function(require,module,exports){
 var CitySelection,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -190,10 +462,12 @@ exports.CitySelection = CitySelection = (function(superClass) {
 })(Layer);
 
 
-},{}],3:[function(require,module,exports){
-var Radar,
+},{}],4:[function(require,module,exports){
+var Radar, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
+
+textLayer = require('TextLayer');
 
 exports.Radar = Radar = (function(superClass) {
   extend(Radar, superClass);
@@ -203,31 +477,232 @@ exports.Radar = Radar = (function(superClass) {
       options = {};
     }
     options.width = Screen.width;
-    options.height = Screen.height;
+    options.height = 1100;
     options.opacity = 1;
     options.backgroundColor = "white";
     this.marginLeft = options.marginLeft;
+    this.title = "Radar";
     Radar.__super__.constructor.call(this, options);
     this.initControls();
   }
 
   Radar.prototype.initControls = function() {
+    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, minusIcon, plusIcon, sliderA, sliderLayer, target, targetLabel;
+    dropdown = new Layer({
+      x: 10,
+      y: 0,
+      width: 250,
+      height: 60,
+      borderWidth: 5,
+      borderColor: "rgb(129,129,129)",
+      backgroundColor: "white",
+      superLayer: this
+    });
+    cityName = new textLayer({
+      x: 0,
+      y: -5,
+      width: 200,
+      height: 60,
+      text: "Bremen",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri"
+    });
+    dropdown.addSubLayer(cityName);
+    arrowDown = new Layer({
+      x: 175,
+      y: 0,
+      width: 75,
+      height: 60,
+      image: "./images/icons/arrow_down.png"
+    });
+    dropdown.addSubLayer(arrowDown);
     this.radarLayer = new Layer({
       x: this.marginLeft,
-      y: 0,
+      y: 100,
       width: this.width,
       height: 720,
       backgroundColor: "white",
       superLayer: this
     });
-    return this.radarLayer.html = "<div class='radar'><div class='waveguide'></div></div>";
+    this.radarLayer.html = "<div class='radar'><div class='waveguide'></div></div>";
+    sliderLayer = new Layer({
+      x: 0,
+      y: 950,
+      width: this.width,
+      height: 100,
+      backgroundColor: "white"
+    });
+    minusIcon = new Layer({
+      x: 50,
+      y: 0,
+      width: 75,
+      height: 75,
+      image: "./images/icons/minus.png"
+    });
+    sliderLayer.addSubLayer(minusIcon);
+    plusIcon = new Layer({
+      x: 615,
+      y: 0,
+      width: 75,
+      height: 75,
+      image: "./images/icons/plus.png"
+    });
+    sliderLayer.addSubLayer(plusIcon);
+    kmMax = new textLayer({
+      x: 520,
+      y: 50,
+      width: 150,
+      height: 100,
+      text: "10km",
+      color: "rgb(129,129,129)",
+      textAlign: "center",
+      fontSize: 30,
+      fontFamily: "Calibri"
+    });
+    sliderLayer.addSubLayer(kmMax);
+    kmMin = new textLayer({
+      x: 70,
+      y: 50,
+      width: 150,
+      height: 100,
+      text: "1km",
+      color: "rgb(129,129,129)",
+      textAlign: "center",
+      fontSize: 30,
+      fontFamily: "Calibri"
+    });
+    sliderLayer.addSubLayer(kmMin);
+    sliderA = new SliderComponent({
+      knobSize: 50,
+      min: 0,
+      max: 10,
+      value: 5,
+      height: 8,
+      width: 453,
+      x: 145,
+      y: 30
+    });
+    sliderA.fill.backgroundColor = "green";
+    sliderA.backgroundColor = "rgba(129,129,129,0.5)";
+    sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)";
+    sliderA.knob.backgroundColor = "green";
+    sliderA.knob.scale = 0.8;
+    sliderA.knob.on(Events.DragStart, function() {
+      return this.animate({
+        properties: {
+          scale: 1
+        },
+        curve: "spring(400, 30, 0)"
+      });
+    });
+    sliderA.knob.on(Events.DragEnd, function() {
+      return this.animate({
+        properties: {
+          scale: 0.8
+        },
+        curve: "spring(400, 30, 0)"
+      });
+    });
+    sliderLayer.addSubLayer(sliderA);
+    currentSelectionLayer = new Layer({
+      x: 50,
+      y: 1000,
+      width: this.width - 100,
+      height: 60,
+      backgroundColor: "white",
+      superLayer: this
+    });
+    targetLabel = new textLayer({
+      x: 0,
+      y: 0,
+      width: 80,
+      height: 60,
+      text: "Ziel: ",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri"
+    });
+    currentSelectionLayer.addSubLayer(targetLabel);
+    target = new textLayer({
+      x: 90,
+      y: 0,
+      width: this.width - 180,
+      height: 60,
+      text: "Uebersee-Museum",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri"
+    });
+    return currentSelectionLayer.addSubLayer(target);
   };
 
   Radar.prototype.getRadarLayer = function() {
     return this.radarLayer;
   };
 
+  Radar.prototype.getTitle = function() {
+    return this.title;
+  };
+
   return Radar;
+
+})(Layer);
+
+
+},{"TextLayer":2}],5:[function(require,module,exports){
+var Tabbar,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+exports.Tabbar = Tabbar = (function(superClass) {
+  extend(Tabbar, superClass);
+
+  function Tabbar(options) {
+    if (options == null) {
+      options = {};
+    }
+    this.pos1 = {
+      x: 17,
+      y: 105
+    };
+    this.pos2 = {
+      x: 178,
+      y: 105
+    };
+    this.pos3 = {
+      x: 332,
+      y: 105
+    };
+    this.pos4 = {
+      x: 475,
+      y: 105
+    };
+    this.pos5 = {
+      x: 610,
+      y: 105
+    };
+    options.width = Screen.width;
+    options.height = 110;
+    options.opacity = 1;
+    options.image = "./images/tabbar.png";
+    Tabbar.__super__.constructor.call(this, options);
+    this.initControls();
+  }
+
+  Tabbar.prototype.initControls = function() {
+    return this.marker = new Layer({
+      x: this.pos2.x,
+      y: this.pos2.y,
+      width: 130,
+      height: 10,
+      backgroundColor: "green",
+      opacity: 1,
+      superLayer: this
+    });
+  };
+
+  return Tabbar;
 
 })(Layer);
 
