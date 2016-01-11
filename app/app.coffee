@@ -7,6 +7,8 @@ if not Framer.Device
 	# End from framer.generated.js 
 
 citySelectionModule = require("citySelectionModule")
+textLayer = require('TextLayer')
+tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
 
 # Set background to white
@@ -38,19 +40,30 @@ backIcon = new Layer
   image: "./images/icons/back.png"
 topMenu.addSubLayer(backIcon)
 
-title = new Layer
+title = new textLayer
   x: 120
-  y: 0
+  y: 10
   width: 500
   height: 100
-  image: "./images/titles/stadt_download.png"
+  text:"Tourist-App"
+  color: "rgb(129,129,129)"
+  textAlign: "center"
+  fontSize: 50
+  fontFamily: "Calibri"
 topMenu.addSubLayer(title)
+
+
+
+
+# Create Bottom Menu
+bottomMenu = new tabbarModule.Tabbar(x: 0, y: Screen.height-120)
 
 # ---- City Selection -----
 #citySelection = new citySelectionModule.CitySelection
 
 # ---- Radar -----
-radar = new radarModule.Radar(x: 0, y:350)
+radar = new radarModule.Radar(y:100)
+title.text = radar.getTitle()
 
 radar.getRadarLayer().on Events.Click, =>
   print "radar clicked!"

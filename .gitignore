@@ -35,6 +35,7 @@ framer/*.old.*
 framer/backup.coffee
 framer/backups/*
 framer/.*.hash
+/app/images/tabbar.psd
 .publish
 
 # Dependency directory
