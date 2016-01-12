@@ -1,5 +1,5 @@
 exports.Tabbar = class Tabbar extends Layer
-  constructor: (@rankingView, @radarView, @listView,@profileView, @settingsView ,@backArrow, options = {}) ->
+  constructor: (@rankingView, @radarView, @listView,@profileView, @settingsView ,@backArrow,@title, options = {}) ->
     @pos1 = {x:17, y:105}
     @pos2 = {x:178, y:105}
     @pos3 = {x:332, y:105}
@@ -16,6 +16,7 @@ exports.Tabbar = class Tabbar extends Layer
     super options
     this.initControls()
     this.bindEvents()
+    this.showRadar()
 
   showRadar: () ->
     this.resetViews()
@@ -27,6 +28,8 @@ exports.Tabbar = class Tabbar extends Layer
     @radarView.x = 0
     @radarView.y = 100
 
+    @title.text = @radarView.getTitle()
+
   showRanking: () ->
     @marker.x = @pos1.x
     @marker.y = @pos1.y
@@ -34,16 +37,16 @@ exports.Tabbar = class Tabbar extends Layer
     this.resetViews()
     @rankingView.x = 0
     @rankingView.y = 100
+    @title.text = "Ranking"#@radarView.getTitle()
 
   showList: () ->
     @marker.x = @pos3.x
     @marker.y = @pos3.y
-
     @backArrow.opacity=0
     this.resetViews()
-
     @listView.x = 0
     @listView.y = 100
+    @title.text = "List"#@radarView.getTitle()
 
   showProfile: () ->
     @marker.x = @pos4.x
@@ -52,6 +55,7 @@ exports.Tabbar = class Tabbar extends Layer
     @profileView.x = 0
     @profileView.y = 100
     @backArrow.opacity=1
+    @title.text = "Profile"#@radarView.getTitle()
 
   showSettings: () ->
     @marker.x = @pos5.x
@@ -60,6 +64,7 @@ exports.Tabbar = class Tabbar extends Layer
     @settingsView.x = 0
     @settingsView.y = 100
     @backArrow.opacity=1
+    @title.text = "Settings"#@radarView.getTitle()
 
   resetViews: () ->
     @rankingView.x = 1500
