@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var backIcon, backgroundLayer, citySelectionModule, hamburgerMenuIcon, list, markerModule, profile, radar, radarModule, ranking, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
+var EventEmitter, backIcon, backgroundLayer, citySelectionModule, list, markerModule, profile, radar, radarModule, ranking, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -28,6 +28,8 @@ radarModule = require("radarModule");
 
 markerModule = require('MarkerModule');
 
+EventEmitter = require('events').EventEmitter;
+
 backgroundLayer = new BackgroundLayer({
   backgroundColor: "rgba(255,255,255,1)"
 });
@@ -39,16 +41,6 @@ topMenu = new Layer({
   height: 100,
   backgroundColor: "white"
 });
-
-hamburgerMenuIcon = new Layer({
-  x: Screen.width - 75,
-  y: 25,
-  width: 50,
-  height: 50,
-  image: "./images/icons/hamburger.png"
-});
-
-topMenu.addSubLayer(hamburgerMenuIcon);
 
 backIcon = new Layer({
   x: 25,
@@ -103,31 +95,46 @@ profile = new Layer({
   x: 2500,
   y: 100,
   width: Screen.width,
-  height: Screen.height - 220
+  height: Screen.height - 100
 });
 
 setting = new Layer({
   x: 2500,
   y: 100,
   width: Screen.width,
-  height: Screen.height - 220
+  height: Screen.height - 100
 });
 
 tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon, title);
 
+radar.getRadarLayer().on(Events.Click, (function(_this) {
+  return function() {
+    return radar.hideAllMarkers();
+  };
+})(this));
 
-},{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
-var Marker,
+
+},{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"events":7,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
+var EventEmitter, Marker, isHeld, triggerLongHold,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
+
+EventEmitter = require('events').EventEmitter;
+
+isHeld = false;
 
 exports.Marker = Marker = (function(superClass) {
   extend(Marker, superClass);
 
-  function Marker(options) {
+  function Marker(targetName, options) {
+    this.targetName = targetName != null ? targetName : "";
     if (options == null) {
       options = {};
     }
+    this.isExplored = bind(this.isExplored, this);
+    this.isSelected = bind(this.isSelected, this);
+    this.isNormal = bind(this.isNormal, this);
     if (options.width == null) {
       options.width = 50;
     }
@@ -136,48 +143,114 @@ exports.Marker = Marker = (function(superClass) {
     }
     options.opacity = 1;
     options.image = "./images/icons/marker-einfach.png";
-    this.isSelected = false;
-    this.isNormal = true;
-    this.isExplored = false;
+    this._isSelected = false;
+    this._isNormal = true;
+    this._isExplored = false;
+    this.popupImage = "./images/popup-ohne-bild.png";
+    this.emitter = new EventEmitter;
     Marker.__super__.constructor.call(this, options);
-    this.on(Events.Click, function() {
-      if (this.isNormal) {
-        return this.setSelected();
-      } else {
-        if (!this.isExplored && !this.isNormal) {
-          return this.setNormal();
+    this.initControls();
+    this.on(Events.TouchStart, function() {
+      isHeld = true;
+      return Utils.delay(.5, function() {
+        if (isHeld) {
+          return triggerLongHold();
         }
+      });
+    });
+    this.on(Events.TouchEnd, function() {
+      if (isHeld) {
+        this.emitter.emit('selected');
+        return isHeld = false;
+      } else {
+        this.popupLayer.states["switch"]("on");
+        return Utils.delay(4, (function(_this) {
+          return function() {
+            return _this.popupLayer.states["switch"]("off");
+          };
+        })(this));
       }
     });
   }
 
+  Marker.prototype.getEmitter = function() {
+    return this.emitter;
+  };
+
+  Marker.prototype.initControls = function() {
+    this.popupLayer = new Layer({
+      x: this.x - 80,
+      y: this.y - 50,
+      width: 250,
+      height: 250,
+      image: this.popupImage,
+      opacity: 0
+    });
+    this.popupLayer.states.add({
+      on: {
+        opacity: 1
+      },
+      off: {
+        opacity: 0
+      }
+    });
+    return this.popupLayer.states.animationOptions = {
+      curve: "ease-out",
+      time: 0.3
+    };
+  };
+
   Marker.prototype.setSelected = function() {
-    this.isExplored = false;
-    this.isSelected = true;
-    this.isNormal = false;
+    this._isExplored = false;
+    this._isSelected = true;
+    this._isNormal = false;
     return this.image = "./images/icons/marker-selektiert.png";
   };
 
   Marker.prototype.setExplored = function() {
-    this.isExplored = true;
-    this.isSelected = false;
-    this.isNormal = false;
+    this._isExplored = true;
+    this._isSelected = false;
+    this._isNormal = false;
     return this.image = "./images/icons/marker-endeckt.png";
   };
 
   Marker.prototype.setNormal = function() {
-    this.isExplored = false;
-    this.isSelected = false;
-    this.isNormal = true;
+    this._isExplored = false;
+    this._isSelected = false;
+    this._isNormal = true;
     return this.image = "./images/icons/marker-einfach.png";
+  };
+
+  Marker.prototype.hidePopup = function() {
+    return this.popupLayer.opacity = 0;
+  };
+
+  Marker.prototype.getTargetName = function() {
+    return this.targetName;
+  };
+
+  Marker.prototype.isNormal = function() {
+    return this._isNormal;
+  };
+
+  Marker.prototype.isSelected = function() {
+    return this._isSelected;
+  };
+
+  Marker.prototype.isExplored = function() {
+    return this._isExplored;
   };
 
   return Marker;
 
 })(Layer);
 
+triggerLongHold = function() {
+  return isHeld = false;
+};
 
-},{}],3:[function(require,module,exports){
+
+},{"events":7}],3:[function(require,module,exports){
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -550,13 +623,16 @@ exports.CitySelection = CitySelection = (function(superClass) {
 
 
 },{}],5:[function(require,module,exports){
-var Radar, markerModule, textLayer,
+var EventEmitter, Radar, markerModule, textLayer,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 textLayer = require('TextLayer');
 
 markerModule = require('MarkerModule');
+
+EventEmitter = require('events').EventEmitter;
 
 exports.Radar = Radar = (function(superClass) {
   extend(Radar, superClass);
@@ -565,16 +641,34 @@ exports.Radar = Radar = (function(superClass) {
     if (options == null) {
       options = {};
     }
+    this.deSelectAllSelectedMarkers = bind(this.deSelectAllSelectedMarkers, this);
     options.width = Screen.width;
     options.height = 1100;
     options.opacity = 1;
     options.backgroundColor = "white";
     this.marginLeft = options.marginLeft;
     this.title = "Radar";
+    this.currentSelection = null;
+    this.markers = [];
     Radar.__super__.constructor.call(this, options);
     this.initControls();
     this.bindEvents();
   }
+
+  Radar.prototype.deSelectAllSelectedMarkers = function(myMarker) {
+    var i, len, marker, ref, results;
+    ref = this.markers;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      marker = ref[i];
+      if (myMarker !== marker && !marker.isExplored()) {
+        results.push(marker.setNormal());
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
 
   Radar.prototype.bindEvents = function() {
     this.plusIcon.on(Events.Click, (function(_this) {
@@ -582,15 +676,54 @@ exports.Radar = Radar = (function(superClass) {
         return _this.sliderA.value = _this.sliderA.value + 1;
       };
     })(this));
-    return this.minusIcon.on(Events.Click, (function(_this) {
+    this.minusIcon.on(Events.Click, (function(_this) {
       return function() {
         return _this.sliderA.value = _this.sliderA.value - 1;
+      };
+    })(this));
+    this.marker_1.getEmitter().on('selected', (function(_this) {
+      return function() {
+        _this.deSelectAllSelectedMarkers(_this.marker_1);
+        if (_this.marker_1.isNormal()) {
+          _this.marker_1.setSelected();
+          return _this.target.text = _this.marker_1.getTargetName();
+        } else {
+          if (!_this.marker_1.isExplored() && !_this.marker_1.isNormal()) {
+            return _this.marker_1.setNormal();
+          }
+        }
+      };
+    })(this));
+    this.marker_2.getEmitter().on('selected', (function(_this) {
+      return function() {
+        _this.deSelectAllSelectedMarkers(_this.marker_2);
+        if (_this.marker_2.isNormal()) {
+          _this.marker_2.setSelected();
+          return _this.target.text = _this.marker_2.getTargetName();
+        } else {
+          if (!_this.marker_2.isExplored() && !_this.marker_2.isNormal()) {
+            return _this.marker_2.setNormal();
+          }
+        }
+      };
+    })(this));
+    return this.marker_3.getEmitter().on('selected', (function(_this) {
+      return function() {
+        _this.deSelectAllSelectedMarkers(_this.marker_3);
+        if (_this.marker_3.isNormal()) {
+          _this.marker_3.setSelected();
+          return _this.target.text = _this.marker_3.getTargetName();
+        } else {
+          if (!_this.marker_3.isExplored() && !_this.marker_3.isNormal()) {
+            return _this.marker_3.setNormal();
+          }
+        }
       };
     })(this));
   };
 
   Radar.prototype.initControls = function() {
-    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, marker_1, marker_2, marker_3, sliderLayer, target, targetLabel;
+    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, sliderLayer, targetLabel;
     dropdown = new Layer({
       x: 10,
       y: 0,
@@ -629,23 +762,27 @@ exports.Radar = Radar = (function(superClass) {
       superLayer: this
     });
     this.radarLayer.html = "<div class='radar'>></div>";
-    marker_1 = new markerModule.Marker({
+    this.marker_1 = new markerModule.Marker("Uebersee-Museum", {
       x: 400,
       y: 200
     });
-    marker_2 = new markerModule.Marker({
+    this.marker_2 = new markerModule.Marker("Roland", {
       x: 140,
       y: 170
     });
-    marker_1.setSelected();
-    marker_3 = new markerModule.Marker({
+    this.marker_1.setSelected();
+    this.marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", {
       x: 400,
       y: 490
     });
-    marker_3.setExplored();
-    this.radarLayer.addSubLayer(marker_1);
-    this.radarLayer.addSubLayer(marker_2);
-    this.radarLayer.addSubLayer(marker_3);
+    this.marker_3.setExplored();
+    this.markers.push(this.marker_1);
+    this.markers.push(this.marker_2);
+    this.markers.push(this.marker_3);
+    this.currentSelection = this.markers[0];
+    this.radarLayer.addSubLayer(this.marker_1);
+    this.radarLayer.addSubLayer(this.marker_2);
+    this.radarLayer.addSubLayer(this.marker_3);
     sliderLayer = new Layer({
       x: 0,
       y: 860,
@@ -745,17 +882,17 @@ exports.Radar = Radar = (function(superClass) {
       fontFamily: "Calibri"
     });
     currentSelectionLayer.addSubLayer(targetLabel);
-    target = new textLayer({
+    this.target = new textLayer({
       x: 90,
       y: 0,
       width: this.width - 180,
       height: 60,
-      text: "Uebersee-Museum",
+      text: this.currentSelection.getTargetName(),
       color: "rgb(129,129,129)",
       fontSize: 50,
       fontFamily: "Calibri"
     });
-    return currentSelectionLayer.addSubLayer(target);
+    return currentSelectionLayer.addSubLayer(this.target);
   };
 
   Radar.prototype.getRadarLayer = function() {
@@ -766,12 +903,18 @@ exports.Radar = Radar = (function(superClass) {
     return this.title;
   };
 
+  Radar.prototype.hideAllMarkers = function() {
+    this.marker_1.hidePopup();
+    this.marker_2.hidePopup();
+    return this.marker_3.hidePopup();
+  };
+
   return Radar;
 
 })(Layer);
 
 
-},{"MarkerModule":2,"TextLayer":3}],6:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":3,"events":7}],6:[function(require,module,exports){
 var Tabbar,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -826,6 +969,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.resetViews();
     this.marker.x = this.pos2.x;
     this.marker.y = this.pos2.y;
+    this.opacity = 1;
     this.backArrow.opacity = 0;
     this.resetViews();
     this.radarView.x = 0;
@@ -836,9 +980,10 @@ exports.Tabbar = Tabbar = (function(superClass) {
   Tabbar.prototype.showRanking = function() {
     this.marker.x = this.pos1.x;
     this.marker.y = this.pos1.y;
+    this.opacity = 1;
     this.backArrow.opacity = 0;
     this.resetViews();
-    this.rankingView.x = 0;
+    this.rankingView.x = 1;
     this.rankingView.y = 100;
     return this.title.text = "Ranking";
   };
@@ -846,6 +991,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
   Tabbar.prototype.showList = function() {
     this.marker.x = this.pos3.x;
     this.marker.y = this.pos3.y;
+    this.opacity = 1;
     this.backArrow.opacity = 0;
     this.resetViews();
     this.listView.x = 0;
@@ -856,6 +1002,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
   Tabbar.prototype.showProfile = function() {
     this.marker.x = this.pos4.x;
     this.marker.y = this.pos4.y;
+    this.opacity = 0;
     this.resetViews();
     this.profileView.x = 0;
     this.profileView.y = 100;
@@ -866,6 +1013,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
   Tabbar.prototype.showSettings = function() {
     this.marker.x = this.pos5.x;
     this.marker.y = this.pos5.y;
+    this.opacity = 0;
     this.resetViews();
     this.settingsView.x = 0;
     this.settingsView.y = 100;
@@ -970,6 +1118,309 @@ exports.Tabbar = Tabbar = (function(superClass) {
 
 })(Layer);
 
+
+},{}],7:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      }
+      throw TypeError('Uncaught, unspecified "error" event.');
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        len = arguments.length;
+        args = new Array(len - 1);
+        for (i = 1; i < len; i++)
+          args[i - 1] = arguments[i];
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    len = arguments.length;
+    args = new Array(len - 1);
+    for (i = 1; i < len; i++)
+      args[i - 1] = arguments[i];
+
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    var m;
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  var ret;
+  if (!emitter._events || !emitter._events[type])
+    ret = 0;
+  else if (isFunction(emitter._events[type]))
+    ret = 1;
+  else
+    ret = emitter._events[type].length;
+  return ret;
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
 
 },{}]},{},[1])
 

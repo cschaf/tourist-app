@@ -1,6 +1,6 @@
 textLayer = require('TextLayer')
 markerModule = require('MarkerModule')
-
+{EventEmitter} = require 'events'
 
 exports.Radar = class Radar extends Layer
   constructor: (options = {}) ->
@@ -10,10 +10,18 @@ exports.Radar = class Radar extends Layer
     options.backgroundColor= "white"
     @marginLeft = options.marginLeft
     @title = "Radar"
+    @currentSelection = null
+    @markers = []
 
     super options
+
     this.initControls()
     this.bindEvents()
+
+  deSelectAllSelectedMarkers: (myMarker)=>
+    for marker in @markers
+      if myMarker != marker and !marker.isExplored()
+        marker.setNormal()
 
   bindEvents: ->
     @plusIcon.on Events.Click, =>
@@ -21,6 +29,33 @@ exports.Radar = class Radar extends Layer
 
     @minusIcon.on Events.Click, =>
       @sliderA.value = @sliderA.value - 1
+
+    @marker_1.getEmitter().on 'selected', =>
+      this.deSelectAllSelectedMarkers(@marker_1)
+      if @marker_1.isNormal()
+        @marker_1.setSelected()
+        @target.text = @marker_1.getTargetName()
+      else
+        if !@marker_1.isExplored() and not @marker_1.isNormal()
+          @marker_1.setNormal()
+
+    @marker_2.getEmitter().on 'selected', =>
+      this.deSelectAllSelectedMarkers(@marker_2)
+      if @marker_2.isNormal()
+        @marker_2.setSelected()
+        @target.text = @marker_2.getTargetName()
+      else
+        if !@marker_2.isExplored() and not @marker_2.isNormal()
+          @marker_2.setNormal()
+
+    @marker_3.getEmitter().on 'selected', =>
+      this.deSelectAllSelectedMarkers(@marker_3)
+      if @marker_3.isNormal()
+        @marker_3.setSelected()
+        @target.text  = @marker_3.getTargetName()
+      else
+        if !@marker_3.isExplored() and not @marker_3.isNormal()
+          @marker_3.setNormal()
 
   initControls: () ->
 
@@ -65,15 +100,21 @@ exports.Radar = class Radar extends Layer
     @radarLayer.html = "<div class='radar'>></div>"
 
     #marker
-    marker_1 = new markerModule.Marker(x:400, y:200)
-    marker_2 = new markerModule.Marker(x:140, y:170)
-    marker_1.setSelected()
-    marker_3 = new markerModule.Marker(x:400, y:490)
-    marker_3.setExplored()
+    @marker_1 = new markerModule.Marker("Uebersee-Museum", x:400, y:200)
+    @marker_2 = new markerModule.Marker("Roland", x:140, y:170)
+    @marker_1.setSelected()
+    @marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", x:400, y:490)
+    @marker_3.setExplored()
 
-    @radarLayer.addSubLayer(marker_1)
-    @radarLayer.addSubLayer(marker_2)
-    @radarLayer.addSubLayer(marker_3)
+    @markers.push(@marker_1)
+    @markers.push(@marker_2)
+    @markers.push(@marker_3)
+
+    @currentSelection = @markers[0]
+
+    @radarLayer.addSubLayer(@marker_1)
+    @radarLayer.addSubLayer(@marker_2)
+    @radarLayer.addSubLayer(@marker_3)
 
     sliderLayer = new Layer
       x:0
@@ -179,20 +220,26 @@ exports.Radar = class Radar extends Layer
 
     currentSelectionLayer.addSubLayer(targetLabel)
 
-    target = new textLayer
+    @target = new textLayer
       x:90
       y:0
       width: this.width-180
       height: 60
-      text:"Uebersee-Museum"
+      text:@currentSelection.getTargetName()
       color: "rgb(129,129,129)"
       fontSize: 50
       fontFamily: "Calibri"
-    currentSelectionLayer.addSubLayer(target)
-
+    currentSelectionLayer.addSubLayer(@target)
 
   getRadarLayer: () ->
     return @radarLayer
 
   getTitle: () ->
     return @title
+
+  hideAllMarkers: ()->
+    @marker_1.hidePopup()
+    @marker_2.hidePopup()
+    @marker_3.hidePopup()
+
+

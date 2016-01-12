@@ -11,6 +11,7 @@ textLayer = require('TextLayer')
 tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
 markerModule = require('MarkerModule')
+{EventEmitter} = require 'events'
 
 # Set background to white
 backgroundLayer = new BackgroundLayer
@@ -23,15 +24,6 @@ topMenu = new Layer
   width: Screen.width
   height: 100
   backgroundColor: "white"
-
-hamburgerMenuIcon = new Layer
-  x: Screen.width - 75
-  y: 25
-  width: 50
-  height: 50
-  image: "./images/icons/hamburger.png"
-
-topMenu.addSubLayer(hamburgerMenuIcon)
 
 backIcon = new Layer
   x: 25
@@ -82,15 +74,15 @@ profile = new Layer
   x: 2500
   y: 100
   width: Screen.width
-  height: Screen.height - 220
+  height: Screen.height - 100
 
 setting = new Layer
   x: 2500
   y: 100
   width: Screen.width
-  height: Screen.height - 220
+  height: Screen.height - 100
 
 # Create Bottom Menu
 tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon, title)
-#radar.getRadarLayer().on Events.Click, =>
-#  print "radar clicked!"
+radar.getRadarLayer().on Events.Click, =>
+  radar.hideAllMarkers()

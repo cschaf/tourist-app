@@ -1,36 +1,89 @@
+{EventEmitter} = require 'events'
+isHeld = false
 exports.Marker = class Marker extends Layer
-  constructor: (options = {}) ->
+  constructor: (@targetName = "", options = {}) ->
     options.width ?= 50
     options.height ?= 50
     options.opacity= 1
     options.image= "./images/icons/marker-einfach.png"
-    @isSelected = false
-    @isNormal = true
-    @isExplored = false
-
+    @_isSelected = false
+    @_isNormal = true
+    @_isExplored = false
+    @popupImage = "./images/popup-ohne-bild.png"
+    @emitter = new EventEmitter
     super options
 
-    @on Events.Click ,->
-      if @isNormal
-        this.setSelected()
+# selection logic here
+    this.initControls()
+
+    @on Events.TouchStart, () ->
+      isHeld = true
+
+      Utils.delay .5, () ->
+        if isHeld then triggerLongHold()
+
+    @on Events.TouchEnd, () ->
+    # this is a regular tap
+      if isHeld
+        @emitter.emit 'selected'
+        isHeld = false
+    # this is the "long hold" release
       else
-        if !@isExplored and not @isNormal
-          this.setNormal()
+        # Animation on load
+        @popupLayer.states.switch("on")
+        Utils.delay 4, =>  @popupLayer.states.switch("off")
+
+  getEmitter: ()->
+    return @emitter
+  initControls: ()->
+    @popupLayer = new Layer
+      x:@.x-80
+      y:@.y-50
+      width:250
+      height:250
+      image: @popupImage
+      opacity: 0
+
+    @popupLayer.states.add
+      on: opacity: 1
+      off: opacity: 0
+
+    @popupLayer.states.animationOptions =
+      curve: "ease-out"
+      time: 0.3
 
   setSelected: () ->
-    @isExplored = false
-    @isSelected = true
-    @isNormal = false
+    @_isExplored = false
+    @_isSelected = true
+    @_isNormal = false
     this.image =  "./images/icons/marker-selektiert.png"
 
   setExplored: () ->
-    @isExplored = true
-    @isSelected = false
-    @isNormal = false
+    @_isExplored = true
+    @_isSelected = false
+    @_isNormal = false
     this.image =  "./images/icons/marker-endeckt.png"
 
   setNormal: () ->
-    @isExplored = false
-    @isSelected = false
-    @isNormal = true
+    @_isExplored = false
+    @_isSelected = false
+    @_isNormal = true
     this.image =  "./images/icons/marker-einfach.png"
+  hidePopup: ()->
+    @popupLayer.opacity = 0
+
+  getTargetName: ()->
+    return @targetName
+
+  isNormal: () =>
+    return @_isNormal
+
+  isSelected: () =>
+    return @_isSelected
+
+  isExplored: () =>
+    return @_isExplored
+
+triggerLongHold = () ->
+# this is the long hold trigger
+    isHeld = false
