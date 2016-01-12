@@ -85,8 +85,6 @@ radar = new radarModule.Radar({
   y: 100
 });
 
-title.text = radar.getTitle();
-
 ranking = new Layer({
   x: 0,
   y: -2500,
@@ -115,7 +113,7 @@ setting = new Layer({
   height: Screen.height - 220
 });
 
-tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon);
+tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon, title);
 
 
 },{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
@@ -781,13 +779,14 @@ var Tabbar,
 exports.Tabbar = Tabbar = (function(superClass) {
   extend(Tabbar, superClass);
 
-  function Tabbar(rankingView, radarView, listView, profileView, settingsView, backArrow, options) {
+  function Tabbar(rankingView, radarView, listView, profileView, settingsView, backArrow, title, options) {
     this.rankingView = rankingView;
     this.radarView = radarView;
     this.listView = listView;
     this.profileView = profileView;
     this.settingsView = settingsView;
     this.backArrow = backArrow;
+    this.title = title;
     if (options == null) {
       options = {};
     }
@@ -820,6 +819,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
     Tabbar.__super__.constructor.call(this, options);
     this.initControls();
     this.bindEvents();
+    this.showRadar();
   }
 
   Tabbar.prototype.showRadar = function() {
@@ -829,7 +829,8 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.backArrow.opacity = 0;
     this.resetViews();
     this.radarView.x = 0;
-    return this.radarView.y = 100;
+    this.radarView.y = 100;
+    return this.title.text = this.radarView.getTitle();
   };
 
   Tabbar.prototype.showRanking = function() {
@@ -838,7 +839,8 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.backArrow.opacity = 0;
     this.resetViews();
     this.rankingView.x = 0;
-    return this.rankingView.y = 100;
+    this.rankingView.y = 100;
+    return this.title.text = "Ranking";
   };
 
   Tabbar.prototype.showList = function() {
@@ -847,7 +849,8 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.backArrow.opacity = 0;
     this.resetViews();
     this.listView.x = 0;
-    return this.listView.y = 100;
+    this.listView.y = 100;
+    return this.title.text = "List";
   };
 
   Tabbar.prototype.showProfile = function() {
@@ -856,7 +859,8 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.resetViews();
     this.profileView.x = 0;
     this.profileView.y = 100;
-    return this.backArrow.opacity = 1;
+    this.backArrow.opacity = 1;
+    return this.title.text = "Profile";
   };
 
   Tabbar.prototype.showSettings = function() {
@@ -865,7 +869,8 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.resetViews();
     this.settingsView.x = 0;
     this.settingsView.y = 100;
-    return this.backArrow.opacity = 1;
+    this.backArrow.opacity = 1;
+    return this.title.text = "Settings";
   };
 
   Tabbar.prototype.resetViews = function() {

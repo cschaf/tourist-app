@@ -65,7 +65,6 @@ topMenu.addSubLayer(title)
 
 # ---- Radar -----
 radar = new radarModule.Radar(y:100)
-title.text = radar.getTitle()
 
 ranking = new Layer
   x:0
@@ -92,6 +91,6 @@ setting = new Layer
   height: Screen.height - 220
 
 # Create Bottom Menu
-tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon)
+tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon, title)
 #radar.getRadarLayer().on Events.Click, =>
 #  print "radar clicked!"
