@@ -24,15 +24,6 @@ topMenu = new Layer
   height: 100
   backgroundColor: "white"
 
-hamburgerMenuIcon = new Layer
-  x: Screen.width - 75
-  y: 25
-  width: 50
-  height: 50
-  image: "./images/icons/hamburger.png"
-
-topMenu.addSubLayer(hamburgerMenuIcon)
-
 backIcon = new Layer
   x: 25
   y: 25
