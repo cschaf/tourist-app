@@ -115,20 +115,23 @@ radar.getRadarLayer().on(Events.Click, (function(_this) {
 
 
 },{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"events":7,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
-var EventEmitter, Marker, isHeld, triggerLongHold,
+var EventEmitter, Marker, isHeld, textLayer, triggerLongHold,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
 EventEmitter = require('events').EventEmitter;
 
+textLayer = require('TextLayer');
+
 isHeld = false;
 
 exports.Marker = Marker = (function(superClass) {
   extend(Marker, superClass);
 
-  function Marker(targetName, options) {
+  function Marker(targetName, popupImage, options) {
     this.targetName = targetName != null ? targetName : "";
+    this.popupImage = popupImage;
     if (options == null) {
       options = {};
     }
@@ -146,7 +149,7 @@ exports.Marker = Marker = (function(superClass) {
     this._isSelected = false;
     this._isNormal = true;
     this._isExplored = false;
-    this.popupImage = "./images/popup-ohne-bild.png";
+    this.popupBackground = "./images/popup-ohne-bild.png";
     this.emitter = new EventEmitter;
     Marker.__super__.constructor.call(this, options);
     this.initControls();
@@ -179,13 +182,33 @@ exports.Marker = Marker = (function(superClass) {
 
   Marker.prototype.initControls = function() {
     this.popupLayer = new Layer({
-      x: this.x - 80,
-      y: this.y - 50,
-      width: 250,
-      height: 250,
-      image: this.popupImage,
+      x: this.x - 135,
+      y: this.y - 155,
+      width: 350,
+      height: 350,
+      image: this.popupBackground,
       opacity: 0
     });
+    this.popupImageLayer = new Layer({
+      x: 25,
+      y: 50,
+      width: 300,
+      height: 175,
+      image: this.popupImage
+    });
+    this.popupLayer.addSubLayer(this.popupImageLayer);
+    this.popupTextLayer = new textLayer({
+      x: 5,
+      y: 0,
+      width: 350,
+      height: 40,
+      color: "rgb(255,255,255)",
+      textAlign: "center",
+      fontSize: 30,
+      fontFamily: "Calibri",
+      text: this.targetName
+    });
+    this.popupLayer.addSubLayer(this.popupTextLayer);
     this.popupLayer.states.add({
       on: {
         opacity: 1
@@ -250,7 +273,7 @@ triggerLongHold = function() {
 };
 
 
-},{"events":7}],3:[function(require,module,exports){
+},{"TextLayer":3,"events":7}],3:[function(require,module,exports){
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -762,16 +785,16 @@ exports.Radar = Radar = (function(superClass) {
       superLayer: this
     });
     this.radarLayer.html = "<div class='radar'>></div>";
-    this.marker_1 = new markerModule.Marker("Uebersee-Museum", {
+    this.marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", {
       x: 400,
       y: 200
     });
-    this.marker_2 = new markerModule.Marker("Roland", {
+    this.marker_2 = new markerModule.Marker("Roland", "./images/roland.png", {
       x: 140,
       y: 170
     });
     this.marker_1.setSelected();
-    this.marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", {
+    this.marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", {
       x: 400,
       y: 490
     });

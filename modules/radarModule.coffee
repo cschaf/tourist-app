@@ -100,10 +100,10 @@ exports.Radar = class Radar extends Layer
     @radarLayer.html = "<div class='radar'>></div>"
 
     #marker
-    @marker_1 = new markerModule.Marker("Uebersee-Museum", x:400, y:200)
-    @marker_2 = new markerModule.Marker("Roland", x:140, y:170)
+    @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
+    @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:140, y:170)
     @marker_1.setSelected()
-    @marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", x:400, y:490)
+    @marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", x:400, y:490)
     @marker_3.setExplored()
 
     @markers.push(@marker_1)
