@@ -38,7 +38,12 @@ backIcon = new Layer
   y: 25
   width: 50
   height: 50
+  opacity:0
   image: "./images/icons/back.png"
+
+backIcon.on Events.Click, =>
+  tabBarLayer.showRadar()
+
 topMenu.addSubLayer(backIcon)
 
 title = new textLayer
@@ -55,10 +60,6 @@ topMenu.addSubLayer(title)
 
 
 
-
-# Create Bottom Menu
-bottomMenu = new tabbarModule.Tabbar(x: 0, y: Screen.height-120)
-
 # ---- City Selection -----
 #citySelection = new citySelectionModule.CitySelection
 
@@ -66,5 +67,31 @@ bottomMenu = new tabbarModule.Tabbar(x: 0, y: Screen.height-120)
 radar = new radarModule.Radar(y:100)
 title.text = radar.getTitle()
 
+ranking = new Layer
+  x:0
+  y:-2500
+  width: Screen.width
+  height :Screen.height - 220
+
+list = new Layer
+  x: 2500
+  y: 100
+  width: Screen.width
+  height: Screen.height - 220
+
+profile = new Layer
+  x: 2500
+  y: 100
+  width: Screen.width
+  height: Screen.height - 220
+
+setting = new Layer
+  x: 2500
+  y: 100
+  width: Screen.width
+  height: Screen.height - 220
+
+# Create Bottom Menu
+tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon)
 #radar.getRadarLayer().on Events.Click, =>
 #  print "radar clicked!"

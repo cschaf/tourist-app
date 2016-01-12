@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var backIcon, backgroundLayer, bottomMenu, citySelectionModule, hamburgerMenuIcon, markerModule, radar, radarModule, tabbarModule, textLayer, title, topMenu;
+var backIcon, backgroundLayer, citySelectionModule, hamburgerMenuIcon, list, markerModule, profile, radar, radarModule, ranking, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -55,8 +55,15 @@ backIcon = new Layer({
   y: 25,
   width: 50,
   height: 50,
+  opacity: 0,
   image: "./images/icons/back.png"
 });
+
+backIcon.on(Events.Click, (function(_this) {
+  return function() {
+    return tabBarLayer.showRadar();
+  };
+})(this));
 
 topMenu.addSubLayer(backIcon);
 
@@ -74,16 +81,41 @@ title = new textLayer({
 
 topMenu.addSubLayer(title);
 
-bottomMenu = new tabbarModule.Tabbar({
-  x: 0,
-  y: Screen.height - 120
-});
-
 radar = new radarModule.Radar({
   y: 100
 });
 
 title.text = radar.getTitle();
+
+ranking = new Layer({
+  x: 0,
+  y: -2500,
+  width: Screen.width,
+  height: Screen.height - 220
+});
+
+list = new Layer({
+  x: 2500,
+  y: 100,
+  width: Screen.width,
+  height: Screen.height - 220
+});
+
+profile = new Layer({
+  x: 2500,
+  y: 100,
+  width: Screen.width,
+  height: Screen.height - 220
+});
+
+setting = new Layer({
+  x: 2500,
+  y: 100,
+  width: Screen.width,
+  height: Screen.height - 220
+});
+
+tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon);
 
 
 },{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
@@ -618,10 +650,11 @@ exports.Radar = Radar = (function(superClass) {
     this.radarLayer.addSubLayer(marker_3);
     sliderLayer = new Layer({
       x: 0,
-      y: 950,
+      y: 860,
       width: this.width,
       height: 100,
-      backgroundColor: "white"
+      backgroundColor: "white",
+      superLayer: this
     });
     this.minusIcon = new Layer({
       x: 50,
@@ -748,7 +781,13 @@ var Tabbar,
 exports.Tabbar = Tabbar = (function(superClass) {
   extend(Tabbar, superClass);
 
-  function Tabbar(options) {
+  function Tabbar(rankingView, radarView, listView, profileView, settingsView, backArrow, options) {
+    this.rankingView = rankingView;
+    this.radarView = radarView;
+    this.listView = listView;
+    this.profileView = profileView;
+    this.settingsView = settingsView;
+    this.backArrow = backArrow;
     if (options == null) {
       options = {};
     }
@@ -775,41 +814,97 @@ exports.Tabbar = Tabbar = (function(superClass) {
     options.width = Screen.width;
     options.height = 110;
     options.opacity = 1;
+    options.x = 0;
+    options.y = Screen.height - 120;
     options.image = "./images/tabbar.png";
     Tabbar.__super__.constructor.call(this, options);
     this.initControls();
     this.bindEvents();
   }
 
+  Tabbar.prototype.showRadar = function() {
+    this.resetViews();
+    this.marker.x = this.pos2.x;
+    this.marker.y = this.pos2.y;
+    this.backArrow.opacity = 0;
+    this.resetViews();
+    this.radarView.x = 0;
+    return this.radarView.y = 100;
+  };
+
+  Tabbar.prototype.showRanking = function() {
+    this.marker.x = this.pos1.x;
+    this.marker.y = this.pos1.y;
+    this.backArrow.opacity = 0;
+    this.resetViews();
+    this.rankingView.x = 0;
+    return this.rankingView.y = 100;
+  };
+
+  Tabbar.prototype.showList = function() {
+    this.marker.x = this.pos3.x;
+    this.marker.y = this.pos3.y;
+    this.backArrow.opacity = 0;
+    this.resetViews();
+    this.listView.x = 0;
+    return this.listView.y = 100;
+  };
+
+  Tabbar.prototype.showProfile = function() {
+    this.marker.x = this.pos4.x;
+    this.marker.y = this.pos4.y;
+    this.resetViews();
+    this.profileView.x = 0;
+    this.profileView.y = 100;
+    return this.backArrow.opacity = 1;
+  };
+
+  Tabbar.prototype.showSettings = function() {
+    this.marker.x = this.pos5.x;
+    this.marker.y = this.pos5.y;
+    this.resetViews();
+    this.settingsView.x = 0;
+    this.settingsView.y = 100;
+    return this.backArrow.opacity = 1;
+  };
+
+  Tabbar.prototype.resetViews = function() {
+    this.rankingView.x = 1500;
+    this.rankingView.y = 1500;
+    this.radarView.x = 1500;
+    this.radarView.y = 1500;
+    this.listView.x = 1500;
+    this.listView.x = 1500;
+    this.profileView.x = 1500;
+    this.profileView.y = 1500;
+    this.settingsView.x = 1500;
+    return this.settingsView.y = 1500;
+  };
+
   Tabbar.prototype.bindEvents = function() {
     this.rankingLayer.on(Events.Click, (function(_this) {
       return function() {
-        _this.marker.x = _this.pos1.x;
-        return _this.marker.y = _this.pos1.y;
+        return _this.showRanking();
       };
     })(this));
     this.radarLayer.on(Events.Click, (function(_this) {
       return function() {
-        _this.marker.x = _this.pos2.x;
-        return _this.marker.y = _this.pos2.y;
+        return _this.showRadar();
       };
     })(this));
     this.listLayer.on(Events.Click, (function(_this) {
       return function() {
-        _this.marker.x = _this.pos3.x;
-        return _this.marker.y = _this.pos3.y;
+        return _this.showList();
       };
     })(this));
     this.profileLayer.on(Events.Click, (function(_this) {
       return function() {
-        _this.marker.x = _this.pos4.x;
-        return _this.marker.y = _this.pos4.y;
+        return _this.showProfile();
       };
     })(this));
     return this.settingsLayer.on(Events.Click, (function(_this) {
       return function() {
-        _this.marker.x = _this.pos5.x;
-        return _this.marker.y = _this.pos5.y;
+        return _this.showSettings();
       };
     })(this));
   };
