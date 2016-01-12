@@ -1,7 +1,8 @@
 {EventEmitter} = require 'events'
+textLayer = require('TextLayer')
 isHeld = false
 exports.Marker = class Marker extends Layer
-  constructor: (@targetName = "", options = {}) ->
+  constructor: (@targetName = "",@popupImage, options = {}) ->
     options.width ?= 50
     options.height ?= 50
     options.opacity= 1
@@ -9,13 +10,11 @@ exports.Marker = class Marker extends Layer
     @_isSelected = false
     @_isNormal = true
     @_isExplored = false
-    @popupImage = "./images/popup-ohne-bild.png"
+    @popupBackground = "./images/popup-ohne-bild.png"
     @emitter = new EventEmitter
     super options
 
-# selection logic here
     this.initControls()
-
     @on Events.TouchStart, () ->
       isHeld = true
 
@@ -35,14 +34,36 @@ exports.Marker = class Marker extends Layer
 
   getEmitter: ()->
     return @emitter
+
+
   initControls: ()->
     @popupLayer = new Layer
-      x:@.x-80
-      y:@.y-50
-      width:250
-      height:250
-      image: @popupImage
+      x:@.x-135
+      y:@.y-155
+      width:350
+      height:350
+      image: @popupBackground
       opacity: 0
+
+    @popupImageLayer = new Layer
+      x:25
+      y:50
+      width:300
+      height:175
+      image: @popupImage
+    @popupLayer.addSubLayer(@popupImageLayer)
+    @popupTextLayer = new textLayer
+      x:5
+      y:0
+      width:350
+      height:40
+      color: "rgb(255,255,255)"
+      textAlign: "center"
+      fontSize: 30
+      fontFamily: "Calibri"
+      text:@targetName
+
+    @popupLayer.addSubLayer(@popupTextLayer)
 
     @popupLayer.states.add
       on: opacity: 1
