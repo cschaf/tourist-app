@@ -82,13 +82,13 @@ profile = new Layer
   x: 2500
   y: 100
   width: Screen.width
-  height: Screen.height - 220
+  height: Screen.height - 100
 
 setting = new Layer
   x: 2500
   y: 100
   width: Screen.width
-  height: Screen.height - 220
+  height: Screen.height - 100
 
 # Create Bottom Menu
 tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon, title)

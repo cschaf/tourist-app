@@ -22,6 +22,7 @@ exports.Tabbar = class Tabbar extends Layer
     this.resetViews()
     @marker.x = @pos2.x
     @marker.y = @pos2.y
+    this.opacity = 1
     @backArrow.opacity=0
     this.resetViews()
 
@@ -33,15 +34,17 @@ exports.Tabbar = class Tabbar extends Layer
   showRanking: () ->
     @marker.x = @pos1.x
     @marker.y = @pos1.y
+    @opacity = 1
     @backArrow.opacity = 0
     this.resetViews()
-    @rankingView.x = 0
+    @rankingView.x = 1
     @rankingView.y = 100
     @title.text = "Ranking"#@radarView.getTitle()
 
   showList: () ->
     @marker.x = @pos3.x
     @marker.y = @pos3.y
+    this.opacity = 1
     @backArrow.opacity=0
     this.resetViews()
     @listView.x = 0
@@ -51,6 +54,7 @@ exports.Tabbar = class Tabbar extends Layer
   showProfile: () ->
     @marker.x = @pos4.x
     @marker.y = @pos4.y
+    this.opacity = 0
     this.resetViews()
     @profileView.x = 0
     @profileView.y = 100
@@ -60,6 +64,7 @@ exports.Tabbar = class Tabbar extends Layer
   showSettings: () ->
     @marker.x = @pos5.x
     @marker.y = @pos5.y
+    @opacity = 0
     this.resetViews()
     @settingsView.x = 0
     @settingsView.y = 100
