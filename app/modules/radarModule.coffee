@@ -77,10 +77,11 @@ exports.Radar = class Radar extends Layer
 
     sliderLayer = new Layer
       x:0
-      y:950
+      y:860
       width: this.width
       height: 100
       backgroundColor: "white"
+      superLayer : this
 
     @minusIcon = new Layer
       x: 50

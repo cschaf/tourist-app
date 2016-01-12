@@ -1,40 +1,97 @@
 exports.Tabbar = class Tabbar extends Layer
-  constructor: (options = {}) ->
+  constructor: (@rankingView, @radarView, @listView,@profileView, @settingsView ,@backArrow, options = {}) ->
     @pos1 = {x:17, y:105}
     @pos2 = {x:178, y:105}
     @pos3 = {x:332, y:105}
     @pos4 = {x:475, y:105}
     @pos5 = {x:610, y:105}
 
-    options.width= Screen.width
-    options.height= 110
+    options.width = Screen.width
+    options.height = 110
     options.opacity= 1
+    options.x= 0
+    options.y= Screen.height-120
     options.image= "./images/tabbar.png"
+
     super options
     this.initControls()
     this.bindEvents()
 
+  showRadar: () ->
+    this.resetViews()
+    @marker.x = @pos2.x
+    @marker.y = @pos2.y
+    @backArrow.opacity=0
+    this.resetViews()
+
+    @radarView.x = 0
+    @radarView.y = 100
+
+  showRanking: () ->
+    @marker.x = @pos1.x
+    @marker.y = @pos1.y
+    @backArrow.opacity = 0
+    this.resetViews()
+    @rankingView.x = 0
+    @rankingView.y = 100
+
+  showList: () ->
+    @marker.x = @pos3.x
+    @marker.y = @pos3.y
+
+    @backArrow.opacity=0
+    this.resetViews()
+
+    @listView.x = 0
+    @listView.y = 100
+
+  showProfile: () ->
+    @marker.x = @pos4.x
+    @marker.y = @pos4.y
+    this.resetViews()
+    @profileView.x = 0
+    @profileView.y = 100
+    @backArrow.opacity=1
+
+  showSettings: () ->
+    @marker.x = @pos5.x
+    @marker.y = @pos5.y
+    this.resetViews()
+    @settingsView.x = 0
+    @settingsView.y = 100
+    @backArrow.opacity=1
+
+  resetViews: () ->
+    @rankingView.x = 1500
+    @rankingView.y = 1500
+
+    @radarView.x = 1500
+    @radarView.y = 1500
+
+    @listView.x = 1500
+    @listView.x = 1500
+
+    @profileView.x = 1500
+    @profileView.y = 1500
+
+    @settingsView.x = 1500
+    @settingsView.y = 1500
 
   bindEvents: ->
     @rankingLayer.on Events.Click, =>
-      @marker.x = @pos1.x
-      @marker.y = @pos1.y
+      this.showRanking()
 
     @radarLayer.on Events.Click, =>
-      @marker.x = @pos2.x
-      @marker.y = @pos2.y
+      this.showRadar()
 
     @listLayer.on Events.Click, =>
-      @marker.x = @pos3.x
-      @marker.y = @pos3.y
+      this.showList()
 
     @profileLayer.on Events.Click, =>
-      @marker.x = @pos4.x
-      @marker.y = @pos4.y
+      this.showProfile()
 
     @settingsLayer.on Events.Click, =>
-      @marker.x = @pos5.x
-      @marker.y = @pos5.y
+      this.showSettings()
 
   initControls: () ->
 
