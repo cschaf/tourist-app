@@ -11,6 +11,7 @@ textLayer = require('TextLayer')
 tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
 markerModule = require('MarkerModule')
+rankingListModule = require('rankingListModule')
 {EventEmitter} = require 'events'
 
 # Set background to white
@@ -52,17 +53,11 @@ topMenu.addSubLayer(title)
 
 
 
-# ---- City Selection -----
-#citySelection = new citySelectionModule.CitySelection
+# ---- ranking list -----
+ranking = new rankingListModule.RankingList(  x:0, y:-2500)
 
 # ---- Radar -----
-radar = new radarModule.Radar(y:100)
-
-ranking = new Layer
-  x:0
-  y:-2500
-  width: Screen.width
-  height :Screen.height - 220
+radar = new radarModule.Radar()
 
 list = new Layer
   x: 2500
