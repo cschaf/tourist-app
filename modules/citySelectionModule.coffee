@@ -1,9 +1,7 @@
 exports.CitySelection = class CitySelection extends Layer
 		constructor: (options = {}) ->
-				options.x = 0
-				options.y = 100
 				options.width= Screen.width
-				options.height= Screen.height - 100
+				options.height= Screen.height - 220
 				options.opacity= 1
 				options.backgroundColor= "#ffffff"
 				super options

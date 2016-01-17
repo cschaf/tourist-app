@@ -37,7 +37,7 @@ exports.Tabbar = class Tabbar extends Layer
     @opacity = 1
     @backArrow.opacity = 0
     this.resetViews()
-    @rankingView.x = 1
+    @rankingView.x = 0
     @rankingView.y = 100
     @title.text = "Ranking"#@radarView.getTitle()
 

@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var EventEmitter, backIcon, backgroundLayer, citySelectionModule, list, markerModule, profile, radar, radarModule, ranking, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
+var EventEmitter, backIcon, backgroundLayer, cityModule, citySelectionModule, list, markerModule, profile, radar, radarModule, ranking, rankingListModule, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -27,6 +27,10 @@ tabbarModule = require("tabbarModule");
 radarModule = require("radarModule");
 
 markerModule = require('MarkerModule');
+
+rankingListModule = require('rankingListModule');
+
+cityModule = require('citySelectionModule');
 
 EventEmitter = require('events').EventEmitter;
 
@@ -73,15 +77,14 @@ title = new textLayer({
 
 topMenu.addSubLayer(title);
 
-radar = new radarModule.Radar({
-  y: 100
+ranking = new rankingListModule.RankingList({
+  x: 0,
+  y: -2500
 });
 
-ranking = new Layer({
+radar = new radarModule.Radar({
   x: 0,
-  y: -2500,
-  width: Screen.width,
-  height: Screen.height - 220
+  y: 100
 });
 
 list = new Layer({
@@ -114,7 +117,7 @@ radar.getRadarLayer().on(Events.Click, (function(_this) {
 })(this));
 
 
-},{"MarkerModule":2,"TextLayer":3,"citySelectionModule":4,"events":7,"radarModule":5,"tabbarModule":6}],2:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"citySelectionModule":5,"events":9,"radarModule":6,"rankingListModule":7,"tabbarModule":8}],2:[function(require,module,exports){
 var EventEmitter, Marker, isHeld, textLayer, triggerLongHold,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -182,8 +185,8 @@ exports.Marker = Marker = (function(superClass) {
 
   Marker.prototype.initControls = function() {
     this.popupLayer = new Layer({
-      x: this.x - 135,
-      y: this.y - 155,
+      x: this.x - 138,
+      y: this.y + 55,
       width: 350,
       height: 350,
       image: this.popupBackground,
@@ -273,7 +276,81 @@ triggerLongHold = function() {
 };
 
 
-},{"TextLayer":3,"events":7}],3:[function(require,module,exports){
+},{"TextLayer":4,"events":9}],3:[function(require,module,exports){
+var RankingRow, textLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+textLayer = require('TextLayer');
+
+exports.RankingRow = RankingRow = (function(superClass) {
+  extend(RankingRow, superClass);
+
+  function RankingRow(scrollPanel, rank, playername, score, options) {
+    this.scrollPanel = scrollPanel;
+    this.rank = rank != null ? rank : "0";
+    this.playername = playername != null ? playername : "Unknown";
+    this.score = score != null ? score : "0";
+    if (options == null) {
+      options = {};
+    }
+    options.width = Screen.width;
+    options.height = 100;
+    options.opacity = 1;
+    options.borderRadius = 6;
+    options.cale = 1;
+    options.superLayer = this.scrollPanel.content;
+    options.backgroundColor = "white";
+    RankingRow.__super__.constructor.call(this, options);
+    this.initControls();
+  }
+
+  RankingRow.prototype.initControls = function() {
+    var nameLayer, rankLayer, scoreLayer;
+    rankLayer = new textLayer({
+      x: 10,
+      y: 0,
+      width: 80,
+      text: this.rank,
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "left",
+      backgroundColor: "white",
+      superLayer: this
+    });
+    nameLayer = new textLayer({
+      x: 90,
+      y: 0,
+      width: Screen.width - 140 - 100,
+      text: this.playername,
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "center",
+      backgroundColor: "white",
+      superLayer: this
+    });
+    return scoreLayer = new textLayer({
+      x: Screen.width - 150,
+      y: 0,
+      width: 140,
+      text: this.score,
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "right",
+      backgroundColor: "white",
+      superLayer: this
+    });
+  };
+
+  return RankingRow;
+
+})(Layer);
+
+
+},{"TextLayer":4}],4:[function(require,module,exports){
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -531,7 +608,7 @@ module.exports = (function(superClass) {
 })(Layer);
 
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var CitySelection,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -543,10 +620,8 @@ exports.CitySelection = CitySelection = (function(superClass) {
     if (options == null) {
       options = {};
     }
-    options.x = 0;
-    options.y = 100;
     options.width = Screen.width;
-    options.height = Screen.height - 100;
+    options.height = Screen.height - 220;
     options.opacity = 1;
     options.backgroundColor = "#ffffff";
     CitySelection.__super__.constructor.call(this, options);
@@ -645,7 +720,7 @@ exports.CitySelection = CitySelection = (function(superClass) {
 })(Layer);
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var EventEmitter, Radar, markerModule, textLayer,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -661,15 +736,18 @@ exports.Radar = Radar = (function(superClass) {
   extend(Radar, superClass);
 
   function Radar(options) {
+    var ref;
     if (options == null) {
       options = {};
     }
     this.deSelectAllSelectedMarkers = bind(this.deSelectAllSelectedMarkers, this);
+    options.x = 0;
+    options.y = 0;
     options.width = Screen.width;
-    options.height = 1100;
+    options.height = Screen.height - 220;
     options.opacity = 1;
-    options.backgroundColor = "white";
-    this.marginLeft = options.marginLeft;
+    this.myBackgroundColor = (ref = options.backgroundColor) != null ? ref : 'white';
+    options.backgroundColor = this.myBackgroundColor;
     this.title = "Radar";
     this.currentSelection = null;
     this.markers = [];
@@ -677,6 +755,169 @@ exports.Radar = Radar = (function(superClass) {
     this.initControls();
     this.bindEvents();
   }
+
+  Radar.prototype.initControls = function() {
+    var kmMax, kmMin, remainingDistanceLabel, remainingDistanceLayer, remainingDistanceValue, sliderLayer;
+    this.radarLayer = new Layer({
+      x: 0,
+      y: Screen.height - 1070,
+      height: 720,
+      width: Screen.width,
+      backgroundColor: this.myBackgroundColor,
+      superLayer: this
+    });
+    this.radarLayer.html = "<div class='radar'>></div>";
+    this.marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", {
+      x: 400,
+      y: 200
+    });
+    this.marker_2 = new markerModule.Marker("Roland", "./images/roland.png", {
+      x: 140,
+      y: 170
+    });
+    this.marker_1.setSelected();
+    this.marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", {
+      x: 400,
+      y: 490
+    });
+    this.marker_3.setExplored();
+    this.markers.push(this.marker_1);
+    this.markers.push(this.marker_2);
+    this.markers.push(this.marker_3);
+    this.currentSelection = this.markers[0];
+    this.radarLayer.addSubLayer(this.marker_1);
+    this.radarLayer.addSubLayer(this.marker_2);
+    this.radarLayer.addSubLayer(this.marker_3);
+    sliderLayer = new Layer({
+      x: 0,
+      y: Screen.height - 355,
+      width: Screen.width,
+      height: 150,
+      backgroundColor: this.myBackgroundColor,
+      superLayer: this
+    });
+    this.minusIcon = new Layer({
+      x: 50,
+      y: 0,
+      width: 75,
+      height: 75,
+      image: "./images/icons/minus.png"
+    });
+    sliderLayer.addSubLayer(this.minusIcon);
+    this.plusIcon = new Layer({
+      x: 615,
+      y: 0,
+      width: 75,
+      height: 75,
+      image: "./images/icons/plus.png"
+    });
+    sliderLayer.addSubLayer(this.plusIcon);
+    kmMax = new textLayer({
+      x: 520,
+      y: 50,
+      width: 150,
+      height: 100,
+      text: "10km",
+      color: "rgb(129,129,129)",
+      textAlign: "center",
+      fontSize: 30,
+      fontFamily: "Calibri"
+    });
+    sliderLayer.addSubLayer(kmMax);
+    kmMin = new textLayer({
+      x: 70,
+      y: 50,
+      width: 150,
+      height: 100,
+      text: "1km",
+      color: "rgb(129,129,129)",
+      textAlign: "center",
+      fontSize: 30,
+      fontFamily: "Calibri"
+    });
+    sliderLayer.addSubLayer(kmMin);
+    this.sliderA = new SliderComponent({
+      knobSize: 50,
+      min: 0,
+      max: 10,
+      value: 5,
+      height: 8,
+      width: 453,
+      x: 145,
+      y: 30
+    });
+    sliderLayer.addSubLayer(this.sliderA);
+    this.sliderA.fill.backgroundColor = "green";
+    this.sliderA.backgroundColor = "rgba(129,129,129,0.5)";
+    this.sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)";
+    this.sliderA.knob.backgroundColor = "green";
+    this.sliderA.knob.scale = 0.8;
+    this.sliderA.knob.on(Events.DragStart, function() {
+      return this.animate({
+        properties: {
+          scale: 1
+        },
+        curve: "spring(400, 30, 0)"
+      });
+    });
+    this.sliderA.knob.on(Events.DragEnd, function() {
+      return this.animate({
+        properties: {
+          scale: 0.8
+        },
+        curve: "spring(400, 30, 0)"
+      });
+    });
+    sliderLayer.addSubLayer(this.sliderA);
+    remainingDistanceLayer = new Layer({
+      x: 0,
+      y: Screen.height - 1260,
+      width: Screen.width,
+      height: 150,
+      backgroundColor: this.myBackgroundColor,
+      superLayer: this
+    });
+    remainingDistanceLabel = new textLayer({
+      x: 0,
+      y: 0,
+      width: Screen.width,
+      height: 120,
+      backgroundColor: this.myBackgroundColor,
+      text: "Entfernung bis zum markierten Ziel: ",
+      color: "rgb(129,129,129)",
+      textAlign: "center",
+      fontSize: 50,
+      fontFamily: "Calibri"
+    });
+    remainingDistanceLayer.addSubLayer(remainingDistanceLabel);
+    remainingDistanceValue = new textLayer({
+      x: 0,
+      y: 60,
+      width: Screen.width,
+      height: 120,
+      backgroundColor: this.myBackgroundColor,
+      text: "5 km",
+      color: "rgb(129,129,129)",
+      textAlign: "center",
+      fontSize: 60,
+      fontFamily: "Calibri"
+    });
+    return remainingDistanceLayer.addSubLayer(remainingDistanceValue);
+  };
+
+  Radar.prototype.getRadarLayer = function() {
+    return this.radarLayer;
+  };
+
+  Radar.prototype.getTitle = function() {
+    return this.title;
+  };
+
+  Radar.prototype.hideAllMarkers = function() {
+    this.marker_1.hidePopup();
+    this.marker_2.hidePopup();
+    return this.marker_3.hidePopup();
+  };
 
   Radar.prototype.deSelectAllSelectedMarkers = function(myMarker) {
     var i, len, marker, ref, results;
@@ -745,199 +986,187 @@ exports.Radar = Radar = (function(superClass) {
     })(this));
   };
 
-  Radar.prototype.initControls = function() {
-    var arrowDown, cityName, currentSelectionLayer, dropdown, kmMax, kmMin, sliderLayer, targetLabel;
-    dropdown = new Layer({
-      x: 10,
-      y: 0,
-      width: 250,
-      height: 60,
-      borderWidth: 5,
-      borderColor: "rgb(129,129,129)",
-      backgroundColor: "white",
-      superLayer: this
-    });
-    cityName = new textLayer({
-      x: 0,
-      y: -5,
-      width: 200,
-      height: 60,
-      text: "Bremen",
-      color: "rgb(129,129,129)",
-      fontSize: 50,
-      fontFamily: "Calibri"
-    });
-    dropdown.addSubLayer(cityName);
-    arrowDown = new Layer({
-      x: 175,
-      y: 0,
-      width: 75,
-      height: 60,
-      image: "./images/icons/arrow_down.png"
-    });
-    dropdown.addSubLayer(arrowDown);
-    this.radarLayer = new Layer({
-      x: this.marginLeft,
-      y: 100,
-      width: this.width,
-      height: 720,
-      backgroundColor: "white",
-      superLayer: this
-    });
-    this.radarLayer.html = "<div class='radar'>></div>";
-    this.marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", {
-      x: 400,
-      y: 200
-    });
-    this.marker_2 = new markerModule.Marker("Roland", "./images/roland.png", {
-      x: 140,
-      y: 170
-    });
-    this.marker_1.setSelected();
-    this.marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", {
-      x: 400,
-      y: 490
-    });
-    this.marker_3.setExplored();
-    this.markers.push(this.marker_1);
-    this.markers.push(this.marker_2);
-    this.markers.push(this.marker_3);
-    this.currentSelection = this.markers[0];
-    this.radarLayer.addSubLayer(this.marker_1);
-    this.radarLayer.addSubLayer(this.marker_2);
-    this.radarLayer.addSubLayer(this.marker_3);
-    sliderLayer = new Layer({
-      x: 0,
-      y: 860,
-      width: this.width,
-      height: 100,
-      backgroundColor: "white",
-      superLayer: this
-    });
-    this.minusIcon = new Layer({
-      x: 50,
-      y: 0,
-      width: 75,
-      height: 75,
-      image: "./images/icons/minus.png"
-    });
-    sliderLayer.addSubLayer(this.minusIcon);
-    this.plusIcon = new Layer({
-      x: 615,
-      y: 0,
-      width: 75,
-      height: 75,
-      image: "./images/icons/plus.png"
-    });
-    sliderLayer.addSubLayer(this.plusIcon);
-    kmMax = new textLayer({
-      x: 520,
-      y: 50,
-      width: 150,
-      height: 100,
-      text: "10km",
-      color: "rgb(129,129,129)",
-      textAlign: "center",
-      fontSize: 30,
-      fontFamily: "Calibri"
-    });
-    sliderLayer.addSubLayer(kmMax);
-    kmMin = new textLayer({
-      x: 70,
-      y: 50,
-      width: 150,
-      height: 100,
-      text: "1km",
-      color: "rgb(129,129,129)",
-      textAlign: "center",
-      fontSize: 30,
-      fontFamily: "Calibri"
-    });
-    sliderLayer.addSubLayer(kmMin);
-    this.sliderA = new SliderComponent({
-      knobSize: 50,
-      min: 0,
-      max: 10,
-      value: 5,
-      height: 8,
-      width: 453,
-      x: 145,
-      y: 30
-    });
-    this.sliderA.fill.backgroundColor = "green";
-    this.sliderA.backgroundColor = "rgba(129,129,129,0.5)";
-    this.sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)";
-    this.sliderA.knob.backgroundColor = "green";
-    this.sliderA.knob.scale = 0.8;
-    this.sliderA.knob.on(Events.DragStart, function() {
-      return this.animate({
-        properties: {
-          scale: 1
-        },
-        curve: "spring(400, 30, 0)"
-      });
-    });
-    this.sliderA.knob.on(Events.DragEnd, function() {
-      return this.animate({
-        properties: {
-          scale: 0.8
-        },
-        curve: "spring(400, 30, 0)"
-      });
-    });
-    sliderLayer.addSubLayer(this.sliderA);
-    currentSelectionLayer = new Layer({
-      x: 50,
-      y: 1000,
-      width: this.width - 100,
-      height: 60,
-      backgroundColor: "white",
-      superLayer: this
-    });
-    targetLabel = new textLayer({
-      x: 0,
-      y: 0,
-      width: 80,
-      height: 60,
-      text: "Ziel: ",
-      color: "rgb(129,129,129)",
-      fontSize: 50,
-      fontFamily: "Calibri"
-    });
-    currentSelectionLayer.addSubLayer(targetLabel);
-    this.target = new textLayer({
-      x: 90,
-      y: 0,
-      width: this.width - 180,
-      height: 60,
-      text: this.currentSelection.getTargetName(),
-      color: "rgb(129,129,129)",
-      fontSize: 50,
-      fontFamily: "Calibri"
-    });
-    return currentSelectionLayer.addSubLayer(this.target);
-  };
-
-  Radar.prototype.getRadarLayer = function() {
-    return this.radarLayer;
-  };
-
-  Radar.prototype.getTitle = function() {
-    return this.title;
-  };
-
-  Radar.prototype.hideAllMarkers = function() {
-    this.marker_1.hidePopup();
-    this.marker_2.hidePopup();
-    return this.marker_3.hidePopup();
-  };
-
   return Radar;
 
 })(Layer);
 
 
-},{"MarkerModule":2,"TextLayer":3,"events":7}],6:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":9}],7:[function(require,module,exports){
+var RankingList, rankingRow, textLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+rankingRow = require('RankingRow');
+
+textLayer = require('TextLayer');
+
+exports.RankingList = RankingList = (function(superClass) {
+  extend(RankingList, superClass);
+
+  function RankingList(options) {
+    if (options == null) {
+      options = {};
+    }
+    options.width = Screen.width;
+    options.height = Screen.height - 215;
+    options.opacity = 1;
+    options.backgroundColor = "white";
+    RankingList.__super__.constructor.call(this, options);
+    this.initControls();
+  }
+
+  RankingList.prototype.initControls = function() {
+    var counter, i, line1, line2, lineHead, nameLabel, nameLayer, num, ownRankLayer, rankLabel, rankLayer, scoreLabel, scoreLayer, tableHeaderLayer;
+    tableHeaderLayer = new Layer({
+      x: 0,
+      y: 0,
+      width: this.width,
+      height: 115,
+      backgroundColor: "white",
+      superLayer: this
+    });
+    rankLabel = new textLayer({
+      x: 10,
+      y: 20,
+      width: 100,
+      height: 150,
+      text: "Platz",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "left"
+    });
+    tableHeaderLayer.addSubLayer(rankLabel);
+    nameLabel = new textLayer({
+      x: 90,
+      y: 20,
+      width: this.width - 140 - 100,
+      height: 150,
+      text: "Nickname",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "center"
+    });
+    tableHeaderLayer.addSubLayer(nameLabel);
+    scoreLabel = new textLayer({
+      x: this.width - 150,
+      y: 20,
+      width: 140,
+      height: 150,
+      text: "Score",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "right"
+    });
+    tableHeaderLayer.addSubLayer(scoreLabel);
+    lineHead = new Layer({
+      x: 0,
+      y: 100,
+      height: 5,
+      width: this.width,
+      backgroundColor: "rgb(129,129,129)"
+    });
+    tableHeaderLayer.addSubLayer(lineHead);
+    this.rankRows = new ScrollComponent({
+      x: 0,
+      y: 115,
+      width: this.width,
+      height: this.height - 215,
+      scrollHorizontal: false,
+      contentInset: {
+        top: 15,
+        bottom: 32
+      },
+      superLayer: this
+    });
+    this.rankRows.content.draggable.overdrag = false;
+    counter = 0;
+    for (num = i = 1; i <= 99; num = ++i) {
+      new rankingRow.RankingRow(this.rankRows, num, " Nickname", "9999", {
+        x: 0,
+        y: (100 + 10) * counter
+      });
+      counter++;
+    }
+    new rankingRow.RankingRow(this.rankRows, 100, " Volker", "120", {
+      x: 0,
+      y: (100 + 10) * counter
+    });
+    ownRankLayer = new Layer({
+      x: 0,
+      y: this.height - 100,
+      width: this.width,
+      height: 105,
+      backgroundColor: "white",
+      superLayer: this
+    });
+    line1 = new Layer({
+      x: 0,
+      y: 5,
+      width: this.width,
+      height: 5,
+      backgroundColor: "rgb(129,129,129)"
+    });
+    ownRankLayer.addSubLayer(line1);
+    line2 = new Layer({
+      x: 0,
+      y: 15,
+      width: this.width,
+      height: 5,
+      backgroundColor: "rgb(129,129,129)"
+    });
+    ownRankLayer.addSubLayer(line2);
+    rankLayer = new textLayer({
+      x: 10,
+      y: 20,
+      width: 80,
+      height: 150,
+      text: "100",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "left"
+    });
+    ownRankLayer.addSubLayer(rankLayer);
+    nameLayer = new textLayer({
+      x: 90,
+      y: 20,
+      width: this.width - 140 - 100,
+      height: 150,
+      text: "Volker",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "center"
+    });
+    ownRankLayer.addSubLayer(nameLayer);
+    scoreLayer = new textLayer({
+      x: this.width - 150,
+      y: 20,
+      width: 140,
+      height: 150,
+      text: "120",
+      color: "rgb(129,129,129)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "right"
+    });
+    ownRankLayer.addSubLayer(scoreLayer);
+    return ownRankLayer.on(Events.Click, (function(_this) {
+      return function() {
+        return _this.rankRows.scrollY = 11000;
+      };
+    })(this));
+  };
+
+  return RankingList;
+
+})(Layer);
+
+
+},{"RankingRow":3,"TextLayer":4}],8:[function(require,module,exports){
 var Tabbar,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1006,7 +1235,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.opacity = 1;
     this.backArrow.opacity = 0;
     this.resetViews();
-    this.rankingView.x = 1;
+    this.rankingView.x = 0;
     this.rankingView.y = 100;
     return this.title.text = "Ranking";
   };
@@ -1142,7 +1371,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
 })(Layer);
 
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
