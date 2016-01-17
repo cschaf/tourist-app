@@ -12,6 +12,7 @@ tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
 markerModule = require('MarkerModule')
 rankingListModule = require('rankingListModule')
+cityModule = require('citySelectionModule')
 {EventEmitter} = require 'events'
 
 # Set background to white
