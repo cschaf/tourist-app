@@ -5,10 +5,9 @@ markerModule = require('MarkerModule')
 exports.Radar = class Radar extends Layer
   constructor: (options = {}) ->
     options.width= Screen.width
-    options.height= 1100
+    options.height= 819
     options.opacity= 1
-    options.backgroundColor= "white"
-    @marginLeft = options.marginLeft
+    options.backgroundColor= "black"
     @title = "Radar"
     @currentSelection = null
     @markers = []
@@ -59,40 +58,10 @@ exports.Radar = class Radar extends Layer
 
   initControls: () ->
 
-  # City DropDown
-    dropdown = new Layer
-      x:10
-      y:0
-      width:250
-      height:60
-      borderWidth: 5
-      borderColor:"rgb(129,129,129)"
-      backgroundColor: "white"
-      superLayer : this
-
-    cityName = new textLayer
-      x: 0
-      y: -5
-      width: 200
-      height: 60
-      text:"Bremen"
-      color: "rgb(129,129,129)"
-      fontSize: 50
-      fontFamily: "Calibri"
-    dropdown.addSubLayer(cityName)
-
-    arrowDown = new Layer
-      x: 175
-      y: 0
-      width: 75
-      height: 60
-      image: "./images/icons/arrow_down.png"
-    dropdown.addSubLayer(arrowDown)
-
     @radarLayer = new Layer
-      x:@marginLeft
-      y:100
-      width: this.width
+      x:0
+      y:0
+      width: Screen.width
       height: 720
       backgroundColor: "white"
       superLayer : this
@@ -118,8 +87,8 @@ exports.Radar = class Radar extends Layer
 
     sliderLayer = new Layer
       x:0
-      y:860
-      width: this.width
+      y:720
+      width: Screen.width
       height: 100
       backgroundColor: "white"
       superLayer : this
@@ -199,37 +168,6 @@ exports.Radar = class Radar extends Layer
         curve: "spring(400, 30, 0)"
 
     sliderLayer.addSubLayer(@sliderA);
-
-    currentSelectionLayer = new Layer
-      x:50
-      y:1000
-      width: this.width-100
-      height:60
-      backgroundColor: "white"
-      superLayer : this
-
-    targetLabel = new textLayer
-      x:0
-      y:0
-      width: 80
-      height: 60
-      text:"Ziel: "
-      color: "rgb(129,129,129)"
-      fontSize: 50
-      fontFamily: "Calibri"
-
-    currentSelectionLayer.addSubLayer(targetLabel)
-
-    @target = new textLayer
-      x:90
-      y:0
-      width: this.width-180
-      height: 60
-      text:@currentSelection.getTargetName()
-      color: "rgb(129,129,129)"
-      fontSize: 50
-      fontFamily: "Calibri"
-    currentSelectionLayer.addSubLayer(@target)
 
   getRadarLayer: () ->
     return @radarLayer
