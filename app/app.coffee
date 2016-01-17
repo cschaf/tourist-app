@@ -57,7 +57,8 @@ topMenu.addSubLayer(title)
 ranking = new rankingListModule.RankingList(  x:0, y:-2500)
 
 # ---- Radar -----
-radar = new radarModule.Radar()
+radar = new radarModule.Radar(x:0, y:100)
+
 
 list = new Layer
   x: 2500
@@ -79,5 +80,6 @@ setting = new Layer
 
 # Create Bottom Menu
 tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon, title)
+
 radar.getRadarLayer().on Events.Click, =>
   radar.hideAllMarkers()

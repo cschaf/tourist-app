@@ -1,5 +1,6 @@
 rankingRow = require('RankingRow')
 exports.RankingList = class RankingList extends Layer
+
   constructor: (options = {}) ->
     options.x = 0
     options.y = 0

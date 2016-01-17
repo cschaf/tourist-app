@@ -4,10 +4,13 @@ markerModule = require('MarkerModule')
 
 exports.Radar = class Radar extends Layer
   constructor: (options = {}) ->
+    options.x = 0
+    options.y = 0
     options.width= Screen.width
-    options.height= 819
+    options.height= Screen.height - 220
     options.opacity= 1
-    options.backgroundColor= "black"
+    @myBackgroundColor = options.backgroundColor ? 'white'
+    options.backgroundColor= @myBackgroundColor
     @title = "Radar"
     @currentSelection = null
     @markers = []
@@ -17,58 +20,20 @@ exports.Radar = class Radar extends Layer
     this.initControls()
     this.bindEvents()
 
-  deSelectAllSelectedMarkers: (myMarker)=>
-    for marker in @markers
-      if myMarker != marker and !marker.isExplored()
-        marker.setNormal()
-
-  bindEvents: ->
-    @plusIcon.on Events.Click, =>
-      @sliderA.value  = @sliderA.value + 1
-
-    @minusIcon.on Events.Click, =>
-      @sliderA.value = @sliderA.value - 1
-
-    @marker_1.getEmitter().on 'selected', =>
-      this.deSelectAllSelectedMarkers(@marker_1)
-      if @marker_1.isNormal()
-        @marker_1.setSelected()
-        @target.text = @marker_1.getTargetName()
-      else
-        if !@marker_1.isExplored() and not @marker_1.isNormal()
-          @marker_1.setNormal()
-
-    @marker_2.getEmitter().on 'selected', =>
-      this.deSelectAllSelectedMarkers(@marker_2)
-      if @marker_2.isNormal()
-        @marker_2.setSelected()
-        @target.text = @marker_2.getTargetName()
-      else
-        if !@marker_2.isExplored() and not @marker_2.isNormal()
-          @marker_2.setNormal()
-
-    @marker_3.getEmitter().on 'selected', =>
-      this.deSelectAllSelectedMarkers(@marker_3)
-      if @marker_3.isNormal()
-        @marker_3.setSelected()
-        @target.text  = @marker_3.getTargetName()
-      else
-        if !@marker_3.isExplored() and not @marker_3.isNormal()
-          @marker_3.setNormal()
 
   initControls: () ->
 
     @radarLayer = new Layer
       x:0
-      y:0
-      width: Screen.width
+      y:Screen.height - 1070
       height: 720
-      backgroundColor: "white"
+      width: Screen.width
+      backgroundColor: @myBackgroundColor
       superLayer : this
 
     @radarLayer.html = "<div class='radar'>></div>"
 
-    #marker
+#    #marker
     @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
     @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:140, y:170)
     @marker_1.setSelected()
@@ -87,10 +52,10 @@ exports.Radar = class Radar extends Layer
 
     sliderLayer = new Layer
       x:0
-      y:720
+      y:Screen.height - 355
       width: Screen.width
-      height: 100
-      backgroundColor: "white"
+      height: 150
+      backgroundColor: @myBackgroundColor
       superLayer : this
 
     @minusIcon = new Layer
@@ -136,13 +101,15 @@ exports.Radar = class Radar extends Layer
     # Create a new Slider
     @sliderA = new SliderComponent
       knobSize: 50
-      min: 0, max: 10
+      min: 0
+      max: 10
       value: 5
       height: 8
       width:453
       x:145
       y:30
 
+    sliderLayer.addSubLayer(@sliderA );
 
     # Customize the slider
     @sliderA.fill.backgroundColor = "green"
@@ -169,6 +136,43 @@ exports.Radar = class Radar extends Layer
 
     sliderLayer.addSubLayer(@sliderA);
 
+    remainingDistanceLayer = new Layer
+      x:0
+      y:Screen.height - 1260
+      width: Screen.width
+      height: 150
+      backgroundColor: @myBackgroundColor
+      superLayer : this
+
+    remainingDistanceLabel = new textLayer
+      x:0
+      y:0
+      width: Screen.width
+      height:120
+      backgroundColor: @myBackgroundColor
+      text:"Entfernung bis zum markierten Ziel: "
+      color: "rgb(129,129,129)"
+      textAlign: "center"
+      fontSize: 50
+      fontFamily: "Calibri"
+
+    remainingDistanceLayer.addSubLayer(remainingDistanceLabel)
+
+    remainingDistanceValue = new textLayer
+      x:0
+      y:60
+      width: Screen.width
+      height:120
+      backgroundColor: @myBackgroundColor
+      text:"5 km"
+      color: "rgb(129,129,129)"
+      textAlign: "center"
+      fontSize: 60
+      fontFamily: "Calibri"
+
+    remainingDistanceLayer.addSubLayer(remainingDistanceValue)
+
+
   getRadarLayer: () ->
     return @radarLayer
 
@@ -180,4 +184,41 @@ exports.Radar = class Radar extends Layer
     @marker_2.hidePopup()
     @marker_3.hidePopup()
 
+  deSelectAllSelectedMarkers: (myMarker)=>
+    for marker in @markers
+      if myMarker != marker and !marker.isExplored()
+        marker.setNormal()
 
+  bindEvents: ->
+    @plusIcon.on Events.Click, =>
+      @sliderA.value  = @sliderA.value + 1
+
+    @minusIcon.on Events.Click, =>
+      @sliderA.value = @sliderA.value - 1
+
+    @marker_1.getEmitter().on 'selected', =>
+      this.deSelectAllSelectedMarkers(@marker_1)
+      if @marker_1.isNormal()
+        @marker_1.setSelected()
+        @target.text = @marker_1.getTargetName()
+      else
+        if !@marker_1.isExplored() and not @marker_1.isNormal()
+          @marker_1.setNormal()
+
+    @marker_2.getEmitter().on 'selected', =>
+      this.deSelectAllSelectedMarkers(@marker_2)
+      if @marker_2.isNormal()
+        @marker_2.setSelected()
+        @target.text = @marker_2.getTargetName()
+      else
+        if !@marker_2.isExplored() and not @marker_2.isNormal()
+          @marker_2.setNormal()
+
+    @marker_3.getEmitter().on 'selected', =>
+      this.deSelectAllSelectedMarkers(@marker_3)
+      if @marker_3.isNormal()
+        @marker_3.setSelected()
+        @target.text  = @marker_3.getTargetName()
+      else
+        if !@marker_3.isExplored() and not @marker_3.isNormal()
+          @marker_3.setNormal()

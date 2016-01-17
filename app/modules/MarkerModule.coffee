@@ -38,8 +38,8 @@ exports.Marker = class Marker extends Layer
 
   initControls: ()->
     @popupLayer = new Layer
-      x:@.x-135
-      y:@.y-155
+      x:@.x-138
+      y:@.y+55
       width:350
       height:350
       image: @popupBackground
