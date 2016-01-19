@@ -72,16 +72,16 @@ exports.RankingList = class RankingList extends Layer
       width: this.width
       height: this.height-215
       scrollHorizontal: false
-      contentInset: {top:15,bottom: 32}
+      contentInset: {top:-5, bottom: 32}
       superLayer: this
 
     @items.content.draggable.overdrag = false
     counter = 0
     for num in [1..99]
-      new rankingRow.RankingRow(@items, num, " Nickname", "9999", x:0, y:(100) * counter)
+      new rankingRow.RankingRow(@items, num + ".", " Nickname", "9999", x:0, y:(100) * counter)
       counter++
 
-    new rankingRow.RankingRow(@items, 100, " Volker", "120", x:0, y:(100) * counter)
+    new rankingRow.RankingRow(@items, 100 + ".", " Volker", "120", x:0, y:(100) * counter)
     ownRankLayer = new Layer
       x:0
       y: this.height - 100
