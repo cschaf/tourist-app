@@ -1,22 +1,21 @@
 exports.Tabbar = class Tabbar extends Layer
-  constructor: (@rankingView, @radarView, @listView,@profileView, @settingsView ,@backArrow,@title, options = {}) ->
+  constructor: (@pageComponent,@profileView, @settingsView ,@backArrow,@title, options = {}) ->
     @pos1 = {x:17, y:105}
     @pos2 = {x:178, y:105}
     @pos3 = {x:332, y:105}
     @pos4 = {x:475, y:105}
     @pos5 = {x:610, y:105}
 
-    options.width = Screen.width
+    options.width = options.width ? Screen.width
     options.height = 110
     options.opacity= 1
-    options.x= 0
-    options.y= Screen.height-120
+    options.x= options.x ? 0
+    options.y= options.y ? Screen.height-120
     options.image= "./images/tabbar.png"
 
     super options
     this.initControls()
     this.bindEvents()
-    this.showRadar()
 
   showRadar: () ->
     this.resetViews()
@@ -25,11 +24,7 @@ exports.Tabbar = class Tabbar extends Layer
     this.opacity = 1
     @backArrow.opacity=0
     this.resetViews()
-
-    @radarView.x = 0
-    @radarView.y = 100
-
-    @title.text = @radarView.getTitle()
+    @title.text = "Bremen"
 
   showRanking: () ->
     @marker.x = @pos1.x
@@ -37,9 +32,7 @@ exports.Tabbar = class Tabbar extends Layer
     @opacity = 1
     @backArrow.opacity = 0
     this.resetViews()
-    @rankingView.x = 0
-    @rankingView.y = 100
-    @title.text = "Ranking"#@radarView.getTitle()
+    @title.text = "Ranking"
 
   showList: () ->
     @marker.x = @pos3.x
@@ -47,9 +40,7 @@ exports.Tabbar = class Tabbar extends Layer
     this.opacity = 1
     @backArrow.opacity=0
     this.resetViews()
-    @listView.x = 0
-    @listView.y = 100
-    @title.text = "List"#@radarView.getTitle()
+    @title.text = "Bremen"
 
   showProfile: () ->
     @marker.x = @pos4.x
@@ -57,7 +48,6 @@ exports.Tabbar = class Tabbar extends Layer
     this.opacity = 0
     this.resetViews()
     @profileView.x = 0
-    @profileView.y = 100
     @backArrow.opacity=1
     @title.text = "Profile"#@radarView.getTitle()
 
@@ -67,36 +57,14 @@ exports.Tabbar = class Tabbar extends Layer
     @opacity = 0
     this.resetViews()
     @settingsView.x = 0
-    @settingsView.y = 100
     @backArrow.opacity=1
     @title.text = "Settings"#@radarView.getTitle()
 
   resetViews: () ->
-    @rankingView.x = 1500
-    @rankingView.y = 1500
-
-    @radarView.x = 1500
-    @radarView.y = 1500
-
-    @listView.x = 1500
-    @listView.x = 1500
-
     @profileView.x = 1500
-    @profileView.y = 1500
-
     @settingsView.x = 1500
-    @settingsView.y = 1500
 
   bindEvents: ->
-    @rankingLayer.on Events.Click, =>
-      this.showRanking()
-
-    @radarLayer.on Events.Click, =>
-      this.showRadar()
-
-    @listLayer.on Events.Click, =>
-      this.showList()
-
     @profileLayer.on Events.Click, =>
       this.showProfile()
 

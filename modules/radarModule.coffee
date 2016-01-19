@@ -4,12 +4,11 @@ markerModule = require('MarkerModule')
 
 exports.Radar = class Radar extends Layer
   constructor: (options = {}) ->
-    options.x = 0
-    options.y = 0
-    options.width= Screen.width
-    options.height= Screen.height - 220
-    options.opacity= 1
+    options.width= options.width ? Screen.width
+    options.height= options.height ? Screen.height - 220
+    options.opacity = options.opacity ? 1
     @myBackgroundColor = options.backgroundColor ? 'white'
+
     options.backgroundColor= @myBackgroundColor
     @title = "Radar"
     @currentSelection = null

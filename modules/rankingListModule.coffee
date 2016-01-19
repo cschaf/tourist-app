@@ -3,9 +3,9 @@ textLayer = require('TextLayer')
 exports.RankingList = class RankingList extends Layer
 
   constructor: (options = {}) ->
-    options.width= Screen.width
-    options.height= Screen.height - 215
-    options.opacity= 1
+    options.width= options.width ? Screen.width
+    options.height= options.height ? Screen.height - 215
+    options.opacity= options.opacity ? 1
     options.backgroundColor = "white"
     super options
     this.initControls()

@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var EventEmitter, backIcon, backgroundLayer, cityModule, citySelectionModule, list, markerModule, profile, radar, radarModule, ranking, rankingListModule, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
+var EventEmitter, backIcon, backgroundLayer, cityModule, citySelectionModule, markerModule, pageComponent, pageSize, profile, radarModule, rankingListModule, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -34,8 +34,13 @@ cityModule = require('citySelectionModule');
 
 EventEmitter = require('events').EventEmitter;
 
+pageSize = {
+  width: 750,
+  height: Screen.height - 220
+};
+
 backgroundLayer = new BackgroundLayer({
-  backgroundColor: "rgba(255,255,255,1)"
+  backgroundColor: "white"
 });
 
 topMenu = new Layer({
@@ -55,12 +60,6 @@ backIcon = new Layer({
   image: "./images/icons/back.png"
 });
 
-backIcon.on(Events.Click, (function(_this) {
-  return function() {
-    return tabBarLayer.showRadar();
-  };
-})(this));
-
 topMenu.addSubLayer(backIcon);
 
 title = new textLayer({
@@ -77,42 +76,113 @@ title = new textLayer({
 
 topMenu.addSubLayer(title);
 
-ranking = new rankingListModule.RankingList({
+this.ranking = new rankingListModule.RankingList({
   x: 0,
-  y: -2500
+  y: 0,
+  width: pageSize.width,
+  height: pageSize.height
 });
 
-radar = new radarModule.Radar({
-  x: 0,
-  y: 100
+this.radar = new radarModule.Radar({
+  x: pageSize.width,
+  y: 0,
+  width: pageSize.width,
+  height: pageSize.height
 });
 
-list = new Layer({
-  x: 2500,
-  y: 100,
-  width: Screen.width,
-  height: Screen.height - 220
+this.list = new Layer({
+  x: pageSize.width * 2,
+  width: pageSize.width,
+  height: pageSize.height
 });
 
 profile = new Layer({
   x: 2500,
   y: 100,
-  width: Screen.width,
-  height: Screen.height - 100
+  width: pageSize.width,
+  height: pageSize.height + 120
 });
 
 setting = new Layer({
   x: 2500,
   y: 100,
-  width: Screen.width,
-  height: Screen.height - 100
+  width: pageSize.width,
+  height: Screen.height + 120
 });
 
-tabBarLayer = new tabbarModule.Tabbar(ranking, radar, list, profile, setting, backIcon, title);
+tabBarLayer = new tabbarModule.Tabbar(pageComponent, profile, setting, backIcon, title);
 
-radar.getRadarLayer().on(Events.Click, (function(_this) {
+tabBarLayer.rankingLayer.on(Events.Click, (function(_this) {
   return function() {
-    return radar.hideAllMarkers();
+    return pageComponent.snapToPage(_this.ranking, false);
+  };
+})(this));
+
+tabBarLayer.radarLayer.on(Events.Click, (function(_this) {
+  return function() {
+    return pageComponent.snapToPage(_this.radar, false);
+  };
+})(this));
+
+tabBarLayer.listLayer.on(Events.Click, (function(_this) {
+  return function() {
+    return pageComponent.snapToPage(_this.list, false);
+  };
+})(this));
+
+tabBarLayer.profileLayer.on(Events.Click, (function(_this) {
+  return function() {
+    pageComponent.x = 1500;
+    return tabBarLayer.showProfile();
+  };
+})(this));
+
+tabBarLayer.settingsLayer.on(Events.Click, (function(_this) {
+  return function() {
+    pageComponent.x = 1500;
+    return tabBarLayer.showSettings();
+  };
+})(this));
+
+pageComponent = new PageComponent({
+  width: pageSize.width,
+  height: pageSize.height,
+  y: 100,
+  x: 0,
+  scrollVertical: false
+});
+
+pageComponent.addPage(this.ranking);
+
+pageComponent.addPage(this.radar);
+
+pageComponent.addPage(this.list);
+
+pageComponent.snapToPage(this.radar, false);
+
+pageComponent.on("change:currentPage", function() {
+  var currentPageIndex;
+  currentPageIndex = pageComponent.horizontalPageIndex(pageComponent.currentPage);
+  if (currentPageIndex === 0) {
+    return tabBarLayer.showRanking();
+  } else if (currentPageIndex === 1) {
+    return tabBarLayer.showRadar();
+  } else {
+    return tabBarLayer.showList();
+  }
+});
+
+backIcon.on(Events.Click, (function(_this) {
+  return function() {
+    pageComponent.x = 0;
+    pageComponent.snapToPage(_this.radar, false);
+    return tabBarLayer.showRadar();
+  };
+})(this));
+
+this.radar.getRadarLayer().on(Events.Click, (function(_this) {
+  return function() {
+    return _this.radar.hideAllMarkers();
   };
 })(this));
 
@@ -736,17 +806,15 @@ exports.Radar = Radar = (function(superClass) {
   extend(Radar, superClass);
 
   function Radar(options) {
-    var ref;
+    var ref, ref1, ref2, ref3;
     if (options == null) {
       options = {};
     }
     this.deSelectAllSelectedMarkers = bind(this.deSelectAllSelectedMarkers, this);
-    options.x = 0;
-    options.y = 0;
-    options.width = Screen.width;
-    options.height = Screen.height - 220;
-    options.opacity = 1;
-    this.myBackgroundColor = (ref = options.backgroundColor) != null ? ref : 'white';
+    options.width = (ref = options.width) != null ? ref : Screen.width;
+    options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 220;
+    options.opacity = (ref2 = options.opacity) != null ? ref2 : 1;
+    this.myBackgroundColor = (ref3 = options.backgroundColor) != null ? ref3 : 'white';
     options.backgroundColor = this.myBackgroundColor;
     this.title = "Radar";
     this.currentSelection = null;
@@ -1004,12 +1072,13 @@ exports.RankingList = RankingList = (function(superClass) {
   extend(RankingList, superClass);
 
   function RankingList(options) {
+    var ref, ref1, ref2;
     if (options == null) {
       options = {};
     }
-    options.width = Screen.width;
-    options.height = Screen.height - 215;
-    options.opacity = 1;
+    options.width = (ref = options.width) != null ? ref : Screen.width;
+    options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 215;
+    options.opacity = (ref2 = options.opacity) != null ? ref2 : 1;
     options.backgroundColor = "white";
     RankingList.__super__.constructor.call(this, options);
     this.initControls();
@@ -1174,10 +1243,9 @@ var Tabbar,
 exports.Tabbar = Tabbar = (function(superClass) {
   extend(Tabbar, superClass);
 
-  function Tabbar(rankingView, radarView, listView, profileView, settingsView, backArrow, title, options) {
-    this.rankingView = rankingView;
-    this.radarView = radarView;
-    this.listView = listView;
+  function Tabbar(pageComponent, profileView, settingsView, backArrow, title, options) {
+    var ref, ref1, ref2;
+    this.pageComponent = pageComponent;
     this.profileView = profileView;
     this.settingsView = settingsView;
     this.backArrow = backArrow;
@@ -1205,16 +1273,15 @@ exports.Tabbar = Tabbar = (function(superClass) {
       x: 610,
       y: 105
     };
-    options.width = Screen.width;
+    options.width = (ref = options.width) != null ? ref : Screen.width;
     options.height = 110;
     options.opacity = 1;
-    options.x = 0;
-    options.y = Screen.height - 120;
+    options.x = (ref1 = options.x) != null ? ref1 : 0;
+    options.y = (ref2 = options.y) != null ? ref2 : Screen.height - 120;
     options.image = "./images/tabbar.png";
     Tabbar.__super__.constructor.call(this, options);
     this.initControls();
     this.bindEvents();
-    this.showRadar();
   }
 
   Tabbar.prototype.showRadar = function() {
@@ -1224,9 +1291,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.opacity = 1;
     this.backArrow.opacity = 0;
     this.resetViews();
-    this.radarView.x = 0;
-    this.radarView.y = 100;
-    return this.title.text = this.radarView.getTitle();
+    return this.title.text = "Bremen";
   };
 
   Tabbar.prototype.showRanking = function() {
@@ -1235,8 +1300,6 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.opacity = 1;
     this.backArrow.opacity = 0;
     this.resetViews();
-    this.rankingView.x = 0;
-    this.rankingView.y = 100;
     return this.title.text = "Ranking";
   };
 
@@ -1246,9 +1309,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.opacity = 1;
     this.backArrow.opacity = 0;
     this.resetViews();
-    this.listView.x = 0;
-    this.listView.y = 100;
-    return this.title.text = "List";
+    return this.title.text = "Bremen";
   };
 
   Tabbar.prototype.showProfile = function() {
@@ -1257,7 +1318,6 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.opacity = 0;
     this.resetViews();
     this.profileView.x = 0;
-    this.profileView.y = 100;
     this.backArrow.opacity = 1;
     return this.title.text = "Profile";
   };
@@ -1268,40 +1328,16 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.opacity = 0;
     this.resetViews();
     this.settingsView.x = 0;
-    this.settingsView.y = 100;
     this.backArrow.opacity = 1;
     return this.title.text = "Settings";
   };
 
   Tabbar.prototype.resetViews = function() {
-    this.rankingView.x = 1500;
-    this.rankingView.y = 1500;
-    this.radarView.x = 1500;
-    this.radarView.y = 1500;
-    this.listView.x = 1500;
-    this.listView.x = 1500;
     this.profileView.x = 1500;
-    this.profileView.y = 1500;
-    this.settingsView.x = 1500;
-    return this.settingsView.y = 1500;
+    return this.settingsView.x = 1500;
   };
 
   Tabbar.prototype.bindEvents = function() {
-    this.rankingLayer.on(Events.Click, (function(_this) {
-      return function() {
-        return _this.showRanking();
-      };
-    })(this));
-    this.radarLayer.on(Events.Click, (function(_this) {
-      return function() {
-        return _this.showRadar();
-      };
-    })(this));
-    this.listLayer.on(Events.Click, (function(_this) {
-      return function() {
-        return _this.showList();
-      };
-    })(this));
     this.profileLayer.on(Events.Click, (function(_this) {
       return function() {
         return _this.showProfile();
