@@ -10,6 +10,7 @@ citySelectionModule = require("citySelectionModule")
 textLayer = require('TextLayer')
 tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
+listModule = require("listModule")
 markerModule = require('MarkerModule')
 rankingListModule = require('rankingListModule')
 cityModule = require('citySelectionModule')
@@ -20,6 +21,7 @@ pageSize = width:750, height:Screen.height - 220
 # Set background to white
 backgroundLayer = new BackgroundLayer
   backgroundColor: "white"
+  image: "./images/background_main.png"
 
 # Create Menu
 topMenu = new Layer
@@ -27,7 +29,7 @@ topMenu = new Layer
   y: 0
   width: Screen.width
   height: 100
-  backgroundColor: "white"
+  backgroundColor: "transparent"
 
 backIcon = new Layer
   x: 25
@@ -45,85 +47,58 @@ title = new textLayer
   width: 500
   height: 100
   text:"Tourist-App"
-  color: "rgb(129,129,129)"
+  color: "rgb(255,255,255)"
   textAlign: "center"
   fontSize: 50
   fontFamily: "Calibri"
 topMenu.addSubLayer(title)
 
 # ---- ranking list -----
-@ranking = new rankingListModule.RankingList(x:0, y:0, width: pageSize.width, height:pageSize.height)
+@rankingView = new rankingListModule.RankingList(x:0, width: pageSize.width, height:pageSize.height)
 
 # ---- Radar -----
-@radar = new radarModule.Radar(x:pageSize.width, y:0,width: pageSize.width, height:pageSize.height)
+@radarView = new radarModule.Radar(x:pageSize.width,width: pageSize.width, height:pageSize.height)
 
-@list = new Layer
-  x: pageSize.width * 2
-  width: pageSize.width
-  height: pageSize.height
+@listView = new listModule.List(x:pageSize.width * 2, width: pageSize.width, height:pageSize.height)
 
-profile = new Layer
+@profileView = new Layer
   x: 2500
   y:100
   width: pageSize.width
   height: pageSize.height + 120
+  backgroundColor: "white"
 
-setting = new Layer
+@settingView = new Layer
   x: 2500
   y:100
   width: pageSize.width
   height: Screen.height + 120
+  backgroundColor: "white"
 
+# PageComponent settings
 
-# Create Bottom Menu
-tabBarLayer = new tabbarModule.Tabbar(pageComponent, profile, setting, backIcon, title)
-
-tabBarLayer.rankingLayer.on Events.Click, =>
-  pageComponent.snapToPage(@ranking, false)
-
-tabBarLayer.radarLayer.on Events.Click, =>
-  pageComponent.snapToPage(@radar, false)
-
-tabBarLayer.listLayer.on Events.Click, =>
-  pageComponent.snapToPage(@list, false)
-
-tabBarLayer.profileLayer.on Events.Click, =>
-  pageComponent.x = 1500
-  tabBarLayer.showProfile()
-
-tabBarLayer.settingsLayer.on Events.Click, =>
-  pageComponent.x = 1500
-  tabBarLayer.showSettings()
-
-# container settings
-
-pageComponent = new PageComponent
+@pageComponent = new PageComponent
   width: pageSize.width
   height: pageSize.height
   y:  100
   x: 0
   scrollVertical: false
 
-pageComponent.addPage @ranking
-pageComponent.addPage @radar
-pageComponent.addPage @list
+@pageComponent.addPage @rankingView
+@pageComponent.addPage @radarView
+@pageComponent.addPage @listView
 
-pageComponent.snapToPage @radar, false
+@pageComponent.snapToPage(@listView, false)
 
-pageComponent.on "change:currentPage", ->
-  currentPageIndex = pageComponent.horizontalPageIndex(pageComponent.currentPage)
+@pageComponent.on "change:currentPage", =>
+  currentPageIndex = @pageComponent.horizontalPageIndex(@pageComponent.currentPage)
   if currentPageIndex == 0
     tabBarLayer.showRanking()
   else if currentPageIndex == 1
     tabBarLayer.showRadar()
-  else
+  else if currentPageIndex == 2
     tabBarLayer.showList()
 
 
-backIcon.on Events.Click, =>
-  pageComponent.x = 0
-  pageComponent.snapToPage @radar, false
-  tabBarLayer.showRadar()
-
-@radar.getRadarLayer().on Events.Click, =>
-  @radar.hideAllMarkers()
+# Create Bottom Menu
+tabBarLayer = new tabbarModule.Tabbar(this, backIcon, title)

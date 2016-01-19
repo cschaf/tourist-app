@@ -7,7 +7,7 @@ exports.Radar = class Radar extends Layer
     options.width= options.width ? Screen.width
     options.height= options.height ? Screen.height - 220
     options.opacity = options.opacity ? 1
-    @myBackgroundColor = options.backgroundColor ? 'white'
+    @myBackgroundColor = options.backgroundColor ? 'transparent'
 
     options.backgroundColor= @myBackgroundColor
     @title = "Radar"
@@ -79,7 +79,7 @@ exports.Radar = class Radar extends Layer
       width: 150
       height: 100
       text:"10km"
-      color: "rgb(129,129,129)"
+      color: "rgb(255,255,255)"
       textAlign: "center"
       fontSize: 30
       fontFamily: "Calibri"
@@ -91,7 +91,7 @@ exports.Radar = class Radar extends Layer
       width: 150
       height: 100
       text:"1km"
-      color: "rgb(129,129,129)"
+      color: "rgb(255,255,255)"
       textAlign: "center"
       fontSize: 30
       fontFamily: "Calibri"
@@ -112,7 +112,7 @@ exports.Radar = class Radar extends Layer
 
     # Customize the slider
     @sliderA.fill.backgroundColor = "green"
-    @sliderA.backgroundColor = "rgba(129,129,129,0.5)"
+    @sliderA.backgroundColor = "rgba(255,255,255,0.5)"
     @sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)"
 
     @sliderA.knob.backgroundColor = "green"
@@ -149,8 +149,8 @@ exports.Radar = class Radar extends Layer
       width: Screen.width
       height:120
       backgroundColor: @myBackgroundColor
-      text:"Entfernung bis zum markierten Ziel: "
-      color: "rgb(129,129,129)"
+      text:"Entfernung bis zum Ziel: "
+      color: "rgb(255,255,255)"
       textAlign: "center"
       fontSize: 50
       fontFamily: "Calibri"
@@ -164,9 +164,9 @@ exports.Radar = class Radar extends Layer
       height:120
       backgroundColor: @myBackgroundColor
       text:"5 km"
-      color: "rgb(129,129,129)"
+      color: "rgb(255,255,255)"
       textAlign: "center"
-      fontSize: 60
+      fontSize: 50
       fontFamily: "Calibri"
 
     remainingDistanceLayer.addSubLayer(remainingDistanceValue)
@@ -199,7 +199,7 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_1)
       if @marker_1.isNormal()
         @marker_1.setSelected()
-        @target.text = @marker_1.getTargetName()
+#Hier Wert für Entfernung bis zum Ziel ändern
       else
         if !@marker_1.isExplored() and not @marker_1.isNormal()
           @marker_1.setNormal()
@@ -208,7 +208,7 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_2)
       if @marker_2.isNormal()
         @marker_2.setSelected()
-        @target.text = @marker_2.getTargetName()
+        #Hier Wert für Entfernung bis zum Ziel ändern
       else
         if !@marker_2.isExplored() and not @marker_2.isNormal()
           @marker_2.setNormal()
@@ -217,7 +217,10 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_3)
       if @marker_3.isNormal()
         @marker_3.setSelected()
-        @target.text  = @marker_3.getTargetName()
+        #Hier Wert für Entfernung bis zum Ziel ändern
       else
         if !@marker_3.isExplored() and not @marker_3.isNormal()
           @marker_3.setNormal()
+
+    @radarLayer.on Events.Click, =>
+      this.hideAllMarkers()

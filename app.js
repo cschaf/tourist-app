@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var EventEmitter, backIcon, backgroundLayer, cityModule, citySelectionModule, markerModule, pageComponent, pageSize, profile, radarModule, rankingListModule, setting, tabBarLayer, tabbarModule, textLayer, title, topMenu;
+var EventEmitter, backIcon, backgroundLayer, cityModule, citySelectionModule, listModule, markerModule, pageSize, radarModule, rankingListModule, tabBarLayer, tabbarModule, textLayer, title, topMenu;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -26,6 +26,8 @@ tabbarModule = require("tabbarModule");
 
 radarModule = require("radarModule");
 
+listModule = require("listModule");
+
 markerModule = require('MarkerModule');
 
 rankingListModule = require('rankingListModule');
@@ -40,7 +42,8 @@ pageSize = {
 };
 
 backgroundLayer = new BackgroundLayer({
-  backgroundColor: "white"
+  backgroundColor: "white",
+  image: "./images/background_main.png"
 });
 
 topMenu = new Layer({
@@ -48,7 +51,7 @@ topMenu = new Layer({
   y: 0,
   width: Screen.width,
   height: 100,
-  backgroundColor: "white"
+  backgroundColor: "transparent"
 });
 
 backIcon = new Layer({
@@ -68,7 +71,7 @@ title = new textLayer({
   width: 500,
   height: 100,
   text: "Tourist-App",
-  color: "rgb(129,129,129)",
+  color: "rgb(255,255,255)",
   textAlign: "center",
   fontSize: 50,
   fontFamily: "Calibri"
@@ -76,75 +79,41 @@ title = new textLayer({
 
 topMenu.addSubLayer(title);
 
-this.ranking = new rankingListModule.RankingList({
+this.rankingView = new rankingListModule.RankingList({
   x: 0,
-  y: 0,
   width: pageSize.width,
   height: pageSize.height
 });
 
-this.radar = new radarModule.Radar({
+this.radarView = new radarModule.Radar({
   x: pageSize.width,
-  y: 0,
   width: pageSize.width,
   height: pageSize.height
 });
 
-this.list = new Layer({
+this.listView = new listModule.List({
   x: pageSize.width * 2,
   width: pageSize.width,
   height: pageSize.height
 });
 
-profile = new Layer({
+this.profileView = new Layer({
   x: 2500,
   y: 100,
   width: pageSize.width,
-  height: pageSize.height + 120
+  height: pageSize.height + 120,
+  backgroundColor: "white"
 });
 
-setting = new Layer({
+this.settingView = new Layer({
   x: 2500,
   y: 100,
   width: pageSize.width,
-  height: Screen.height + 120
+  height: Screen.height + 120,
+  backgroundColor: "white"
 });
 
-tabBarLayer = new tabbarModule.Tabbar(pageComponent, profile, setting, backIcon, title);
-
-tabBarLayer.rankingLayer.on(Events.Click, (function(_this) {
-  return function() {
-    return pageComponent.snapToPage(_this.ranking, false);
-  };
-})(this));
-
-tabBarLayer.radarLayer.on(Events.Click, (function(_this) {
-  return function() {
-    return pageComponent.snapToPage(_this.radar, false);
-  };
-})(this));
-
-tabBarLayer.listLayer.on(Events.Click, (function(_this) {
-  return function() {
-    return pageComponent.snapToPage(_this.list, false);
-  };
-})(this));
-
-tabBarLayer.profileLayer.on(Events.Click, (function(_this) {
-  return function() {
-    pageComponent.x = 1500;
-    return tabBarLayer.showProfile();
-  };
-})(this));
-
-tabBarLayer.settingsLayer.on(Events.Click, (function(_this) {
-  return function() {
-    pageComponent.x = 1500;
-    return tabBarLayer.showSettings();
-  };
-})(this));
-
-pageComponent = new PageComponent({
+this.pageComponent = new PageComponent({
   width: pageSize.width,
   height: pageSize.height,
   y: 100,
@@ -152,42 +121,32 @@ pageComponent = new PageComponent({
   scrollVertical: false
 });
 
-pageComponent.addPage(this.ranking);
+this.pageComponent.addPage(this.rankingView);
 
-pageComponent.addPage(this.radar);
+this.pageComponent.addPage(this.radarView);
 
-pageComponent.addPage(this.list);
+this.pageComponent.addPage(this.listView);
 
-pageComponent.snapToPage(this.radar, false);
+this.pageComponent.snapToPage(this.listView, false);
 
-pageComponent.on("change:currentPage", function() {
-  var currentPageIndex;
-  currentPageIndex = pageComponent.horizontalPageIndex(pageComponent.currentPage);
-  if (currentPageIndex === 0) {
-    return tabBarLayer.showRanking();
-  } else if (currentPageIndex === 1) {
-    return tabBarLayer.showRadar();
-  } else {
-    return tabBarLayer.showList();
-  }
-});
-
-backIcon.on(Events.Click, (function(_this) {
+this.pageComponent.on("change:currentPage", (function(_this) {
   return function() {
-    pageComponent.x = 0;
-    pageComponent.snapToPage(_this.radar, false);
-    return tabBarLayer.showRadar();
+    var currentPageIndex;
+    currentPageIndex = _this.pageComponent.horizontalPageIndex(_this.pageComponent.currentPage);
+    if (currentPageIndex === 0) {
+      return tabBarLayer.showRanking();
+    } else if (currentPageIndex === 1) {
+      return tabBarLayer.showRadar();
+    } else if (currentPageIndex === 2) {
+      return tabBarLayer.showList();
+    }
   };
 })(this));
 
-this.radar.getRadarLayer().on(Events.Click, (function(_this) {
-  return function() {
-    return _this.radar.hideAllMarkers();
-  };
-})(this));
+tabBarLayer = new tabbarModule.Tabbar(this, backIcon, title);
 
 
-},{"MarkerModule":2,"TextLayer":4,"citySelectionModule":5,"events":9,"radarModule":6,"rankingListModule":7,"tabbarModule":8}],2:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"citySelectionModule":5,"events":11,"listModule":7,"radarModule":8,"rankingListModule":9,"tabbarModule":10}],2:[function(require,module,exports){
 var EventEmitter, Marker, isHeld, textLayer, triggerLongHold,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -208,6 +167,7 @@ exports.Marker = Marker = (function(superClass) {
     if (options == null) {
       options = {};
     }
+    this.setPopupEnabled = bind(this.setPopupEnabled, this);
     this.isExplored = bind(this.isExplored, this);
     this.isSelected = bind(this.isSelected, this);
     this.isNormal = bind(this.isNormal, this);
@@ -222,6 +182,7 @@ exports.Marker = Marker = (function(superClass) {
     this._isSelected = false;
     this._isNormal = true;
     this._isExplored = false;
+    this.enablePopup = true;
     this.popupBackground = "./images/popup-ohne-bild.png";
     this.emitter = new EventEmitter;
     Marker.__super__.constructor.call(this, options);
@@ -239,12 +200,14 @@ exports.Marker = Marker = (function(superClass) {
         this.emitter.emit('selected');
         return isHeld = false;
       } else {
-        this.popupLayer.states["switch"]("on");
-        return Utils.delay(4, (function(_this) {
-          return function() {
-            return _this.popupLayer.states["switch"]("off");
-          };
-        })(this));
+        if (this.enablePopup) {
+          this.popupLayer.states["switch"]("on");
+          return Utils.delay(4, (function(_this) {
+            return function() {
+              return _this.popupLayer.states["switch"]("off");
+            };
+          })(this));
+        }
       }
     });
   }
@@ -337,6 +300,10 @@ exports.Marker = Marker = (function(superClass) {
     return this._isExplored;
   };
 
+  Marker.prototype.setPopupEnabled = function(enabled) {
+    return this.enablePopup = enabled;
+  };
+
   return Marker;
 
 })(Layer);
@@ -346,7 +313,7 @@ triggerLongHold = function() {
 };
 
 
-},{"TextLayer":4,"events":9}],3:[function(require,module,exports){
+},{"TextLayer":4,"events":11}],3:[function(require,module,exports){
 var RankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -370,7 +337,9 @@ exports.RankingRow = RankingRow = (function(superClass) {
     options.borderRadius = 6;
     options.cale = 1;
     options.superLayer = this.scrollPanel.content;
-    options.backgroundColor = "white";
+    options.borderColor = "black";
+    options.borderWidth = 1;
+    options.backgroundColor = "transparent";
     RankingRow.__super__.constructor.call(this, options);
     this.initControls();
   }
@@ -791,6 +760,196 @@ exports.CitySelection = CitySelection = (function(superClass) {
 
 
 },{}],6:[function(require,module,exports){
+var ListItem, markerModule, textLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+textLayer = require('TextLayer');
+
+markerModule = require('MarkerModule');
+
+exports.ListItem = ListItem = (function(superClass) {
+  extend(ListItem, superClass);
+
+  function ListItem(scrollPanel, sightImage, sightName, distance, options) {
+    var ref, ref1;
+    this.scrollPanel = scrollPanel;
+    this.sightImage = sightImage;
+    this.sightName = sightName;
+    this.distance = distance;
+    if (options == null) {
+      options = {};
+    }
+    options.width = (ref = options.width) != null ? ref : Screen.width;
+    options.height = (ref1 = options.height) != null ? ref1 : 200;
+    options.opacity = 1;
+    options.backgroundColor = "white";
+    options.superLayer = this.scrollPanel.content;
+    options.borderColor = "black";
+    options.borderWidth = 1;
+    ListItem.__super__.constructor.call(this, options);
+    this.initControls();
+  }
+
+  ListItem.prototype.initControls = function() {
+    var distanceLayer, sightImageLayer, sightNameLayer;
+    sightImageLayer = new Layer({
+      x: 10,
+      y: 10,
+      width: 200,
+      height: 200,
+      image: this.sightImage,
+      superLayer: this
+    });
+    sightNameLayer = new textLayer({
+      x: 225,
+      y: 25,
+      width: 450,
+      height: 100,
+      text: "Name: " + this.sightName,
+      color: "rgb(0,0,0)",
+      fontSize: 40,
+      fontFamily: "Calibri",
+      textAlign: "left",
+      backgroundColor: "transparent",
+      superLayer: this
+    });
+    distanceLayer = new textLayer({
+      x: 225,
+      y: 100,
+      width: 450,
+      height: 100,
+      text: "Entfernung: " + this.distance,
+      color: "rgb(0,0,0)",
+      fontSize: 40,
+      fontFamily: "Calibri",
+      textAlign: "left",
+      backgroundColor: "transparent",
+      superLayer: this
+    });
+    this.marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", {
+      x: 650,
+      y: 75,
+      width: 100,
+      height: 100,
+      superLayer: this
+    });
+    this.marker_1.setPopupEnabled(false);
+    return this.marker_1.getEmitter().on('selected', (function(_this) {
+      return function() {
+        if (_this.marker_1.isNormal()) {
+          return _this.marker_1.setSelected();
+        } else {
+          if (!_this.marker_1.isExplored() && !_this.marker_1.isNormal()) {
+            return _this.marker_1.setNormal();
+          }
+        }
+      };
+    })(this));
+  };
+
+  return ListItem;
+
+})(Layer);
+
+
+},{"MarkerModule":2,"TextLayer":4}],7:[function(require,module,exports){
+var List, listItemModule, textLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+textLayer = require('TextLayer');
+
+listItemModule = require('listItemModule');
+
+exports.List = List = (function(superClass) {
+  extend(List, superClass);
+
+  function List(options) {
+    var ref, ref1;
+    if (options == null) {
+      options = {};
+    }
+    options.width = (ref = options.width) != null ? ref : Screen.width;
+    options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 215;
+    options.opacity = 1;
+    options.backgroundColor = "white";
+    List.__super__.constructor.call(this, options);
+    this.initControls();
+  }
+
+  List.prototype.initControls = function() {
+    var btnExploredLabel, btnUnexploreddLabel;
+    this.btnExplored = new Layer({
+      x: 0,
+      y: 0,
+      width: this.width / 2,
+      height: 100,
+      backgroundColor: "white",
+      borderColor: "black",
+      borderWidth: 3,
+      superLayer: this
+    });
+    btnExploredLabel = new textLayer({
+      y: 10,
+      width: this.width / 2,
+      text: "Entdeckt",
+      color: "rgb(0,0,0)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "center",
+      superLayer: this.btnExplored
+    });
+    this.btnUnexplored = new Layer({
+      x: this.width / 2,
+      y: 0,
+      width: this.width / 2,
+      height: 100,
+      backgroundColor: "white",
+      borderColor: "black",
+      borderWidth: 3,
+      superLayer: this
+    });
+    btnUnexploreddLabel = new textLayer({
+      y: 10,
+      width: this.width / 2,
+      text: "Unentdeckt",
+      color: "rgb(0,0,0)",
+      fontSize: 50,
+      fontFamily: "Calibri",
+      textAlign: "center",
+      superLayer: this.btnUnexplored
+    });
+    this.items = new ScrollComponent({
+      x: 0,
+      y: 100,
+      width: this.width,
+      height: this.height - 100,
+      scrollHorizontal: false,
+      backgroundColor: "white",
+      superLayer: this
+    });
+    this.items.content.draggable.overdrag = false;
+    new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
+      x: 0,
+      y: 0
+    });
+    new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
+      x: 0,
+      y: 200
+    });
+    return new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
+      x: 0,
+      y: 400
+    });
+  };
+
+  return List;
+
+})(Layer);
+
+
+},{"TextLayer":4,"listItemModule":6}],8:[function(require,module,exports){
 var EventEmitter, Radar, markerModule, textLayer,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -814,7 +973,7 @@ exports.Radar = Radar = (function(superClass) {
     options.width = (ref = options.width) != null ? ref : Screen.width;
     options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 220;
     options.opacity = (ref2 = options.opacity) != null ? ref2 : 1;
-    this.myBackgroundColor = (ref3 = options.backgroundColor) != null ? ref3 : 'white';
+    this.myBackgroundColor = (ref3 = options.backgroundColor) != null ? ref3 : 'transparent';
     options.backgroundColor = this.myBackgroundColor;
     this.title = "Radar";
     this.currentSelection = null;
@@ -886,7 +1045,7 @@ exports.Radar = Radar = (function(superClass) {
       width: 150,
       height: 100,
       text: "10km",
-      color: "rgb(129,129,129)",
+      color: "rgb(255,255,255)",
       textAlign: "center",
       fontSize: 30,
       fontFamily: "Calibri"
@@ -898,7 +1057,7 @@ exports.Radar = Radar = (function(superClass) {
       width: 150,
       height: 100,
       text: "1km",
-      color: "rgb(129,129,129)",
+      color: "rgb(255,255,255)",
       textAlign: "center",
       fontSize: 30,
       fontFamily: "Calibri"
@@ -916,7 +1075,7 @@ exports.Radar = Radar = (function(superClass) {
     });
     sliderLayer.addSubLayer(this.sliderA);
     this.sliderA.fill.backgroundColor = "green";
-    this.sliderA.backgroundColor = "rgba(129,129,129,0.5)";
+    this.sliderA.backgroundColor = "rgba(255,255,255,0.5)";
     this.sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)";
     this.sliderA.knob.backgroundColor = "green";
     this.sliderA.knob.scale = 0.8;
@@ -951,8 +1110,8 @@ exports.Radar = Radar = (function(superClass) {
       width: Screen.width,
       height: 120,
       backgroundColor: this.myBackgroundColor,
-      text: "Entfernung bis zum markierten Ziel: ",
-      color: "rgb(129,129,129)",
+      text: "Entfernung bis zum Ziel: ",
+      color: "rgb(255,255,255)",
       textAlign: "center",
       fontSize: 50,
       fontFamily: "Calibri"
@@ -965,9 +1124,9 @@ exports.Radar = Radar = (function(superClass) {
       height: 120,
       backgroundColor: this.myBackgroundColor,
       text: "5 km",
-      color: "rgb(129,129,129)",
+      color: "rgb(255,255,255)",
       textAlign: "center",
-      fontSize: 60,
+      fontSize: 50,
       fontFamily: "Calibri"
     });
     return remainingDistanceLayer.addSubLayer(remainingDistanceValue);
@@ -1017,8 +1176,7 @@ exports.Radar = Radar = (function(superClass) {
       return function() {
         _this.deSelectAllSelectedMarkers(_this.marker_1);
         if (_this.marker_1.isNormal()) {
-          _this.marker_1.setSelected();
-          return _this.target.text = _this.marker_1.getTargetName();
+          return _this.marker_1.setSelected();
         } else {
           if (!_this.marker_1.isExplored() && !_this.marker_1.isNormal()) {
             return _this.marker_1.setNormal();
@@ -1030,8 +1188,7 @@ exports.Radar = Radar = (function(superClass) {
       return function() {
         _this.deSelectAllSelectedMarkers(_this.marker_2);
         if (_this.marker_2.isNormal()) {
-          _this.marker_2.setSelected();
-          return _this.target.text = _this.marker_2.getTargetName();
+          return _this.marker_2.setSelected();
         } else {
           if (!_this.marker_2.isExplored() && !_this.marker_2.isNormal()) {
             return _this.marker_2.setNormal();
@@ -1039,17 +1196,21 @@ exports.Radar = Radar = (function(superClass) {
         }
       };
     })(this));
-    return this.marker_3.getEmitter().on('selected', (function(_this) {
+    this.marker_3.getEmitter().on('selected', (function(_this) {
       return function() {
         _this.deSelectAllSelectedMarkers(_this.marker_3);
         if (_this.marker_3.isNormal()) {
-          _this.marker_3.setSelected();
-          return _this.target.text = _this.marker_3.getTargetName();
+          return _this.marker_3.setSelected();
         } else {
           if (!_this.marker_3.isExplored() && !_this.marker_3.isNormal()) {
             return _this.marker_3.setNormal();
           }
         }
+      };
+    })(this));
+    return this.radarLayer.on(Events.Click, (function(_this) {
+      return function() {
+        return _this.hideAllMarkers();
       };
     })(this));
   };
@@ -1059,7 +1220,7 @@ exports.Radar = Radar = (function(superClass) {
 })(Layer);
 
 
-},{"MarkerModule":2,"TextLayer":4,"events":9}],7:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":11}],9:[function(require,module,exports){
 var RankingList, rankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1155,13 +1316,13 @@ exports.RankingList = RankingList = (function(superClass) {
     for (num = i = 1; i <= 99; num = ++i) {
       new rankingRow.RankingRow(this.items, num, " Nickname", "9999", {
         x: 0,
-        y: (100 + 10) * counter
+        y: 100. * counter
       });
       counter++;
     }
     new rankingRow.RankingRow(this.items, 100, " Volker", "120", {
       x: 0,
-      y: (100 + 10) * counter
+      y: 100. * counter
     });
     ownRankLayer = new Layer({
       x: 0,
@@ -1235,7 +1396,7 @@ exports.RankingList = RankingList = (function(superClass) {
 })(Layer);
 
 
-},{"RankingRow":3,"TextLayer":4}],8:[function(require,module,exports){
+},{"RankingRow":3,"TextLayer":4}],10:[function(require,module,exports){
 var Tabbar,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1243,11 +1404,9 @@ var Tabbar,
 exports.Tabbar = Tabbar = (function(superClass) {
   extend(Tabbar, superClass);
 
-  function Tabbar(pageComponent, profileView, settingsView, backArrow, title, options) {
+  function Tabbar(mainContext, backArrow, title, options) {
     var ref, ref1, ref2;
-    this.pageComponent = pageComponent;
-    this.profileView = profileView;
-    this.settingsView = settingsView;
+    this.mainContext = mainContext;
     this.backArrow = backArrow;
     this.title = title;
     if (options == null) {
@@ -1273,6 +1432,12 @@ exports.Tabbar = Tabbar = (function(superClass) {
       x: 610,
       y: 105
     };
+    this.pageComponent = this.mainContext.pageComponent;
+    this.rankingView = this.mainContext.rankingView;
+    this.radarView = this.mainContext.radarView;
+    this.listView = this.mainContext.listView;
+    this.profileView = this.mainContext.profileView;
+    this.settingView = this.mainContext.settingView;
     options.width = (ref = options.width) != null ? ref : Screen.width;
     options.height = 110;
     options.opacity = 1;
@@ -1285,12 +1450,10 @@ exports.Tabbar = Tabbar = (function(superClass) {
   }
 
   Tabbar.prototype.showRadar = function() {
-    this.resetViews();
     this.marker.x = this.pos2.x;
     this.marker.y = this.pos2.y;
     this.opacity = 1;
     this.backArrow.opacity = 0;
-    this.resetViews();
     return this.title.text = "Bremen";
   };
 
@@ -1299,7 +1462,6 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.marker.y = this.pos1.y;
     this.opacity = 1;
     this.backArrow.opacity = 0;
-    this.resetViews();
     return this.title.text = "Ranking";
   };
 
@@ -1308,7 +1470,6 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.marker.y = this.pos3.y;
     this.opacity = 1;
     this.backArrow.opacity = 0;
-    this.resetViews();
     return this.title.text = "Bremen";
   };
 
@@ -1316,8 +1477,6 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.marker.x = this.pos4.x;
     this.marker.y = this.pos4.y;
     this.opacity = 0;
-    this.resetViews();
-    this.profileView.x = 0;
     this.backArrow.opacity = 1;
     return this.title.text = "Profile";
   };
@@ -1326,28 +1485,8 @@ exports.Tabbar = Tabbar = (function(superClass) {
     this.marker.x = this.pos5.x;
     this.marker.y = this.pos5.y;
     this.opacity = 0;
-    this.resetViews();
-    this.settingsView.x = 0;
     this.backArrow.opacity = 1;
     return this.title.text = "Settings";
-  };
-
-  Tabbar.prototype.resetViews = function() {
-    this.profileView.x = 1500;
-    return this.settingsView.x = 1500;
-  };
-
-  Tabbar.prototype.bindEvents = function() {
-    this.profileLayer.on(Events.Click, (function(_this) {
-      return function() {
-        return _this.showProfile();
-      };
-    })(this));
-    return this.settingsLayer.on(Events.Click, (function(_this) {
-      return function() {
-        return _this.showSettings();
-      };
-    })(this));
   };
 
   Tabbar.prototype.initControls = function() {
@@ -1402,12 +1541,67 @@ exports.Tabbar = Tabbar = (function(superClass) {
     });
   };
 
+  Tabbar.prototype.bindEvents = function() {
+    this.rankingLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.pageComponent.x = 0;
+        _this.showRanking();
+        return _this.pageComponent.snapToPage(_this.rankingView, false);
+      };
+    })(this));
+    this.radarLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.pageComponent.x = 0;
+        _this.showRadar();
+        return _this.pageComponent.snapToPage(_this.radarView, false);
+      };
+    })(this));
+    this.listLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.pageComponent.x = 0;
+        _this.showList();
+        return _this.pageComponent.snapToPage(_this.listView, false);
+      };
+    })(this));
+    this.profileLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.profileView.x = 0;
+        return _this.showProfile();
+      };
+    })(this));
+    this.settingsLayer.on(Events.Click, (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.settingView.x = 0;
+        return _this.showSettings();
+      };
+    })(this));
+    return this.backArrow.on(Events.Click, (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.pageComponent.x = 0;
+        _this.showRadar();
+        return _this.pageComponent.snapToPage(_this.radarView, false);
+      };
+    })(this));
+  };
+
+  Tabbar.prototype.resetViews = function() {
+    this.pageComponent.x = 1500;
+    this.settingView.x = 1500;
+    return this.profileView.x = 1500;
+  };
+
   return Tabbar;
 
 })(Layer);
 
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a

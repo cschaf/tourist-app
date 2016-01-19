@@ -78,10 +78,10 @@ exports.RankingList = class RankingList extends Layer
     @items.content.draggable.overdrag = false
     counter = 0
     for num in [1..99]
-      new rankingRow.RankingRow(@items, num, " Nickname", "9999", x:0, y:(100 + 10) * counter)
+      new rankingRow.RankingRow(@items, num, " Nickname", "9999", x:0, y:(100) * counter)
       counter++
 
-    new rankingRow.RankingRow(@items, 100, " Volker", "120", x:0, y:(100 + 10) * counter)
+    new rankingRow.RankingRow(@items, 100, " Volker", "120", x:0, y:(100) * counter)
     ownRankLayer = new Layer
       x:0
       y: this.height - 100

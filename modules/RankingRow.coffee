@@ -8,7 +8,9 @@ exports.RankingRow = class RankingRow extends Layer
     options.borderRadius= 6
     options.cale= 1
     options.superLayer= @scrollPanel.content
-    options.backgroundColor = "white"
+    options.borderColor = "black"
+    options.borderWidth = 1
+    options.backgroundColor = "transparent"
     super options
 
 
