@@ -88,6 +88,9 @@ topMenu.addSubLayer(title)
 @pageComponent.addPage @radarView
 @pageComponent.addPage @listView
 
+#testing
+
+
 @pageComponent.snapToPage(@radarView, false)
 
 @pageComponent.on "change:currentPage", =>

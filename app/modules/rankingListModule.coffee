@@ -25,7 +25,7 @@ exports.RankingList = class RankingList extends Layer
       width: 100
       height: 150
       text: "Platz"
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "left"
@@ -38,7 +38,7 @@ exports.RankingList = class RankingList extends Layer
       width: this.width - 140 - 100
       height: 150
       text: "Nickname"
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "center"
@@ -50,7 +50,7 @@ exports.RankingList = class RankingList extends Layer
       width: 140
       height: 150
       text: "Score"
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "right"
@@ -62,7 +62,7 @@ exports.RankingList = class RankingList extends Layer
       y:100
       height:5
       width:this.width
-      backgroundColor:"rgb(129,129,129)"
+      backgroundColor:"rgb(0,0,0)"
 
     tableHeaderLayer.addSubLayer(lineHead)
 
@@ -95,7 +95,7 @@ exports.RankingList = class RankingList extends Layer
       y:5
       width:this.width
       height:5
-      backgroundColor:"rgb(129,129,129)"
+      backgroundColor:"rgb(0,0,0)"
 
     ownRankLayer.addSubLayer(line1)
 
@@ -104,7 +104,7 @@ exports.RankingList = class RankingList extends Layer
       y:15
       width:this.width
       height:5
-      backgroundColor:"rgb(129,129,129)"
+      backgroundColor:"rgb(0,0,0)"
 
     ownRankLayer.addSubLayer(line2)
 
@@ -114,7 +114,7 @@ exports.RankingList = class RankingList extends Layer
       width: 80
       height: 150
       text: "100"
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "left"
@@ -126,7 +126,7 @@ exports.RankingList = class RankingList extends Layer
       width: this.width - 140 - 100
       height: 150
       text: "Volker"
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "center"
@@ -138,7 +138,7 @@ exports.RankingList = class RankingList extends Layer
       width: 140
       height: 150
       text: "120"
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "right"
