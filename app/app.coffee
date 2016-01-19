@@ -10,6 +10,7 @@ citySelectionModule = require("citySelectionModule")
 textLayer = require('TextLayer')
 tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
+listModule = require("listModule")
 markerModule = require('MarkerModule')
 rankingListModule = require('rankingListModule')
 cityModule = require('citySelectionModule')
@@ -20,6 +21,7 @@ pageSize = width:750, height:Screen.height - 220
 # Set background to white
 backgroundLayer = new BackgroundLayer
   backgroundColor: "white"
+  image: "./images/background_main.png"
 
 # Create Menu
 topMenu = new Layer
@@ -27,7 +29,7 @@ topMenu = new Layer
   y: 0
   width: Screen.width
   height: 100
-  backgroundColor: "white"
+  backgroundColor: "transparent"
 
 backIcon = new Layer
   x: 25
@@ -45,34 +47,33 @@ title = new textLayer
   width: 500
   height: 100
   text:"Tourist-App"
-  color: "rgb(129,129,129)"
+  color: "rgb(255,255,255)"
   textAlign: "center"
   fontSize: 50
   fontFamily: "Calibri"
 topMenu.addSubLayer(title)
 
 # ---- ranking list -----
-@rankingView = new rankingListModule.RankingList(x:0, y:0, width: pageSize.width, height:pageSize.height)
+@rankingView = new rankingListModule.RankingList(x:0, width: pageSize.width, height:pageSize.height)
 
 # ---- Radar -----
-@radarView = new radarModule.Radar(x:pageSize.width, y:0,width: pageSize.width, height:pageSize.height)
+@radarView = new radarModule.Radar(x:pageSize.width,width: pageSize.width, height:pageSize.height)
 
-@listView = new Layer
-  x: pageSize.width * 2
-  width: pageSize.width
-  height: pageSize.height
+@listView = new listModule.List(x:pageSize.width * 2, width: pageSize.width, height:pageSize.height)
 
 @profileView = new Layer
   x: 2500
   y:100
   width: pageSize.width
   height: pageSize.height + 120
+  backgroundColor: "white"
 
 @settingView = new Layer
   x: 2500
   y:100
   width: pageSize.width
   height: Screen.height + 120
+  backgroundColor: "white"
 
 # PageComponent settings
 
@@ -87,7 +88,7 @@ topMenu.addSubLayer(title)
 @pageComponent.addPage @radarView
 @pageComponent.addPage @listView
 
-@pageComponent.snapToPage(@radarView, false)
+@pageComponent.snapToPage(@listView, false)
 
 @pageComponent.on "change:currentPage", =>
   currentPageIndex = @pageComponent.horizontalPageIndex(@pageComponent.currentPage)

@@ -10,6 +10,7 @@ exports.Marker = class Marker extends Layer
     @_isSelected = false
     @_isNormal = true
     @_isExplored = false
+    @enablePopup = true
     @popupBackground = "./images/popup-ohne-bild.png"
     @emitter = new EventEmitter
     super options
@@ -22,19 +23,19 @@ exports.Marker = class Marker extends Layer
         if isHeld then triggerLongHold()
 
     @on Events.TouchEnd, () ->
-    # this is a regular tap
+      # this is a regular tap
       if isHeld
         @emitter.emit 'selected'
         isHeld = false
-    # this is the "long hold" release
+      # this is the "long hold" release
       else
         # Animation on load
-        @popupLayer.states.switch("on")
-        Utils.delay 4, =>  @popupLayer.states.switch("off")
+        if @enablePopup
+          @popupLayer.states.switch("on")
+          Utils.delay 4, =>  @popupLayer.states.switch("off")
 
   getEmitter: ()->
     return @emitter
-
 
   initControls: ()->
     @popupLayer = new Layer
@@ -105,6 +106,10 @@ exports.Marker = class Marker extends Layer
   isExplored: () =>
     return @_isExplored
 
+  setPopupEnabled: (enabled)=>
+    @enablePopup = enabled
+
 triggerLongHold = () ->
 # this is the long hold trigger
     isHeld = false
+
