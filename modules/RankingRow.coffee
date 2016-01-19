@@ -22,7 +22,7 @@ exports.RankingRow = class RankingRow extends Layer
       y: 0
       width: 80
       text: @rank
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "left"
@@ -34,7 +34,7 @@ exports.RankingRow = class RankingRow extends Layer
       y: 0
       width: Screen.width - 140 - 100
       text: @playername
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "center"
@@ -46,7 +46,7 @@ exports.RankingRow = class RankingRow extends Layer
       y: 0
       width: 140
       text: @score
-      color: "rgb(129,129,129)"
+      color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"
       textAlign: "right"

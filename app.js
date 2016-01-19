@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var EventEmitter, backIcon, backgroundLayer, cityModule, citySelectionModule, listModule, markerModule, pageSize, radarModule, rankingListModule, tabBarLayer, tabbarModule, textLayer, title, topMenu;
+var EventEmitter, backgroundLayer, cityModule, citySelectionModule, listModule, markerModule, radarModule, rankingListModule, tabbarModule, textLayer;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -36,17 +36,27 @@ cityModule = require('citySelectionModule');
 
 EventEmitter = require('events').EventEmitter;
 
-pageSize = {
+this.pageSize = {
   width: 750,
   height: Screen.height - 220
 };
+
+this.lastPage = null;
+
+this.pageComponent = new PageComponent({
+  width: this.pageSize.width,
+  height: this.pageSize.height,
+  y: 100,
+  x: 0,
+  scrollVertical: false
+});
 
 backgroundLayer = new BackgroundLayer({
   backgroundColor: "white",
   image: "./images/background_main.png"
 });
 
-topMenu = new Layer({
+this.topMenu = new Layer({
   x: 0,
   y: 0,
   width: Screen.width,
@@ -54,7 +64,7 @@ topMenu = new Layer({
   backgroundColor: "transparent"
 });
 
-backIcon = new Layer({
+this.backIcon = new Layer({
   x: 25,
   y: 25,
   width: 50,
@@ -63,9 +73,9 @@ backIcon = new Layer({
   image: "./images/icons/back.png"
 });
 
-topMenu.addSubLayer(backIcon);
+this.topMenu.addSubLayer(this.backIcon);
 
-title = new textLayer({
+this.title = new textLayer({
   x: 120,
   y: 10,
   width: 500,
@@ -77,76 +87,94 @@ title = new textLayer({
   fontFamily: "Calibri"
 });
 
-topMenu.addSubLayer(title);
+this.topMenu.addSubLayer(this.title);
 
 this.rankingView = new rankingListModule.RankingList({
   x: 0,
-  width: pageSize.width,
-  height: pageSize.height
+  width: this.pageSize.width,
+  height: this.pageSize.height
 });
+
+this.pageComponent.addPage(this.rankingView);
 
 this.radarView = new radarModule.Radar({
-  x: pageSize.width,
-  width: pageSize.width,
-  height: pageSize.height
+  x: this.pageSize.width,
+  width: this.pageSize.width,
+  height: this.pageSize.height
 });
 
-this.listView = new listModule.List({
-  x: pageSize.width * 2,
-  width: pageSize.width,
-  height: pageSize.height
+this.pageComponent.addPage(this.radarView);
+
+this.listView = new listModule.List(this, {
+  x: this.pageSize.width * 2,
+  y: 0,
+  width: this.pageSize.width,
+  height: this.pageSize.height
 });
+
+this.pageComponent.addPage(this.listView);
 
 this.profileView = new Layer({
   x: 2500,
   y: 100,
-  width: pageSize.width,
-  height: pageSize.height + 120,
+  width: this.pageSize.width,
+  height: this.pageSize.height + 120,
   backgroundColor: "white"
 });
 
 this.settingView = new Layer({
   x: 2500,
   y: 100,
-  width: pageSize.width,
+  width: this.pageSize.width,
   height: Screen.height + 120,
   backgroundColor: "white"
 });
 
-this.pageComponent = new PageComponent({
-  width: pageSize.width,
-  height: pageSize.height,
-  y: 100,
-  x: 0,
-  scrollVertical: false
-});
-
-this.pageComponent.addPage(this.rankingView);
-
-this.pageComponent.addPage(this.radarView);
-
-this.pageComponent.addPage(this.listView);
-
 this.pageComponent.snapToPage(this.radarView, false);
+
+this.lastPage = this.radarView;
+
+this.tabBarLayer = new tabbarModule.Tabbar(this, this.backIcon, this.title);
+
+this.listView.tabBarLayer = this.tabBarLayer;
 
 this.pageComponent.on("change:currentPage", (function(_this) {
   return function() {
     var currentPageIndex;
     currentPageIndex = _this.pageComponent.horizontalPageIndex(_this.pageComponent.currentPage);
     if (currentPageIndex === 0) {
-      return tabBarLayer.showRanking();
+      _this.lastPage = _this.rankingView;
+      return _this.tabBarLayer.showRanking();
     } else if (currentPageIndex === 1) {
-      return tabBarLayer.showRadar();
+      _this.lastPage = _this.radarView;
+      return _this.tabBarLayer.showRadar();
     } else if (currentPageIndex === 2) {
-      return tabBarLayer.showList();
+      _this.lastPage = _this.listView;
+      return _this.tabBarLayer.showList();
     }
   };
 })(this));
 
-tabBarLayer = new tabbarModule.Tabbar(this, backIcon, title);
+this.backIcon.on(Events.Click, (function(_this) {
+  return function() {
+    var index;
+    _this.tabBarLayer.resetViews();
+    _this.pageComponent.x = 0;
+    _this.tabBarLayer.x = 0;
+    _this.pageComponent.snapToPage(_this.lastPage, false);
+    index = _this.pageComponent.horizontalPageIndex(_this.pageComponent.currentPage);
+    if (index === 0) {
+      return _this.tabBarLayer.showRanking();
+    } else if (index === 1) {
+      return _this.tabBarLayer.showRadar();
+    } else if (index === 2) {
+      return _this.tabBarLayer.showList();
+    }
+  };
+})(this));
 
 
-},{"MarkerModule":2,"TextLayer":4,"citySelectionModule":5,"events":11,"listModule":7,"radarModule":8,"rankingListModule":9,"tabbarModule":10}],2:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"citySelectionModule":5,"events":12,"listModule":8,"radarModule":9,"rankingListModule":10,"tabbarModule":11}],2:[function(require,module,exports){
 var EventEmitter, Marker, isHeld, textLayer, triggerLongHold,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -313,7 +341,7 @@ triggerLongHold = function() {
 };
 
 
-},{"TextLayer":4,"events":11}],3:[function(require,module,exports){
+},{"TextLayer":4,"events":12}],3:[function(require,module,exports){
 var RankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -351,7 +379,7 @@ exports.RankingRow = RankingRow = (function(superClass) {
       y: 0,
       width: 80,
       text: this.rank,
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "left",
@@ -363,7 +391,7 @@ exports.RankingRow = RankingRow = (function(superClass) {
       y: 0,
       width: Screen.width - 140 - 100,
       text: this.playername,
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "center",
@@ -375,7 +403,7 @@ exports.RankingRow = RankingRow = (function(superClass) {
       y: 0,
       width: 140,
       text: this.score,
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "right",
@@ -760,7 +788,100 @@ exports.CitySelection = CitySelection = (function(superClass) {
 
 
 },{}],6:[function(require,module,exports){
-var ListItem, markerModule, textLayer,
+var DetailSight, textLayer,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+textLayer = require('TextLayer');
+
+exports.DetailSight = DetailSight = (function(superClass) {
+  extend(DetailSight, superClass);
+
+  function DetailSight(nameText, imagePath, commonText, historyText, options) {
+    this.nameText = nameText;
+    this.imagePath = imagePath;
+    this.commonText = commonText;
+    this.historyText = historyText;
+    if (options == null) {
+      options = {};
+    }
+    if (options.width == null) {
+      options.width = Screen.width;
+    }
+    if (options.height == null) {
+      options.height = Screen.height - 100;
+    }
+    options.opacity = 1;
+    options.backgroundColor = "white";
+    DetailSight.__super__.constructor.call(this, options);
+    this.initControls();
+  }
+
+  DetailSight.prototype.initControls = function() {
+    var common, history, historyLayer, imageLayer, nameLayer;
+    imageLayer = new Layer({
+      x: 0,
+      y: 0,
+      width: this.width,
+      height: 400,
+      image: this.imagePath,
+      superLayer: this
+    });
+    nameLayer = new textLayer({
+      x: 0,
+      y: 400,
+      width: this.width,
+      height: 100,
+      text: this.nameText,
+      textAlign: "center",
+      color: "rgb(0,0,0)",
+      superLayer: this,
+      fontSize: 50
+    });
+    common = new textLayer({
+      x: 10,
+      y: 500,
+      width: this.width - 20,
+      height: 300,
+      text: this.commonText,
+      color: "#000",
+      textAlign: "left",
+      fontSize: 27,
+      fontFamily: "Calibri",
+      superLayer: this
+    });
+    historyLayer = new textLayer({
+      x: 0,
+      y: 800,
+      width: this.width,
+      height: 100,
+      text: "Geschichte",
+      textAlign: "center",
+      color: "rgb(0,0,0)",
+      superLayer: this,
+      fontSize: 50
+    });
+    return history = new textLayer({
+      x: 10,
+      y: 900,
+      width: this.width - 20,
+      height: 500,
+      text: this.historyText,
+      color: "#000",
+      textAlign: "left",
+      fontSize: 27,
+      fontFamily: "Calibri",
+      superLayer: this
+    });
+  };
+
+  return DetailSight;
+
+})(Layer);
+
+
+},{"TextLayer":4}],7:[function(require,module,exports){
+var EventEmitter, ListItem, isHeld, markerModule, textLayer, triggerLongHold,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -768,11 +889,14 @@ textLayer = require('TextLayer');
 
 markerModule = require('MarkerModule');
 
+EventEmitter = require('events').EventEmitter;
+
+isHeld = false;
+
 exports.ListItem = ListItem = (function(superClass) {
   extend(ListItem, superClass);
 
   function ListItem(scrollPanel, sightImage, sightName, distance, options) {
-    var ref, ref1;
     this.scrollPanel = scrollPanel;
     this.sightImage = sightImage;
     this.sightName = sightName;
@@ -780,16 +904,40 @@ exports.ListItem = ListItem = (function(superClass) {
     if (options == null) {
       options = {};
     }
-    options.width = (ref = options.width) != null ? ref : Screen.width;
-    options.height = (ref1 = options.height) != null ? ref1 : 200;
+    if (options.width == null) {
+      options.width = Screen.width;
+    }
+    if (options.height == null) {
+      options.height = 200;
+    }
     options.opacity = 1;
     options.backgroundColor = "white";
     options.superLayer = this.scrollPanel.content;
     options.borderColor = "black";
     options.borderWidth = 1;
+    this.emitter = new EventEmitter;
     ListItem.__super__.constructor.call(this, options);
     this.initControls();
+    this.on(Events.TouchStart, function() {
+      isHeld = true;
+      return Utils.delay(.5, function() {
+        if (isHeld) {
+          return triggerLongHold();
+        }
+      });
+    });
+    this.on(Events.TouchEnd, function() {
+      if (isHeld) {
+        return isHeld = false;
+      } else {
+        return this.emitter.emit('selected');
+      }
+    });
   }
+
+  ListItem.prototype.getEmitter = function() {
+    return this.emitter;
+  };
 
   ListItem.prototype.initControls = function() {
     var distanceLayer, sightImageLayer, sightNameLayer;
@@ -852,9 +1000,13 @@ exports.ListItem = ListItem = (function(superClass) {
 
 })(Layer);
 
+triggerLongHold = function() {
+  return isHeld = false;
+};
 
-},{"MarkerModule":2,"TextLayer":4}],7:[function(require,module,exports){
-var List, listItemModule, textLayer,
+
+},{"MarkerModule":2,"TextLayer":4,"events":12}],8:[function(require,module,exports){
+var List, detailSightModule, listItemModule, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -862,16 +1014,29 @@ textLayer = require('TextLayer');
 
 listItemModule = require('listItemModule');
 
+detailSightModule = require('detailSightModule');
+
 exports.List = List = (function(superClass) {
   extend(List, superClass);
 
-  function List(options) {
+  function List(mainContext, options) {
     var ref, ref1;
+    this.mainContext = mainContext;
     if (options == null) {
       options = {};
     }
+    this.pageComponent = this.mainContext.pageComponent;
+    this.backIcon = this.mainContext.backIcon;
+    this.tabBarLayer = this.mainContext.tabBarLayer;
+    this.backIcon.on(Events.Click, (function(_this) {
+      return function() {
+        _this.detailSightView1.x = 1500;
+        _this.detailSightView2.x = 1500;
+        return _this.detailSightView3.x = 1500;
+      };
+    })(this));
     options.width = (ref = options.width) != null ? ref : Screen.width;
-    options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 215;
+    options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 100;
     options.opacity = 1;
     options.backgroundColor = "white";
     List.__super__.constructor.call(this, options);
@@ -879,11 +1044,11 @@ exports.List = List = (function(superClass) {
   }
 
   List.prototype.initControls = function() {
-    var btnExploredLabel, btnUnexploreddLabel;
+    var btnExploredLabel, btnUnexploreddLabel, commonText, historyText, item_1, item_2, item_3;
     this.btnExplored = new Layer({
-      x: 0,
+      x: -1,
       y: 0,
-      width: this.width / 2,
+      width: this.width / 2 + 1,
       height: 100,
       backgroundColor: "white",
       borderColor: "black",
@@ -903,7 +1068,7 @@ exports.List = List = (function(superClass) {
     this.btnUnexplored = new Layer({
       x: this.width / 2,
       y: 0,
-      width: this.width / 2,
+      width: (this.width / 2) + 3,
       height: 100,
       backgroundColor: "white",
       borderColor: "black",
@@ -924,24 +1089,80 @@ exports.List = List = (function(superClass) {
       x: 0,
       y: 100,
       width: this.width,
-      height: this.height - 100,
+      height: this.height + 20,
       scrollHorizontal: false,
       backgroundColor: "white",
       superLayer: this
     });
     this.items.content.draggable.overdrag = false;
-    new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
+    commonText = "Das Uebersee-Museum Bremen ist ein ueber 100 Jahre altes bedeutendes Museum in der Bremer Innenstadt direkt am Hauptbahnhof am Bahnhofsplatz. Das Gebaeude steht seit 1993 unter Denkmalschutz. In einer integrierten Ausstellung ueber Natur, Kultur und Handel praesentiert es Aspekte ueberseeischer Lebensraeume mit Dauerausstellungen zu Asien, Suedsee/Ozeanien, Amerika, Afrika und zu Globalisierungsthemen. Das Museum gehoert nach eigenen Angaben zu den meistbesuchten Museen in Deutschland.";
+    historyText = "Unter dem Namen 'Staedtische Sammlungen fuer Naturgeschichte und Ethnographie' gingen 1875 die Sammlungen des ''Naturwissenschaftlichen Vereins'', einer Gruendung der ''Gesellschaft Museum'', und Sammlungen einer 1872 gegruendeten ''Anthropologischen Kommission'' in das Eigentum der Stadt Bremen ueber.";
+    this.detailSightView1 = new detailSightModule.DetailSight("Uebersee-Museum", "./images/uebersee-museum.png", commonText, historyText, {
+      x: 1500,
+      y: 100,
+      width: this.width,
+      height: this.height + 120
+    });
+    commonText = "Das Uebersee-Museum Bremen ist ein ueber 100 Jahre altes bedeutendes Museum in der Bremer Innenstadt direkt am Hauptbahnhof am Bahnhofsplatz. Das Gebaeude steht seit 1993 unter Denkmalschutz. In einer integrierten Ausstellung ueber Natur, Kultur und Handel praesentiert es Aspekte ueberseeischer Lebensraeume mit Dauerausstellungen zu Asien, Suedsee/Ozeanien, Amerika, Afrika und zu Globalisierungsthemen. Das Museum gehoert nach eigenen Angaben zu den meistbesuchten Museen in Deutschland.";
+    historyText = "Unter dem Namen 'Staedtische Sammlungen fuer Naturgeschichte und Ethnographie' gingen 1875 die Sammlungen des ''Naturwissenschaftlichen Vereins'', einer Gruendung der ''Gesellschaft Museum'', und Sammlungen einer 1872 gegruendeten ''Anthropologischen Kommission'' in das Eigentum der Stadt Bremen ueber.";
+    this.detailSightView2 = new detailSightModule.DetailSight("Roland", "./images/roland.png", commonText, historyText, {
+      x: 1500,
+      y: 100,
+      width: this.width,
+      height: this.height + 120
+    });
+    commonText = "Das Uebersee-Museum Bremen ist ein ueber 100 Jahre altes bedeutendes Museum in der Bremer Innenstadt direkt am Hauptbahnhof am Bahnhofsplatz. Das Gebaeude steht seit 1993 unter Denkmalschutz. In einer integrierten Ausstellung ueber Natur, Kultur und Handel praesentiert es Aspekte ueberseeischer Lebensraeume mit Dauerausstellungen zu Asien, Suedsee/Ozeanien, Amerika, Afrika und zu Globalisierungsthemen. Das Museum gehoert nach eigenen Angaben zu den meistbesuchten Museen in Deutschland.";
+    historyText = "Unter dem Namen 'Staedtische Sammlungen fuer Naturgeschichte und Ethnographie' gingen 1875 die Sammlungen des ''Naturwissenschaftlichen Vereins'', einer Gruendung der ''Gesellschaft Museum'', und Sammlungen einer 1872 gegruendeten ''Anthropologischen Kommission'' in das Eigentum der Stadt Bremen ueber.";
+    this.detailSightView3 = new detailSightModule.DetailSight("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", commonText, historyText, {
+      x: 1500,
+      y: 100,
+      width: this.width,
+      height: this.height + 120
+    });
+    item_1 = new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
       x: 0,
       y: 0
     });
-    new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
+    item_1.getEmitter().on('selected', (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.detailSightView1.x = 0;
+        _this.backIcon.opacity = 1;
+        return _this.mainContext.title.text = "Detail";
+      };
+    })(this));
+    item_2 = new listItemModule.ListItem(this.items, "./images/roland_item.png", "Roland", "2km", {
       x: 0,
       y: 200
     });
-    return new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
+    item_2.getEmitter().on('selected', (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.detailSightView2.x = 0;
+        _this.backIcon.opacity = 1;
+        return _this.mainContext.title.text = "Detail";
+      };
+    })(this));
+    item_3 = new listItemModule.ListItem(this.items, "./images/stadtmusikanten_item.png", "Stadtmusikanten", "3km", {
       x: 0,
       y: 400
     });
+    return item_3.getEmitter().on('selected', (function(_this) {
+      return function() {
+        _this.resetViews();
+        _this.detailSightView3.x = 0;
+        _this.backIcon.opacity = 1;
+        return _this.mainContext.title.text = "Detail";
+      };
+    })(this));
+  };
+
+  List.prototype.resetViews = function() {
+    this.pageComponent.x = 1500;
+    this.tabBarLayer.x = 1500;
+    this.detailSightView1.x = 1500;
+    this.detailSightView2.x = 1500;
+    return this.detailSightView3.x = 1500;
   };
 
   return List;
@@ -949,7 +1170,7 @@ exports.List = List = (function(superClass) {
 })(Layer);
 
 
-},{"TextLayer":4,"listItemModule":6}],8:[function(require,module,exports){
+},{"TextLayer":4,"detailSightModule":6,"listItemModule":7}],9:[function(require,module,exports){
 var EventEmitter, Radar, markerModule, textLayer,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1220,7 +1441,7 @@ exports.Radar = Radar = (function(superClass) {
 })(Layer);
 
 
-},{"MarkerModule":2,"TextLayer":4,"events":11}],9:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":12}],10:[function(require,module,exports){
 var RankingList, rankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1261,7 +1482,7 @@ exports.RankingList = RankingList = (function(superClass) {
       width: 100,
       height: 150,
       text: "Platz",
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "left"
@@ -1273,7 +1494,7 @@ exports.RankingList = RankingList = (function(superClass) {
       width: this.width - 140 - 100,
       height: 150,
       text: "Nickname",
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "center"
@@ -1285,7 +1506,7 @@ exports.RankingList = RankingList = (function(superClass) {
       width: 140,
       height: 150,
       text: "Score",
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "right"
@@ -1296,7 +1517,7 @@ exports.RankingList = RankingList = (function(superClass) {
       y: 100,
       height: 5,
       width: this.width,
-      backgroundColor: "rgb(129,129,129)"
+      backgroundColor: "rgb(0,0,0)"
     });
     tableHeaderLayer.addSubLayer(lineHead);
     this.items = new ScrollComponent({
@@ -1306,7 +1527,7 @@ exports.RankingList = RankingList = (function(superClass) {
       height: this.height - 215,
       scrollHorizontal: false,
       contentInset: {
-        top: 15,
+        top: -5,
         bottom: 32
       },
       superLayer: this
@@ -1314,13 +1535,13 @@ exports.RankingList = RankingList = (function(superClass) {
     this.items.content.draggable.overdrag = false;
     counter = 0;
     for (num = i = 1; i <= 99; num = ++i) {
-      new rankingRow.RankingRow(this.items, num, " Nickname", "9999", {
+      new rankingRow.RankingRow(this.items, num + ".", " Nickname", "9999", {
         x: 0,
         y: 100. * counter
       });
       counter++;
     }
-    new rankingRow.RankingRow(this.items, 100, " Volker", "120", {
+    new rankingRow.RankingRow(this.items, 100 + ".", " Volker", "120", {
       x: 0,
       y: 100. * counter
     });
@@ -1337,7 +1558,7 @@ exports.RankingList = RankingList = (function(superClass) {
       y: 5,
       width: this.width,
       height: 5,
-      backgroundColor: "rgb(129,129,129)"
+      backgroundColor: "rgb(0,0,0)"
     });
     ownRankLayer.addSubLayer(line1);
     line2 = new Layer({
@@ -1345,7 +1566,7 @@ exports.RankingList = RankingList = (function(superClass) {
       y: 15,
       width: this.width,
       height: 5,
-      backgroundColor: "rgb(129,129,129)"
+      backgroundColor: "rgb(0,0,0)"
     });
     ownRankLayer.addSubLayer(line2);
     rankLayer = new textLayer({
@@ -1354,7 +1575,7 @@ exports.RankingList = RankingList = (function(superClass) {
       width: 80,
       height: 150,
       text: "100",
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "left"
@@ -1366,7 +1587,7 @@ exports.RankingList = RankingList = (function(superClass) {
       width: this.width - 140 - 100,
       height: 150,
       text: "Volker",
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "center"
@@ -1378,7 +1599,7 @@ exports.RankingList = RankingList = (function(superClass) {
       width: 140,
       height: 150,
       text: "120",
-      color: "rgb(129,129,129)",
+      color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
       textAlign: "right"
@@ -1396,7 +1617,7 @@ exports.RankingList = RankingList = (function(superClass) {
 })(Layer);
 
 
-},{"RankingRow":3,"TextLayer":4}],10:[function(require,module,exports){
+},{"RankingRow":3,"TextLayer":4}],11:[function(require,module,exports){
 var Tabbar,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1573,24 +1794,17 @@ exports.Tabbar = Tabbar = (function(superClass) {
         return _this.showProfile();
       };
     })(this));
-    this.settingsLayer.on(Events.Click, (function(_this) {
+    return this.settingsLayer.on(Events.Click, (function(_this) {
       return function() {
         _this.resetViews();
         _this.settingView.x = 0;
         return _this.showSettings();
       };
     })(this));
-    return this.backArrow.on(Events.Click, (function(_this) {
-      return function() {
-        _this.resetViews();
-        _this.pageComponent.x = 0;
-        _this.showRadar();
-        return _this.pageComponent.snapToPage(_this.radarView, false);
-      };
-    })(this));
   };
 
   Tabbar.prototype.resetViews = function() {
+    this.opacity = 1;
     this.pageComponent.x = 1500;
     this.settingView.x = 1500;
     return this.profileView.x = 1500;
@@ -1601,7 +1815,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
 })(Layer);
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a

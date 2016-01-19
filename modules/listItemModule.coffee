@@ -1,17 +1,38 @@
 textLayer = require('TextLayer')
 markerModule = require('MarkerModule')
+{EventEmitter} = require 'events'
+isHeld = false
 exports.ListItem = class ListItem extends Layer
   constructor: (@scrollPanel, @sightImage, @sightName, @distance, options = {}) ->
-    options.width = options.width ? Screen.width
-    options.height = options.height ? 200
+    options.width ?= Screen.width
+    options.height ?= 200
     options.opacity= 1
     options.backgroundColor =  "white"
     options.superLayer= @scrollPanel.content
     options.borderColor = "black"
     options.borderWidth = 1
+    @emitter = new EventEmitter
     super options
 
     this.initControls()
+    @on Events.TouchStart, () ->
+      isHeld = true
+
+      Utils.delay .5, () ->
+        if isHeld then triggerLongHold()
+
+    @on Events.TouchEnd, () ->
+      # this is a regular tap
+      if isHeld
+        #@emitter.emit 'selected'
+        isHeld = false
+      # this is the "long hold" release
+      else
+        @emitter.emit 'selected'
+
+
+  getEmitter: ()->
+    return @emitter
 
   initControls: ()->
     sightImageLayer = new Layer
@@ -59,5 +80,6 @@ exports.ListItem = class ListItem extends Layer
         if !@marker_1.isExplored() and not @marker_1.isNormal()
           @marker_1.setNormal()
 
-
-
+triggerLongHold = () ->
+# this is the long hold trigger
+  isHeld = false

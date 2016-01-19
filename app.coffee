@@ -16,7 +16,14 @@ rankingListModule = require('rankingListModule')
 cityModule = require('citySelectionModule')
 {EventEmitter} = require 'events'
 
-pageSize = width:750, height:Screen.height - 220
+@pageSize = width:750, height:Screen.height - 220
+@lastPage = null
+@pageComponent = new PageComponent
+  width: @pageSize.width
+  height: @pageSize.height
+  y:  100
+  x: 0
+  scrollVertical: false
 
 # Set background to white
 backgroundLayer = new BackgroundLayer
@@ -24,14 +31,14 @@ backgroundLayer = new BackgroundLayer
   image: "./images/background_main.png"
 
 # Create Menu
-topMenu = new Layer
+@topMenu = new Layer
   x: 0
   y: 0
   width: Screen.width
   height: 100
   backgroundColor: "transparent"
 
-backIcon = new Layer
+@backIcon = new Layer
   x: 25
   y: 25
   width: 50
@@ -39,9 +46,9 @@ backIcon = new Layer
   opacity:0
   image: "./images/icons/back.png"
 
-topMenu.addSubLayer(backIcon)
+@topMenu.addSubLayer(@backIcon)
 
-title = new textLayer
+@title = new textLayer
   x: 120
   y: 10
   width: 500
@@ -51,54 +58,67 @@ title = new textLayer
   textAlign: "center"
   fontSize: 50
   fontFamily: "Calibri"
-topMenu.addSubLayer(title)
+@topMenu.addSubLayer(@title)
 
 # ---- ranking list -----
-@rankingView = new rankingListModule.RankingList(x:0, width: pageSize.width, height:pageSize.height)
+@rankingView = new rankingListModule.RankingList(x:0, width: @pageSize.width, height:@pageSize.height)
+@pageComponent.addPage @rankingView
 
 # ---- Radar -----
-@radarView = new radarModule.Radar(x:pageSize.width,width: pageSize.width, height:pageSize.height)
+@radarView = new radarModule.Radar(x:@pageSize.width,width: @pageSize.width, height:@pageSize.height)
+@pageComponent.addPage @radarView
 
-@listView = new listModule.List(x:pageSize.width * 2, width: pageSize.width, height:pageSize.height)
+@listView = new listModule.List(this, x:@pageSize.width * 2, y:0, width: @pageSize.width, height:@pageSize.height)
+@pageComponent.addPage @listView
+
 
 @profileView = new Layer
   x: 2500
   y:100
-  width: pageSize.width
-  height: pageSize.height + 120
+  width: @pageSize.width
+  height: @pageSize.height + 120
   backgroundColor: "white"
 
 @settingView = new Layer
   x: 2500
   y:100
-  width: pageSize.width
+  width: @pageSize.width
   height: Screen.height + 120
   backgroundColor: "white"
 
-# PageComponent settings
-
-@pageComponent = new PageComponent
-  width: pageSize.width
-  height: pageSize.height
-  y:  100
-  x: 0
-  scrollVertical: false
-
-@pageComponent.addPage @rankingView
-@pageComponent.addPage @radarView
-@pageComponent.addPage @listView
 
 @pageComponent.snapToPage(@radarView, false)
+@lastPage = @radarView
+
+# Create Bottom Menu
+@tabBarLayer = new tabbarModule.Tabbar(this, @backIcon, @title)
+@listView.tabBarLayer = @tabBarLayer
 
 @pageComponent.on "change:currentPage", =>
   currentPageIndex = @pageComponent.horizontalPageIndex(@pageComponent.currentPage)
   if currentPageIndex == 0
-    tabBarLayer.showRanking()
+    @lastPage = @rankingView
+    @tabBarLayer.showRanking()
   else if currentPageIndex == 1
-    tabBarLayer.showRadar()
+    @lastPage = @radarView
+    @tabBarLayer.showRadar()
   else if currentPageIndex == 2
-    tabBarLayer.showList()
+    @lastPage = @listView
+    @tabBarLayer.showList()
 
 
-# Create Bottom Menu
-tabBarLayer = new tabbarModule.Tabbar(this, backIcon, title)
+
+
+@backIcon.on Events.Click, =>
+  @tabBarLayer.resetViews()
+  @pageComponent.x = 0
+  @tabBarLayer.x = 0
+  @pageComponent.snapToPage(@lastPage, false)
+
+  index = @pageComponent.horizontalPageIndex(@pageComponent.currentPage)
+  if index == 0
+    @tabBarLayer.showRanking()
+  else if index == 1
+    @tabBarLayer.showRadar()
+  else if index == 2
+    @tabBarLayer.showList()
