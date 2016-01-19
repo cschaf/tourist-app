@@ -66,7 +66,7 @@ exports.RankingList = class RankingList extends Layer
 
     tableHeaderLayer.addSubLayer(lineHead)
 
-    @rankRows = new ScrollComponent
+    @items = new ScrollComponent
       x:0
       y:115
       width: this.width
@@ -75,13 +75,13 @@ exports.RankingList = class RankingList extends Layer
       contentInset: {top:15,bottom: 32}
       superLayer: this
 
-    @rankRows.content.draggable.overdrag = false
+    @items.content.draggable.overdrag = false
     counter = 0
     for num in [1..99]
-      new rankingRow.RankingRow(@rankRows, num, " Nickname", "9999", x:0, y:(100 + 10) * counter)
+      new rankingRow.RankingRow(@items, num, " Nickname", "9999", x:0, y:(100 + 10) * counter)
       counter++
 
-    new rankingRow.RankingRow(@rankRows, 100, " Volker", "120", x:0, y:(100 + 10) * counter)
+    new rankingRow.RankingRow(@items, 100, " Volker", "120", x:0, y:(100 + 10) * counter)
     ownRankLayer = new Layer
       x:0
       y: this.height - 100
@@ -146,4 +146,4 @@ exports.RankingList = class RankingList extends Layer
     ownRankLayer.addSubLayer(scoreLayer)
 
     ownRankLayer.on Events.Click, =>
-      @rankRows.scrollY = 11000
+      @items.scrollY = 11000

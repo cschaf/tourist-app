@@ -1138,7 +1138,7 @@ exports.RankingList = RankingList = (function(superClass) {
       backgroundColor: "rgb(129,129,129)"
     });
     tableHeaderLayer.addSubLayer(lineHead);
-    this.rankRows = new ScrollComponent({
+    this.items = new ScrollComponent({
       x: 0,
       y: 115,
       width: this.width,
@@ -1150,16 +1150,16 @@ exports.RankingList = RankingList = (function(superClass) {
       },
       superLayer: this
     });
-    this.rankRows.content.draggable.overdrag = false;
+    this.items.content.draggable.overdrag = false;
     counter = 0;
     for (num = i = 1; i <= 99; num = ++i) {
-      new rankingRow.RankingRow(this.rankRows, num, " Nickname", "9999", {
+      new rankingRow.RankingRow(this.items, num, " Nickname", "9999", {
         x: 0,
         y: (100 + 10) * counter
       });
       counter++;
     }
-    new rankingRow.RankingRow(this.rankRows, 100, " Volker", "120", {
+    new rankingRow.RankingRow(this.items, 100, " Volker", "120", {
       x: 0,
       y: (100 + 10) * counter
     });
@@ -1225,7 +1225,7 @@ exports.RankingList = RankingList = (function(superClass) {
     ownRankLayer.addSubLayer(scoreLayer);
     return ownRankLayer.on(Events.Click, (function(_this) {
       return function() {
-        return _this.rankRows.scrollY = 11000;
+        return _this.items.scrollY = 11000;
       };
     })(this));
   };
