@@ -52,50 +52,29 @@ title = new textLayer
 topMenu.addSubLayer(title)
 
 # ---- ranking list -----
-@ranking = new rankingListModule.RankingList(x:0, y:0, width: pageSize.width, height:pageSize.height)
+@rankingView = new rankingListModule.RankingList(x:0, y:0, width: pageSize.width, height:pageSize.height)
 
 # ---- Radar -----
-@radar = new radarModule.Radar(x:pageSize.width, y:0,width: pageSize.width, height:pageSize.height)
+@radarView = new radarModule.Radar(x:pageSize.width, y:0,width: pageSize.width, height:pageSize.height)
 
-@list = new Layer
+@listView = new Layer
   x: pageSize.width * 2
   width: pageSize.width
   height: pageSize.height
 
-profile = new Layer
+@profileView = new Layer
   x: 2500
   y:100
   width: pageSize.width
   height: pageSize.height + 120
 
-setting = new Layer
+@settingView = new Layer
   x: 2500
   y:100
   width: pageSize.width
   height: Screen.height + 120
 
-
-# Create Bottom Menu
-tabBarLayer = new tabbarModule.Tabbar(pageComponent, profile, setting, backIcon, title)
-
-tabBarLayer.rankingLayer.on Events.Click, =>
-  pageComponent.snapToPage(@ranking, false)
-
-tabBarLayer.radarLayer.on Events.Click, =>
-  pageComponent.snapToPage(@radar, false)
-
-tabBarLayer.listLayer.on Events.Click, =>
-  pageComponent.snapToPage(@list, false)
-
-tabBarLayer.profileLayer.on Events.Click, =>
-  pageComponent.x = 1500
-  tabBarLayer.showProfile()
-
-tabBarLayer.settingsLayer.on Events.Click, =>
-  pageComponent.x = 1500
-  tabBarLayer.showSettings()
-
-# container settings
+# PageComponent settings
 
 pageComponent = new PageComponent
   width: pageSize.width
@@ -104,11 +83,11 @@ pageComponent = new PageComponent
   x: 0
   scrollVertical: false
 
-pageComponent.addPage @ranking
-pageComponent.addPage @radar
-pageComponent.addPage @list
+pageComponent.addPage @rankingView
+pageComponent.addPage @radarView
+pageComponent.addPage @listView
 
-pageComponent.snapToPage @radar, false
+pageComponent.snapToPage @radarView, false
 
 pageComponent.on "change:currentPage", ->
   currentPageIndex = pageComponent.horizontalPageIndex(pageComponent.currentPage)
@@ -116,14 +95,56 @@ pageComponent.on "change:currentPage", ->
     tabBarLayer.showRanking()
   else if currentPageIndex == 1
     tabBarLayer.showRadar()
-  else
+  else if currentPageIndex == 2
     tabBarLayer.showList()
 
 
-backIcon.on Events.Click, =>
-  pageComponent.x = 0
-  pageComponent.snapToPage @radar, false
-  tabBarLayer.showRadar()
+# Create Bottom Menu
+tabBarLayer = new tabbarModule.Tabbar(backIcon, title)
 
-@radar.getRadarLayer().on Events.Click, =>
-  @radar.hideAllMarkers()
+tabBarLayer.rankingLayer.on Events.Click, =>
+  pageComponent.x = 0
+  @settingView.x = 1500
+  @profileView.x = 1500
+  tabBarLayer.showRanking()
+  pageComponent.snapToPage(@rankingView, false)
+
+
+tabBarLayer.radarLayer.on Events.Click, =>
+  @settingView.x = 1500
+  @profileView.x = 1500
+  pageComponent.x = 0
+  tabBarLayer.showRadar()
+  pageComponent.snapToPage(@radarView, false)
+
+
+tabBarLayer.listLayer.on Events.Click, =>
+  @settingView.x = 1500
+  @profileView.x = 1500
+  pageComponent.x = 0
+  tabBarLayer.showList()
+  pageComponent.snapToPage(@listView, false)
+
+
+tabBarLayer.profileLayer.on Events.Click, =>
+  pageComponent.x = 1500
+  @settingView.x = 1500
+  @profileView.x = 0
+  tabBarLayer.showProfile()
+
+tabBarLayer.settingsLayer.on Events.Click, =>
+  pageComponent.x = 1500
+  @profileView.x = 1500
+  @settingView.x = 0
+  tabBarLayer.showSettings()
+
+
+backIcon.on Events.Click, =>
+  @profileView.x = 1500
+  @settingView.x = 1500
+  pageComponent.x = 0
+  tabBarLayer.showRadar()
+  pageComponent.snapToPage(@radarView, false)
+
+@radarView.getRadarLayer().on Events.Click, =>
+  @radarView.hideAllMarkers()
