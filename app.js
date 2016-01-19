@@ -127,7 +127,7 @@ this.pageComponent.addPage(this.radarView);
 
 this.pageComponent.addPage(this.listView);
 
-this.pageComponent.snapToPage(this.listView, false);
+this.pageComponent.snapToPage(this.radarView, false);
 
 this.pageComponent.on("change:currentPage", (function(_this) {
   return function() {

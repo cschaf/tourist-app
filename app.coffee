@@ -88,7 +88,7 @@ topMenu.addSubLayer(title)
 @pageComponent.addPage @radarView
 @pageComponent.addPage @listView
 
-@pageComponent.snapToPage(@listView, false)
+@pageComponent.snapToPage(@radarView, false)
 
 @pageComponent.on "change:currentPage", =>
   currentPageIndex = @pageComponent.horizontalPageIndex(@pageComponent.currentPage)
