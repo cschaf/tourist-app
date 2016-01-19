@@ -4,8 +4,8 @@ markerModule = require('MarkerModule')
 isHeld = false
 exports.ListItem = class ListItem extends Layer
   constructor: (@scrollPanel, @sightImage, @sightName, @distance, options = {}) ->
-    options.width = options.width ? Screen.width
-    options.height = options.height ? 200
+    options.width ?= Screen.width
+    options.height ?= 200
     options.opacity= 1
     options.backgroundColor =  "white"
     options.superLayer= @scrollPanel.content
@@ -24,11 +24,11 @@ exports.ListItem = class ListItem extends Layer
     @on Events.TouchEnd, () ->
       # this is a regular tap
       if isHeld
-        @emitter.emit 'selected'
+        #@emitter.emit 'selected'
         isHeld = false
       # this is the "long hold" release
       else
-        # load Detail View
+        @emitter.emit 'selected'
 
 
   getEmitter: ()->

@@ -2,8 +2,8 @@ textLayer = require('TextLayer')
 
 exports.DetailSight = class DetailSight extends Layer
   constructor: (@nameText, @imagePath, @commonText, @historyText, options = {}) ->
-    options.width = options.width ? Screen.width
-    options.height = options.height ? Screen.height - 100
+    options.width ?=  Screen.width
+    options.height ?= Screen.height - 100
     options.opacity = 1
     options.backgroundColor = "white"
     super options

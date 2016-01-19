@@ -142,13 +142,8 @@ exports.Tabbar = class Tabbar extends Layer
       @settingView.x = 0
       this.showSettings()
 
-    @backArrow.on Events.Click, =>
-      this.resetViews()
-      @pageComponent.x = 0
-      this.showRadar()
-      @pageComponent.snapToPage(@radarView, false)
-
   resetViews: () ->
+    this.opacity = 1
     @pageComponent.x = 1500
     @settingView.x = 1500
     @profileView.x = 1500
