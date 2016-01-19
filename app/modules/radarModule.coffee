@@ -199,7 +199,7 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_1)
       if @marker_1.isNormal()
         @marker_1.setSelected()
-        @target.text = @marker_1.getTargetName()
+#Hier Wert für Entfernung bis zum Ziel ändern
       else
         if !@marker_1.isExplored() and not @marker_1.isNormal()
           @marker_1.setNormal()
@@ -208,7 +208,7 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_2)
       if @marker_2.isNormal()
         @marker_2.setSelected()
-        @target.text = @marker_2.getTargetName()
+        #Hier Wert für Entfernung bis zum Ziel ändern
       else
         if !@marker_2.isExplored() and not @marker_2.isNormal()
           @marker_2.setNormal()
@@ -217,7 +217,10 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_3)
       if @marker_3.isNormal()
         @marker_3.setSelected()
-        @target.text  = @marker_3.getTargetName()
+        #Hier Wert für Entfernung bis zum Ziel ändern
       else
         if !@marker_3.isExplored() and not @marker_3.isNormal()
           @marker_3.setNormal()
+
+    @radarLayer.on Events.Click, =>
+      this.hideAllMarkers()

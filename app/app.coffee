@@ -76,21 +76,21 @@ topMenu.addSubLayer(title)
 
 # PageComponent settings
 
-pageComponent = new PageComponent
+@pageComponent = new PageComponent
   width: pageSize.width
   height: pageSize.height
   y:  100
   x: 0
   scrollVertical: false
 
-pageComponent.addPage @rankingView
-pageComponent.addPage @radarView
-pageComponent.addPage @listView
+@pageComponent.addPage @rankingView
+@pageComponent.addPage @radarView
+@pageComponent.addPage @listView
 
-pageComponent.snapToPage @radarView, false
+@pageComponent.snapToPage(@radarView, false)
 
-pageComponent.on "change:currentPage", ->
-  currentPageIndex = pageComponent.horizontalPageIndex(pageComponent.currentPage)
+@pageComponent.on "change:currentPage", =>
+  currentPageIndex = @pageComponent.horizontalPageIndex(@pageComponent.currentPage)
   if currentPageIndex == 0
     tabBarLayer.showRanking()
   else if currentPageIndex == 1
@@ -100,51 +100,4 @@ pageComponent.on "change:currentPage", ->
 
 
 # Create Bottom Menu
-tabBarLayer = new tabbarModule.Tabbar(backIcon, title)
-
-tabBarLayer.rankingLayer.on Events.Click, =>
-  pageComponent.x = 0
-  @settingView.x = 1500
-  @profileView.x = 1500
-  tabBarLayer.showRanking()
-  pageComponent.snapToPage(@rankingView, false)
-
-
-tabBarLayer.radarLayer.on Events.Click, =>
-  @settingView.x = 1500
-  @profileView.x = 1500
-  pageComponent.x = 0
-  tabBarLayer.showRadar()
-  pageComponent.snapToPage(@radarView, false)
-
-
-tabBarLayer.listLayer.on Events.Click, =>
-  @settingView.x = 1500
-  @profileView.x = 1500
-  pageComponent.x = 0
-  tabBarLayer.showList()
-  pageComponent.snapToPage(@listView, false)
-
-
-tabBarLayer.profileLayer.on Events.Click, =>
-  pageComponent.x = 1500
-  @settingView.x = 1500
-  @profileView.x = 0
-  tabBarLayer.showProfile()
-
-tabBarLayer.settingsLayer.on Events.Click, =>
-  pageComponent.x = 1500
-  @profileView.x = 1500
-  @settingView.x = 0
-  tabBarLayer.showSettings()
-
-
-backIcon.on Events.Click, =>
-  @profileView.x = 1500
-  @settingView.x = 1500
-  pageComponent.x = 0
-  tabBarLayer.showRadar()
-  pageComponent.snapToPage(@radarView, false)
-
-@radarView.getRadarLayer().on Events.Click, =>
-  @radarView.hideAllMarkers()
+tabBarLayer = new tabbarModule.Tabbar(this, backIcon, title)
