@@ -12,9 +12,9 @@ exports.List = class List extends Layer
 
   initControls: ()->
     @btnExplored = new Layer
-      x: 0
+      x: -1
       y: 0
-      width: this.width / 2
+      width: this.width / 2 + 1
       height: 100
       backgroundColor: "white"
       borderColor: "black"
@@ -34,7 +34,7 @@ exports.List = class List extends Layer
     @btnUnexplored = new Layer
       x: this.width / 2
       y: 0
-      width: this.width / 2
+      width: (this.width / 2) + 3
       height: 100
       backgroundColor: "white"
       borderColor: "black"
