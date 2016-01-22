@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var EventEmitter, backgroundLayer, cityModule, citySelectionModule, listModule, markerModule, radarModule, rankingListModule, tabbarModule, textLayer;
+var EventEmitter, backgroundLayer, listModule, markerModule, radarModule, rankingListModule, tabbarModule, textLayer;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -18,8 +18,6 @@ if (!Framer.Device) {
   Framer.Device.setupContext();
 }
 
-citySelectionModule = require("citySelectionModule");
-
 textLayer = require('TextLayer');
 
 tabbarModule = require("tabbarModule");
@@ -31,8 +29,6 @@ listModule = require("listModule");
 markerModule = require('MarkerModule');
 
 rankingListModule = require('rankingListModule');
-
-cityModule = require('citySelectionModule');
 
 EventEmitter = require('events').EventEmitter;
 
@@ -174,7 +170,7 @@ this.backIcon.on(Events.Click, (function(_this) {
 })(this));
 
 
-},{"MarkerModule":2,"TextLayer":4,"citySelectionModule":5,"events":12,"listModule":8,"radarModule":9,"rankingListModule":10,"tabbarModule":11}],2:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":11,"listModule":7,"radarModule":8,"rankingListModule":9,"tabbarModule":10}],2:[function(require,module,exports){
 var EventEmitter, Marker, isHeld, textLayer, triggerLongHold,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -341,7 +337,7 @@ triggerLongHold = function() {
 };
 
 
-},{"TextLayer":4,"events":12}],3:[function(require,module,exports){
+},{"TextLayer":4,"events":11}],3:[function(require,module,exports){
 var RankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -676,118 +672,6 @@ module.exports = (function(superClass) {
 
 
 },{}],5:[function(require,module,exports){
-var CitySelection,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-exports.CitySelection = CitySelection = (function(superClass) {
-  extend(CitySelection, superClass);
-
-  function CitySelection(options) {
-    if (options == null) {
-      options = {};
-    }
-    options.width = Screen.width;
-    options.height = Screen.height - 220;
-    options.opacity = 1;
-    options.backgroundColor = "#ffffff";
-    CitySelection.__super__.constructor.call(this, options);
-    this.initControls();
-  }
-
-  CitySelection.prototype.initControls = function() {
-    var b, bLayer, cities, hb, hbLayer, hh, hhLayer, m, mLayer;
-    cities = new ScrollComponent({
-      width: this.width,
-      height: this.height,
-      scrollHorizontal: false,
-      contentInset: {
-        top: 32,
-        bottom: 32
-      },
-      superLayer: this
-    });
-    cities.content.draggable.overdrag = false;
-    hbLayer = new Layer({
-      backgroundColor: "#fff",
-      width: cities.width - 48,
-      height: 400,
-      x: 24,
-      y: (400 + 10) * 0,
-      borderRadius: 6,
-      superLayer: cities.content,
-      scale: 1
-    });
-    hbLayer.style.boxShadow = "0 1px 6px rgba(0,0,0,0.2)";
-    hb = new Layer({
-      image: "./app/images/bremen.png",
-      superLayer: hbLayer,
-      width: cities.width,
-      height: 400
-    });
-    hb.center();
-    hhLayer = new Layer({
-      backgroundColor: "#fff",
-      width: cities.width - 48,
-      height: 400,
-      x: 24,
-      y: (400 + 10) * 1,
-      borderRadius: 6,
-      superLayer: cities.content,
-      scale: 1
-    });
-    hhLayer.style.boxShadow = "0 1px 6px rgba(0,0,0,0.2)";
-    hh = new Layer({
-      image: "./app/images/hamburg.png",
-      superLayer: hhLayer,
-      width: cities.width,
-      height: 400
-    });
-    hh.center();
-    mLayer = new Layer({
-      backgroundColor: "#fff",
-      width: cities.width - 48,
-      height: 400,
-      x: 24,
-      y: (400 + 10) * 2,
-      borderRadius: 6,
-      superLayer: cities.content,
-      scale: 1
-    });
-    mLayer.style.boxShadow = "0 1px 6px rgba(0,0,0,0.2)";
-    m = new Layer({
-      image: "./app/images/muenchen.png",
-      superLayer: mLayer,
-      width: cities.width,
-      height: 400
-    });
-    m.center();
-    bLayer = new Layer({
-      backgroundColor: "#fff",
-      width: cities.width - 48,
-      height: 400,
-      x: 24,
-      y: (400 + 10) * 3,
-      borderRadius: 6,
-      superLayer: cities.content,
-      scale: 1
-    });
-    bLayer.style.boxShadow = "0 1px 6px rgba(0,0,0,0.2)";
-    b = new Layer({
-      image: "./app/images/berlin.png",
-      superLayer: bLayer,
-      width: cities.width,
-      height: 400
-    });
-    return b.center();
-  };
-
-  return CitySelection;
-
-})(Layer);
-
-
-},{}],6:[function(require,module,exports){
 var DetailSight, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -880,7 +764,7 @@ exports.DetailSight = DetailSight = (function(superClass) {
 })(Layer);
 
 
-},{"TextLayer":4}],7:[function(require,module,exports){
+},{"TextLayer":4}],6:[function(require,module,exports){
 var EventEmitter, ListItem, isHeld, markerModule, textLayer, triggerLongHold,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1005,7 +889,7 @@ triggerLongHold = function() {
 };
 
 
-},{"MarkerModule":2,"TextLayer":4,"events":12}],8:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":11}],7:[function(require,module,exports){
 var List, detailSightModule, listItemModule, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1170,7 +1054,7 @@ exports.List = List = (function(superClass) {
 })(Layer);
 
 
-},{"TextLayer":4,"detailSightModule":6,"listItemModule":7}],9:[function(require,module,exports){
+},{"TextLayer":4,"detailSightModule":5,"listItemModule":6}],8:[function(require,module,exports){
 var EventEmitter, Radar, markerModule, textLayer,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1199,6 +1083,7 @@ exports.Radar = Radar = (function(superClass) {
     this.title = "Radar";
     this.currentSelection = null;
     this.markers = [];
+    this.sliderValue = 1;
     Radar.__super__.constructor.call(this, options);
     this.initControls();
     this.bindEvents();
@@ -1214,10 +1099,51 @@ exports.Radar = Radar = (function(superClass) {
       backgroundColor: this.myBackgroundColor,
       superLayer: this
     });
-    this.radarLayer.html = "<div class='radar'>></div>";
+    this.radarLayer.html = "<div class='radar'></div>";
+    this.swing = new Layer({
+      x: this.radarLayer.width - 375,
+      y: 0,
+      width: 354,
+      height: 349,
+      originX: 0,
+      originY: 1,
+      image: "./images/swing_radar.png",
+      superLayer: this.radarLayer
+    });
+    this.swingAnimation = new Animation({
+      layer: this.swing,
+      properties: {
+        rotation: -360,
+        originX: 0,
+        originY: 1
+      },
+      time: 3.5,
+      curve: "linear"
+    });
+    this.swingAnimation.start();
+    this.swingAnimation.on(Events.AnimationEnd, (function(_this) {
+      return function() {
+        _this.swing.rotation = 0;
+        return _this.swingAnimation.start();
+      };
+    })(this));
     this.marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", {
       x: 400,
       y: 200
+    });
+    this.zoomOut = new Animation({
+      layer: this.marker_1,
+      properties: {
+        x: this.marker_1.x + (Utils.round(this.sliderValue, 0) * 16.8),
+        y: this.marker_1.y - (Utils.round(this.sliderValue, 0) * 16.8)
+      }
+    });
+    this.zoomIn = new Animation({
+      layer: this.marker_1,
+      properties: {
+        x: this.marker_1.x - (this.sliderValue * 16.8),
+        y: this.marker_1.y + (this.sliderValue * 16.8)
+      }
     });
     this.marker_2 = new markerModule.Marker("Roland", "./images/roland.png", {
       x: 140,
@@ -1288,17 +1214,18 @@ exports.Radar = Radar = (function(superClass) {
       knobSize: 50,
       min: 0,
       max: 10,
-      value: 5,
+      value: 1,
       height: 8,
       width: 453,
       x: 145,
       y: 30
     });
+    this.sliderValue = 1;
     sliderLayer.addSubLayer(this.sliderA);
-    this.sliderA.fill.backgroundColor = "green";
+    this.sliderA.fill.backgroundColor = "white";
     this.sliderA.backgroundColor = "rgba(255,255,255,0.5)";
     this.sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)";
-    this.sliderA.knob.backgroundColor = "green";
+    this.sliderA.knob.backgroundColor = "white";
     this.sliderA.knob.scale = 0.8;
     this.sliderA.knob.on(Events.DragStart, function() {
       return this.animate({
@@ -1383,6 +1310,28 @@ exports.Radar = Radar = (function(superClass) {
   };
 
   Radar.prototype.bindEvents = function() {
+    this.sliderA.on("change:value", (function(_this) {
+      return function() {
+        var roundedValue;
+        roundedValue = Utils.round(_this.sliderA.value, 0);
+        if (roundedValue > _this.sliderValue && roundedValue <= 10 && roundedValue !== _this.sliderValue) {
+          _this.marker_1.x = _this.marker_1.x + 18.5;
+          _this.marker_1.y = _this.marker_1.y - 18.5;
+          _this.marker_2.x = _this.marker_2.x - 8;
+          _this.marker_2.y = _this.marker_2.y - 8;
+          _this.marker_3.x = _this.marker_3.x + 14;
+          _this.marker_3.y = _this.marker_3.y + 14;
+        } else if (roundedValue < _this.sliderValue && roundedValue >= 0 && roundedValue !== _this.sliderValue) {
+          _this.marker_1.x = _this.marker_1.x - 18.5;
+          _this.marker_1.y = _this.marker_1.y + 18.5;
+          _this.marker_2.x = _this.marker_2.x + 8;
+          _this.marker_2.y = _this.marker_2.y + 8;
+          _this.marker_3.x = _this.marker_3.x - 14;
+          _this.marker_3.y = _this.marker_3.y - 14;
+        }
+        return _this.sliderValue = roundedValue;
+      };
+    })(this));
     this.plusIcon.on(Events.Click, (function(_this) {
       return function() {
         return _this.sliderA.value = _this.sliderA.value + 1;
@@ -1441,7 +1390,7 @@ exports.Radar = Radar = (function(superClass) {
 })(Layer);
 
 
-},{"MarkerModule":2,"TextLayer":4,"events":12}],10:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":11}],9:[function(require,module,exports){
 var RankingList, rankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1617,7 +1566,7 @@ exports.RankingList = RankingList = (function(superClass) {
 })(Layer);
 
 
-},{"RankingRow":3,"TextLayer":4}],11:[function(require,module,exports){
+},{"RankingRow":3,"TextLayer":4}],10:[function(require,module,exports){
 var Tabbar,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1634,15 +1583,15 @@ exports.Tabbar = Tabbar = (function(superClass) {
       options = {};
     }
     this.pos1 = {
-      x: 17,
+      x: 35,
       y: 105
     };
     this.pos2 = {
-      x: 178,
+      x: 176,
       y: 105
     };
     this.pos3 = {
-      x: 332,
+      x: 320,
       y: 105
     };
     this.pos4 = {
@@ -1754,9 +1703,9 @@ exports.Tabbar = Tabbar = (function(superClass) {
     return this.marker = new Layer({
       x: this.pos2.x,
       y: this.pos2.y,
-      width: 130,
+      width: 100,
       height: 10,
-      backgroundColor: "green",
+      backgroundColor: "white",
       opacity: 1,
       superLayer: this
     });
@@ -1815,7 +1764,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
 })(Layer);
 
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a

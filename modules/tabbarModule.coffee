@@ -1,8 +1,8 @@
 exports.Tabbar = class Tabbar extends Layer
   constructor: (@mainContext, @backArrow,@title, options = {}) ->
-    @pos1 = {x:17, y:105}
-    @pos2 = {x:178, y:105}
-    @pos3 = {x:332, y:105}
+    @pos1 = {x:35, y:105}
+    @pos2 = {x:176, y:105}
+    @pos3 = {x:320, y:105}
     @pos4 = {x:475, y:105}
     @pos5 = {x:610, y:105}
 
@@ -104,9 +104,9 @@ exports.Tabbar = class Tabbar extends Layer
     @marker = new Layer
       x: this.pos2.x
       y: this.pos2.y
-      width: 130
+      width: 100
       height: 10
-      backgroundColor: "green"
+      backgroundColor: "white"
       opacity: 1
       superLayer : this
 

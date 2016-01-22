@@ -13,6 +13,7 @@ exports.Radar = class Radar extends Layer
     @title = "Radar"
     @currentSelection = null
     @markers = []
+    @sliderValue = 1
 
     super options
 
@@ -30,10 +31,50 @@ exports.Radar = class Radar extends Layer
       backgroundColor: @myBackgroundColor
       superLayer : this
 
-    @radarLayer.html = "<div class='radar'>></div>"
+    @radarLayer.html = "<div class='radar'></div>"
+
+    @swing = new Layer
+      x:@radarLayer.width - 375
+      y:0
+      width:354
+      height:349
+      originX:0
+      originY:1
+      image: "./images/swing_radar.png"
+      superLayer:@radarLayer
+
+    @swingAnimation = new Animation
+      layer: @swing
+      properties:
+        rotation: -360
+        originX:0
+        originY:1
+      time: 3.5
+      curve: "linear"
+
+    # Start animation
+    @swingAnimation.start()
+    # Loop animation
+    @swingAnimation.on Events.AnimationEnd, =>
+    # Reset rotation before looping
+      @swing.rotation = 0
+      @swingAnimation.start()
 
 #    #marker
     @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
+
+    @zoomOut = new Animation
+      layer: @marker_1
+      properties:
+        x: @marker_1.x + (Utils.round(@sliderValue, 0)  * 16.8)
+        y: @marker_1.y - (Utils.round(@sliderValue, 0) * 16.8)
+
+    @zoomIn = new Animation
+      layer: @marker_1
+      properties:
+        x: @marker_1.x - (@sliderValue  * 16.8)
+        y: @marker_1.y + (@sliderValue * 16.8)
+
     @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:140, y:170)
     @marker_1.setSelected()
     @marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", x:400, y:490)
@@ -102,20 +143,22 @@ exports.Radar = class Radar extends Layer
       knobSize: 50
       min: 0
       max: 10
-      value: 5
+      value: 1
       height: 8
       width:453
       x:145
       y:30
 
+    @sliderValue = 1
+
     sliderLayer.addSubLayer(@sliderA );
 
     # Customize the slider
-    @sliderA.fill.backgroundColor = "green"
+    @sliderA.fill.backgroundColor = "white"
     @sliderA.backgroundColor = "rgba(255,255,255,0.5)"
     @sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)"
 
-    @sliderA.knob.backgroundColor = "green"
+    @sliderA.knob.backgroundColor = "white"
 
     # We initially downscale the knob
     # This way, the knob never gets blurry
@@ -188,7 +231,34 @@ exports.Radar = class Radar extends Layer
       if myMarker != marker and !marker.isExplored()
         marker.setNormal()
 
+
   bindEvents: ->
+
+    @sliderA.on "change:value", =>
+      roundedValue =  Utils.round(@sliderA.value, 0)
+
+      if roundedValue > @sliderValue and roundedValue <= 10 and roundedValue != @sliderValue
+        @marker_1.x = @marker_1.x + 18.5
+        @marker_1.y = @marker_1.y - 18.5
+
+        @marker_2.x = @marker_2.x - 8
+        @marker_2.y = @marker_2.y - 8
+
+        @marker_3.x = @marker_3.x + 14
+        @marker_3.y = @marker_3.y + 14
+
+      else if roundedValue < @sliderValue and roundedValue >= 0 and roundedValue != @sliderValue
+        @marker_1.x = @marker_1.x - 18.5
+        @marker_1.y = @marker_1.y + 18.5
+
+        @marker_2.x = @marker_2.x + 8
+        @marker_2.y = @marker_2.y + 8
+
+        @marker_3.x = @marker_3.x - 14
+        @marker_3.y = @marker_3.y - 14
+
+      @sliderValue = roundedValue
+
     @plusIcon.on Events.Click, =>
       @sliderA.value  = @sliderA.value + 1
 
@@ -224,3 +294,4 @@ exports.Radar = class Radar extends Layer
 
     @radarLayer.on Events.Click, =>
       this.hideAllMarkers()
+
