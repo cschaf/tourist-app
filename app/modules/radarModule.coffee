@@ -13,6 +13,7 @@ exports.Radar = class Radar extends Layer
     @title = "Radar"
     @currentSelection = null
     @markers = []
+    @sliderValue = 1
 
     super options
 
@@ -30,10 +31,23 @@ exports.Radar = class Radar extends Layer
       backgroundColor: @myBackgroundColor
       superLayer : this
 
-    @radarLayer.html = "<div class='radar'>></div>"
+    @radarLayer.html = "<div class='radar'></div>"
 
 #    #marker
     @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
+
+    @zoomOut = new Animation
+      layer: @marker_1
+      properties:
+        x: @marker_1.x + (Utils.round(@sliderValue, 0)  * 16.8)
+        y: @marker_1.y - (Utils.round(@sliderValue, 0) * 16.8)
+
+    @zoomIn = new Animation
+      layer: @marker_1
+      properties:
+        x: @marker_1.x - (@sliderValue  * 16.8)
+        y: @marker_1.y + (@sliderValue * 16.8)
+
     @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:140, y:170)
     @marker_1.setSelected()
     @marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", x:400, y:490)
@@ -102,11 +116,13 @@ exports.Radar = class Radar extends Layer
       knobSize: 50
       min: 0
       max: 10
-      value: 5
+      value: 1
       height: 8
       width:453
       x:145
       y:30
+
+    @sliderValue = 1
 
     sliderLayer.addSubLayer(@sliderA );
 
@@ -188,7 +204,31 @@ exports.Radar = class Radar extends Layer
       if myMarker != marker and !marker.isExplored()
         marker.setNormal()
 
+
   bindEvents: ->
+
+    @sliderA.on "change:value", =>
+      @zoomOut.stop()
+      @zoomIn.stop()
+
+      @zoomOut = new Animation
+        layer: @marker_1
+        properties:
+          x: @marker_1.x + (@sliderValue  * 16.8)
+          y: @marker_1.y - (@sliderValue * 16.8)
+
+      @zoomIn = new Animation
+        layer: @marker_1
+        properties:
+          x: @marker_1.x - (@sliderValue  * 16.8)
+          y: @marker_1.y + (@sliderValue * 16.8)
+
+      if @sliderA.value < @sliderValue
+        @zoomIn.start()
+      else
+        @zoomOut.start()
+      @sliderValue = @sliderA.value
+
     @plusIcon.on Events.Click, =>
       @sliderA.value  = @sliderA.value + 1
 
@@ -224,3 +264,4 @@ exports.Radar = class Radar extends Layer
 
     @radarLayer.on Events.Click, =>
       this.hideAllMarkers()
+
