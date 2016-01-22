@@ -4,16 +4,14 @@ if not Framer.Device
 	Framer.Defaults.DeviceComponent = {"deviceScale":-1,"deviceType":"iphone-6-silver","contentScale":1,"orientation":0};
 	Framer.Device = new Framer.DeviceView();
 	Framer.Device.setupContext();
-	# End from framer.generated.js 
+	# End from framer.generated.js
 
-citySelectionModule = require("citySelectionModule")
 textLayer = require('TextLayer')
 tabbarModule = require("tabbarModule")
 radarModule = require("radarModule")
 listModule = require("listModule")
 markerModule = require('MarkerModule')
 rankingListModule = require('rankingListModule')
-cityModule = require('citySelectionModule')
 {EventEmitter} = require 'events'
 
 @pageSize = width:750, height:Screen.height - 220

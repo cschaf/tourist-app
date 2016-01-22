@@ -111,11 +111,11 @@ exports.Radar = class Radar extends Layer
     sliderLayer.addSubLayer(@sliderA );
 
     # Customize the slider
-    @sliderA.fill.backgroundColor = "green"
+    @sliderA.fill.backgroundColor = "white"
     @sliderA.backgroundColor = "rgba(255,255,255,0.5)"
     @sliderA.knob.style.boxShadow = "0 0 0 1px rgba(0,0,0,0.1)"
 
-    @sliderA.knob.backgroundColor = "green"
+    @sliderA.knob.backgroundColor = "white"
 
     # We initially downscale the knob
     # This way, the knob never gets blurry
