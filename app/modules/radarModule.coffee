@@ -208,26 +208,29 @@ exports.Radar = class Radar extends Layer
   bindEvents: ->
 
     @sliderA.on "change:value", =>
-      @zoomOut.stop()
-      @zoomIn.stop()
+      roundedValue =  Utils.round(@sliderA.value, 0)
 
-      @zoomOut = new Animation
-        layer: @marker_1
-        properties:
-          x: @marker_1.x + (@sliderValue  * 16.8)
-          y: @marker_1.y - (@sliderValue * 16.8)
+      if roundedValue > @sliderValue and roundedValue <= 10 and roundedValue != @sliderValue
+        @marker_1.x = @marker_1.x + 18.5
+        @marker_1.y = @marker_1.y - 18.5
 
-      @zoomIn = new Animation
-        layer: @marker_1
-        properties:
-          x: @marker_1.x - (@sliderValue  * 16.8)
-          y: @marker_1.y + (@sliderValue * 16.8)
+        @marker_2.x = @marker_2.x - 8
+        @marker_2.y = @marker_2.y - 8
 
-      if @sliderA.value < @sliderValue
-        @zoomIn.start()
-      else
-        @zoomOut.start()
-      @sliderValue = @sliderA.value
+        @marker_3.x = @marker_3.x + 14
+        @marker_3.y = @marker_3.y + 14
+
+      else if roundedValue < @sliderValue and roundedValue >= 0 and roundedValue != @sliderValue
+        @marker_1.x = @marker_1.x - 18.5
+        @marker_1.y = @marker_1.y + 18.5
+
+        @marker_2.x = @marker_2.x + 8
+        @marker_2.y = @marker_2.y + 8
+
+        @marker_3.x = @marker_3.x - 14
+        @marker_3.y = @marker_3.y - 14
+
+      @sliderValue = roundedValue
 
     @plusIcon.on Events.Click, =>
       @sliderA.value  = @sliderA.value + 1
