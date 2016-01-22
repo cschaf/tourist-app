@@ -33,6 +33,33 @@ exports.Radar = class Radar extends Layer
 
     @radarLayer.html = "<div class='radar'></div>"
 
+    @swing = new Layer
+      x:@radarLayer.width - 375
+      y:0
+      width:354
+      height:349
+      originX:0
+      originY:1
+      image: "./images/swing_radar.png"
+      superLayer:@radarLayer
+
+    @swingAnimation = new Animation
+      layer: @swing
+      properties:
+        rotation: -360
+        originX:0
+        originY:1
+      time: 3.5
+      curve: "linear"
+
+    # Start animation
+    @swingAnimation.start()
+    # Loop animation
+    @swingAnimation.on Events.AnimationEnd, =>
+    # Reset rotation before looping
+      @swing.rotation = 0
+      @swingAnimation.start()
+
 #    #marker
     @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
 
