@@ -39,8 +39,8 @@ exports.Marker = class Marker extends Layer
 
   initControls: ()->
     @popupLayer = new Layer
-      x:@.x-138
-      y:@.y+55
+      x:@.x-126
+      y:@.y+35
       width:350
       height:350
       image: @popupBackground
@@ -90,7 +90,7 @@ exports.Marker = class Marker extends Layer
     @_isExplored = false
     @_isSelected = false
     @_isNormal = true
-    this.image =  "./images/icons/marker-einfach.png"
+    this.image =  "./images/icons/_marker-einfach.png"
   hidePopup: ()->
     @popupLayer.opacity = 0
 

@@ -63,17 +63,9 @@ exports.Radar = class Radar extends Layer
 #    #marker
     @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
 
-    @zoomOut = new Animation
-      layer: @marker_1
-      properties:
-        x: @marker_1.x + (Utils.round(@sliderValue, 0)  * 16.8)
-        y: @marker_1.y - (Utils.round(@sliderValue, 0) * 16.8)
+    @zoomOut = null
 
-    @zoomIn = new Animation
-      layer: @marker_1
-      properties:
-        x: @marker_1.x - (@sliderValue  * 16.8)
-        y: @marker_1.y + (@sliderValue * 16.8)
+    @zoomIn = null
 
     @marker_1Animation_1 = new Animation
       layer: @marker_1
