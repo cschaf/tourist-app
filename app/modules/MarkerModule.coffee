@@ -13,6 +13,10 @@ exports.Marker = class Marker extends Layer
     @enablePopup = true
     @popupBackground = "./images/popup-ohne-bild.png"
     @emitter = new EventEmitter
+
+    @isMoveToMeSlow = false
+    @isMoveToMeFast = false
+
     super options
 
     this.initControls()
