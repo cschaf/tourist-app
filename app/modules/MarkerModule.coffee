@@ -16,6 +16,7 @@ exports.Marker = class Marker extends Layer
     super options
 
     this.initControls()
+
     @on Events.TouchStart, () ->
       isHeld = true
 
@@ -34,13 +35,17 @@ exports.Marker = class Marker extends Layer
           @popupLayer.states.switch("on")
           Utils.delay 4, =>  @popupLayer.states.switch("off")
 
+    @on "change:x", () ->
+      @popupLayer.x = @x - 126
+      @popupLayer.y = @y + 35
+
   getEmitter: ()->
     return @emitter
 
   initControls: ()->
     @popupLayer = new Layer
-      x:@.x-126
-      y:@.y+35
+      x:this.x - 126
+      y:this.y + 35
       width:350
       height:350
       image: @popupBackground
