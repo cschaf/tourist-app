@@ -7,11 +7,13 @@
 
 body {
     background: #fff;
-    font: 28px/1em "Helvetica";
+    font: 28px/1em "Calibri";
     color: #FFF;
     -webkit-tap-highlight-color: rgba(0,0,0,0)
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    cursor: url('../images/cursor.png') 39 39, auto;
 }
-
 a {
     color: #bfbfbf;
 }

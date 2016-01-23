@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var EventEmitter, backgroundLayer, listModule, markerModule, radarModule, rankingListModule, tabbarModule, textLayer;
+var EventEmitter, backgroundLayer, cursor, listModule, markerModule, radarModule, rankingListModule, tabbarModule, textLayer;
 
 if (!Framer.Device) {
   Framer.Defaults.DeviceView = {
@@ -17,6 +17,10 @@ if (!Framer.Device) {
   Framer.Device = new Framer.DeviceView();
   Framer.Device.setupContext();
 }
+
+cursor = require("cursor");
+
+cursor.addPressedState();
 
 textLayer = require('TextLayer');
 
@@ -76,7 +80,7 @@ this.title = new textLayer({
   y: 10,
   width: 500,
   height: 100,
-  text: "Tourist-App",
+  text: "Bremen",
   color: "rgb(255,255,255)",
   textAlign: "center",
   fontSize: 50,
@@ -170,7 +174,7 @@ this.backIcon.on(Events.Click, (function(_this) {
 })(this));
 
 
-},{"MarkerModule":2,"TextLayer":4,"events":11,"listModule":7,"radarModule":8,"rankingListModule":9,"tabbarModule":10}],2:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"cursor":5,"events":12,"listModule":8,"radarModule":9,"rankingListModule":10,"tabbarModule":11}],2:[function(require,module,exports){
 var EventEmitter, Marker, isHeld, textLayer, triggerLongHold,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -337,7 +341,7 @@ triggerLongHold = function() {
 };
 
 
-},{"TextLayer":4,"events":11}],3:[function(require,module,exports){
+},{"TextLayer":4,"events":12}],3:[function(require,module,exports){
 var RankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -672,6 +676,12 @@ module.exports = (function(superClass) {
 
 
 },{}],5:[function(require,module,exports){
+exports.addPressedState = function() {
+  return document.styleSheets[0].insertRule("body:active{ cursor: url(data:image/png;base64,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) 39 39, auto;}", 2);
+};
+
+
+},{}],6:[function(require,module,exports){
 var DetailSight, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -764,7 +774,7 @@ exports.DetailSight = DetailSight = (function(superClass) {
 })(Layer);
 
 
-},{"TextLayer":4}],6:[function(require,module,exports){
+},{"TextLayer":4}],7:[function(require,module,exports){
 var EventEmitter, ListItem, isHeld, markerModule, textLayer, triggerLongHold,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -889,7 +899,7 @@ triggerLongHold = function() {
 };
 
 
-},{"MarkerModule":2,"TextLayer":4,"events":11}],7:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":12}],8:[function(require,module,exports){
 var List, detailSightModule, listItemModule, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1054,7 +1064,7 @@ exports.List = List = (function(superClass) {
 })(Layer);
 
 
-},{"TextLayer":4,"detailSightModule":5,"listItemModule":6}],8:[function(require,module,exports){
+},{"TextLayer":4,"detailSightModule":6,"listItemModule":7}],9:[function(require,module,exports){
 var EventEmitter, Radar, markerModule, textLayer,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1092,22 +1102,22 @@ exports.Radar = Radar = (function(superClass) {
   Radar.prototype.initControls = function() {
     var kmMax, kmMin, remainingDistanceLabel, remainingDistanceLayer, remainingDistanceValue, sliderLayer;
     this.radarLayer = new Layer({
-      x: 0,
+      x: 25,
       y: Screen.height - 1070,
-      height: 720,
-      width: Screen.width,
-      backgroundColor: this.myBackgroundColor,
-      superLayer: this
+      height: 700,
+      width: 700,
+      superLayer: this,
+      image: "./images/radar.png"
     });
-    this.radarLayer.html = "<div class='radar'></div>";
     this.swing = new Layer({
-      x: this.radarLayer.width - 375,
+      x: this.radarLayer.width - 350,
       y: 0,
       width: 354,
       height: 349,
       originX: 0,
       originY: 1,
       image: "./images/swing_radar.png",
+      opacity: 1,
       superLayer: this.radarLayer
     });
     this.swingAnimation = new Animation({
@@ -1145,6 +1155,30 @@ exports.Radar = Radar = (function(superClass) {
         y: this.marker_1.y + (this.sliderValue * 16.8)
       }
     });
+    this.marker_1Animation_1 = new Animation({
+      layer: this.marker_1,
+      path: Path.fromString("M424,249.5c0,0 0.707092,0.292892 0,1c-0.707092,0.707108 -0.292908,1.292892 -1,2c-0.707092,0.707108 -1,1 -1,2c0,1 -0.292908,1.292892 -1,2c-0.707092,0.707092 0,2 0,3c0,1 -0.458801,1.693451 -1,3c-0.38269,0.923889 -1,1 -1,2c0,1 0,2 0,3c0,1 -0.292908,1.292908 -1,2c-0.707092,0.707092 0.707092,2.292908 0,3c-0.707092,0.707092 -1,1 -1,2c0,1 0.707092,2.292908 0,3c-0.707092,0.707092 -0.292908,1.292908 -1,2c-0.707092,0.707092 -1,1 -1,2c0,1 -0.458801,1.693451 -1,3c-0.38269,0.923889 -0.61731,2.076111 -1,3c-0.541199,1.306549 -1.486267,1.823761 -2,4c-0.229767,0.973236 -1,1 -1,2c0,1 -1.770233,2.026764 -2,3c-0.513733,2.176239 -0.292908,3.292908 -1,4c-0.707092,0.707092 -2,0 -2,1c0,1 -0.61731,1.076111 -1,2c-0.541199,1.306549 -1,2 -2,2c-1,0 -1.076111,0.61731 -2,1c-1.306549,0.541199 -2.076111,2.61731 -3,3c-1.306549,0.541199 -3.458801,1.693451 -4,3c-0.38269,0.923889 -1.292908,1.292908 -2,2c-0.707092,0.707092 -2,0 -3,1c-1,1 -2.076111,1.61731 -3,2c-1.306549,0.541199 -1.292908,1.292908 -2,2c-0.707092,0.707092 -2.076111,0.61731 -3,1c-1.306549,0.541199 -1.61731,1.076111 -2,2c-0.541199,1.306549 -1.292908,1.292908 -2,2c-0.707092,0.707092 -2.149353,0.474274 -3,1c-1.9021,1.175568 -1,3 -2,3c-1,0 -2,0 -2,1c0,1 -0.292908,1.292908 -1,2c-0.707092,0.707092 -2.292908,0.292908 -3,1c-0.707092,0.707092 -0.292908,1.292908 -1,2c-0.707092,0.707092 -0.61731,1.076111 -1,2c-0.541199,1.306549 -1,2 -2,2c-1,0 -1.292908,0.292908 -2,1c-0.707092,0.707092 -0.292908,1.292908 -1,2c-0.707092,0.707092 -0.292908,1.292908 -1,2c-0.707092,0.707092 -1.292908,0.292908 -2,1c-0.707092,0.707092 -2,0 -3,0c-1,0 -1,1 -2,1l-1,0l-1,0l0,1"),
+      curve: 'linear',
+      time: 3,
+      pathOptions: {
+        autoRotate: false
+      }
+    });
+    this.marker_1Animation_2 = new Animation({
+      layer: this.marker_1,
+      path: Path.fromString("M343,344.5c0,0 -0.693451,-0.458801 -2,-1c-0.923889,-0.38269 -3.159271,-1.610657 -6,-3c-3.238922,-1.584106 -6.593994,-4.513 -9,-6c-2.690002,-1.662506 -4.152252,-2.234619 -6,-3c-1.306549,-0.541199 -2,-2 -3,-3c-1,-1 -2.486267,-0.823761 -3,-3c-0.229767,-0.973236 -0.692535,-3.186005 -2,-5c-0.826904,-1.147278 -1.458801,-2.693451 -2,-4c-0.38269,-0.923889 0,-4 0,-6c0,-2 0,-4 0,-5c0,-2 0,-3 0,-5c0,-2 -0.68927,-3.080261 0,-6c0.513733,-2.176239 0.61731,-3.076111 1,-4c1.082397,-2.613129 1.948547,-4.298706 3,-6c1.175568,-1.9021 2.173096,-2.852722 3,-4c1.307465,-1.813995 2.458801,-2.693451 3,-4c0.38269,-0.923889 0.61731,-2.076111 1,-3c1.082397,-2.613129 2.61731,-3.076111 3,-4c1.082397,-2.613129 2.852722,-4.173096 4,-5c1.813995,-1.307465 2.61731,-2.076111 3,-3c0.541199,-1.306549 1.693451,-1.458801 3,-2c0.923889,-0.38269 0.823761,-1.486267 3,-2c0.973236,-0.229767 2.053497,-0.540497 4,-1c2.176239,-0.513748 3.076111,-0.61731 4,-1c1.306549,-0.541199 4.025818,-1.679642 6,-2c3.121429,-0.506546 5.823761,-2.486252 8,-3c1.946503,-0.459503 3,0 5,0c2,0 2.823761,-0.486252 5,-1c1.946503,-0.459503 5,0 7,0c2,0 4,0 7,0c2,0 5,0 8,0c2,0 4,0 7,0c1,0 3,0 4,0c2,0 3,-1 4,-1c2,0 3,0 4,0c1,0 2,0 3,0l1,0"),
+      curve: 'linear',
+      time: 1,
+      pathOptions: {
+        autoRotate: false
+      }
+    });
+    this.marker_1Animation_1.on(Events.AnimationEnd, (function(_this) {
+      return function() {
+        return _this.marker_1Animation_2.start();
+      };
+    })(this));
+    this.marker_1Animation_1.start();
     this.marker_2 = new markerModule.Marker("Roland", "./images/roland.png", {
       x: 140,
       y: 170
@@ -1390,7 +1424,7 @@ exports.Radar = Radar = (function(superClass) {
 })(Layer);
 
 
-},{"MarkerModule":2,"TextLayer":4,"events":11}],9:[function(require,module,exports){
+},{"MarkerModule":2,"TextLayer":4,"events":12}],10:[function(require,module,exports){
 var RankingList, rankingRow, textLayer,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1566,7 +1600,7 @@ exports.RankingList = RankingList = (function(superClass) {
 })(Layer);
 
 
-},{"RankingRow":3,"TextLayer":4}],10:[function(require,module,exports){
+},{"RankingRow":3,"TextLayer":4}],11:[function(require,module,exports){
 var Tabbar,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -1764,7 +1798,7 @@ exports.Tabbar = Tabbar = (function(superClass) {
 })(Layer);
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a

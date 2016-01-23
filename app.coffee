@@ -5,6 +5,9 @@ if not Framer.Device
 	Framer.Device = new Framer.DeviceView();
 	Framer.Device.setupContext();
 	# End from framer.generated.js
+# Add a Pressed state by including the cursor module & call addPressedState() as shown below.
+cursor = require "cursor"
+cursor.addPressedState()
 
 textLayer = require('TextLayer')
 tabbarModule = require("tabbarModule")
@@ -51,7 +54,7 @@ backgroundLayer = new BackgroundLayer
   y: 10
   width: 500
   height: 100
-  text:"Tourist-App"
+  text:"Bremen"
   color: "rgb(255,255,255)"
   textAlign: "center"
   fontSize: 50
@@ -103,8 +106,6 @@ backgroundLayer = new BackgroundLayer
   else if currentPageIndex == 2
     @lastPage = @listView
     @tabBarLayer.showList()
-
-
 
 
 @backIcon.on Events.Click, =>
