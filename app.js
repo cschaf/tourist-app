@@ -240,6 +240,10 @@ exports.Marker = Marker = (function(superClass) {
         }
       }
     });
+    this.on("change:x", function() {
+      this.popupLayer.x = this.x - 126;
+      return this.popupLayer.y = this.y + 35;
+    });
   }
 
   Marker.prototype.getEmitter = function() {
