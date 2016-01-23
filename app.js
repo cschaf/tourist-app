@@ -1410,8 +1410,8 @@ exports.Radar = Radar = (function(superClass) {
       superLayer: this
     });
     this.exploredPopup = new Layer({
-      width: 393,
-      height: 82,
+      width: 700,
+      height: 260,
       image: "./images/ueberseemuseum-entdeckt-nachricht.png",
       superLayer: this.exploredPopupLayer
     });

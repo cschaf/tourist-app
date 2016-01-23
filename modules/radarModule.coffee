@@ -310,8 +310,9 @@ exports.Radar = class Radar extends Layer
       superLayer: this
 
     @exploredPopup = new Layer
-      width:393
-      height:82
+
+      width:700
+      height:260
       image: "./images/ueberseemuseum-entdeckt-nachricht.png"
       superLayer : @exploredPopupLayer
     @exploredPopup.center()
