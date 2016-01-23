@@ -68,7 +68,7 @@ exports.Radar = class Radar extends Layer
     @zoomIn = null
 
 #    #marker
-    @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
+    @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:550, y:250)
 
 
     @marker_1Animation_1 = new Animation
@@ -88,10 +88,8 @@ exports.Radar = class Radar extends Layer
           autoRotate: false
 
 
-    @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:140, y:170)
-    @marker_1.setSelected()
-    @marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", x:400, y:490)
-    @marker_3.setExplored()
+    @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:180, y:0)
+    @marker_3 = new markerModule.Marker("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", x:50, y:100)
 
     @markers.push(@marker_1)
     @markers.push(@marker_2)
@@ -262,8 +260,7 @@ exports.Radar = class Radar extends Layer
       Utils.delay 6, => @remainingDistanceLayer.x = 0
       Utils.delay 6, => @exploredPopupLayer.x = 1500
 
-
-    @marker_1Animation_1.start()
+    #@marker_1Animation_1.start()
 
 
   getRadarLayer: () ->
