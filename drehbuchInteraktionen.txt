@@ -1,0 +1,5 @@
+0. Marker Startpositionen
+1. auf marker 1 klicken und damit markieren
+2. Sekunde 24 -32 Marker mit normaler Geschwindigkeit bewegen
+3. Sekunde 35 -51 Marker mit erhöhter Geschwindigkeit bewegen bis zum Radarmittelpunkt
+4.
