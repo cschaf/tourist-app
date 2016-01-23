@@ -3,7 +3,11 @@ markerModule = require('MarkerModule')
 {EventEmitter} = require 'events'
 
 exports.Radar = class Radar extends Layer
-  constructor: (options = {}) ->
+  constructor: (@mainContext, options = {}) ->
+    @pageComponent =  @mainContext.pageComponent
+    @ListView =  @mainContext.ListView
+    @backIcon = @mainContext.backIcon
+
     options.width= options.width ? Screen.width
     options.height= options.height ? Screen.height - 220
     options.opacity = options.opacity ? 1
@@ -82,10 +86,6 @@ exports.Radar = class Radar extends Layer
         time: 1
         pathOptions:
           autoRotate: false
-
-    @marker_1Animation_1.on Events.AnimationEnd, =>
-      @marker_1Animation_2.start()
-   # @marker_1Animation_1.start()
 
 
     @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:140, y:170)
@@ -191,7 +191,7 @@ exports.Radar = class Radar extends Layer
 
     sliderLayer.addSubLayer(@sliderA);
 
-    remainingDistanceLayer = new Layer
+    @remainingDistanceLayer = new Layer
       x:0
       y:Screen.height - 1260
       width: Screen.width
@@ -211,7 +211,7 @@ exports.Radar = class Radar extends Layer
       fontSize: 50
       fontFamily: "Calibri"
 
-    remainingDistanceLayer.addSubLayer(remainingDistanceLabel)
+    @remainingDistanceLayer.addSubLayer(remainingDistanceLabel)
 
     remainingDistanceValue = new textLayer
       x:0
@@ -225,7 +225,45 @@ exports.Radar = class Radar extends Layer
       fontSize: 50
       fontFamily: "Calibri"
 
-    remainingDistanceLayer.addSubLayer(remainingDistanceValue)
+    @remainingDistanceLayer.addSubLayer(remainingDistanceValue)
+
+    @exploredPopupLayer = new Layer
+      x:1500
+      y:0
+      width:Screen.width
+      height:260
+      opacity:0
+      backgroundColor: "transparent"
+      superLayer: this
+
+    @exploredPopup = new Layer
+      width:393
+      height:82
+      image: "./images/ueberseemuseum-entdeckt-nachricht.png"
+      superLayer : @exploredPopupLayer
+    @exploredPopup.center()
+
+    @exploredPopupLayer.states.add
+      on: opacity: 1
+      off: opacity: 0
+
+    @exploredPopupLayer.states.animationOptions =
+      curve: "ease-out"
+      time: 0.3
+
+
+    @marker_1Animation_1.on Events.AnimationEnd, =>
+      #@marker_1Animation_2.start()
+      @remainingDistanceLayer.x = 1500
+      @exploredPopupLayer.x = 0
+      @exploredPopupLayer.states.switch("on")
+
+      Utils.delay 6, => @exploredPopupLayer.states.switch("off")
+      Utils.delay 6, => @remainingDistanceLayer.x = 0
+      Utils.delay 6, => @exploredPopupLayer.x = 1500
+
+
+    @marker_1Animation_1.start()
 
 
   getRadarLayer: () ->
@@ -245,7 +283,13 @@ exports.Radar = class Radar extends Layer
         marker.setNormal()
 
 
-  bindEvents: ->
+  bindEvents: =>
+    @exploredPopup.on Events.Click , =>
+      @exploredPopupLayer.x = 1500
+      @pageComponent.x = 1500
+      @backIcon.opacity = 1
+      @listView.detailSightView1.x = 0
+      @remainingDistanceLayer.x = 0
 
     @sliderA.on "change:value", =>
       roundedValue =  Utils.round(@sliderA.value, 0)
