@@ -18,6 +18,8 @@ exports.Radar = class Radar extends Layer
     @currentSelection = null
     @markers = []
     @sliderValue = 1
+    @currentRemainingValue = 500
+
 
     super options
 
@@ -143,6 +145,11 @@ exports.Radar = class Radar extends Layer
       @marker_1Animation_slowWalk.start()
 
 
+    @marker_1Animation_slowWalk.on Events.AnimationLoop, =>
+      print "isLoop"
+      @currentRemainingValue = @currentRemainingValue - 25
+      @remainingDistanceValue.text = @currentRemainingValue + " m"
+
     @markers.push(@marker_1)
     @markers.push(@marker_2)
     @markers.push(@marker_3)
@@ -246,6 +253,7 @@ exports.Radar = class Radar extends Layer
       y:Screen.height - 1260
       width: Screen.width
       height: 150
+      opacity:1
       backgroundColor: @myBackgroundColor
       superLayer : this
 
@@ -263,19 +271,20 @@ exports.Radar = class Radar extends Layer
 
     @remainingDistanceLayer.addSubLayer(remainingDistanceLabel)
 
-    remainingDistanceValue = new textLayer
+    @remainingDistanceValue = new textLayer
       x:0
       y:60
       width: Screen.width
       height:120
       backgroundColor: @myBackgroundColor
-      text:"5 km"
+      text:"500 m"
+      opacity: 0
       color: "rgb(255,255,255)"
       textAlign: "center"
       fontSize: 50
       fontFamily: "Calibri"
 
-    @remainingDistanceLayer.addSubLayer(remainingDistanceValue)
+    @remainingDistanceLayer.addSubLayer(@remainingDistanceValue)
 
     @exploredPopupLayer = new Layer
       x:1500
@@ -301,16 +310,15 @@ exports.Radar = class Radar extends Layer
       curve: "ease-out"
       time: 0.3
 
-
     @marker_1Animation_quickWalk.on Events.AnimationEnd, =>
-      #@marker_1Animation_2.start()
       @remainingDistanceLayer.x = 1500
       @exploredPopupLayer.x = 0
       @exploredPopupLayer.states.switch("on")
       @marker_1.setExplored()
-      Utils.delay 6, => @exploredPopupLayer.states.switch("off")
-      Utils.delay 6, => @remainingDistanceLayer.x = 0
-      Utils.delay 6, => @exploredPopupLayer.x = 1500
+      Utils.delay 6, =>
+        @exploredPopupLayer.states.switch("off")
+        @remainingDistanceLayer.x = 0
+        @remainingDistanceValue.opacity = 0
 
 
 
@@ -344,6 +352,7 @@ exports.Radar = class Radar extends Layer
       @pageComponent.x = 1500
       @backIcon.opacity = 1
       @listView.detailSightView1.x = 0
+      @remainingDistanceValue.opacity = 0
       @remainingDistanceLayer.x = 0
 
     @sliderA.on "change:value", =>
@@ -388,8 +397,8 @@ exports.Radar = class Radar extends Layer
       if @marker_1.isNormal()
         @marker_1.setSelected()
         #Hier Wert für Entfernung bis zum Ziel ändern
+        @remainingDistanceValue.opacity = 1
         @startAnimations()
-        @rotateToStartWalk()
       else
         if !@marker_1.isExplored() and not @marker_1.isNormal()
           @marker_1.setNormal()
