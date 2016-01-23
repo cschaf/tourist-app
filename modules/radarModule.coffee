@@ -3,7 +3,11 @@ markerModule = require('MarkerModule')
 {EventEmitter} = require 'events'
 
 exports.Radar = class Radar extends Layer
-  constructor: (options = {}) ->
+  constructor: (@mainContext, options = {}) ->
+    @pageComponent =  @mainContext.pageComponent
+    @ListView =  @mainContext.ListView
+    @backIcon = @mainContext.backIcon
+
     options.width= options.width ? Screen.width
     options.height= options.height ? Screen.height - 220
     options.opacity = options.opacity ? 1
@@ -60,20 +64,12 @@ exports.Radar = class Radar extends Layer
       @swing.rotation = 0
       @swingAnimation.start()
 
+    @zoomOut = null
+    @zoomIn = null
+
 #    #marker
     @marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", x:400, y:200)
 
-    @zoomOut = new Animation
-      layer: @marker_1
-      properties:
-        x: @marker_1.x + (Utils.round(@sliderValue, 0)  * 16.8)
-        y: @marker_1.y - (Utils.round(@sliderValue, 0) * 16.8)
-
-    @zoomIn = new Animation
-      layer: @marker_1
-      properties:
-        x: @marker_1.x - (@sliderValue  * 16.8)
-        y: @marker_1.y + (@sliderValue * 16.8)
 
     @marker_1Animation_1 = new Animation
       layer: @marker_1
@@ -90,10 +86,6 @@ exports.Radar = class Radar extends Layer
         time: 1
         pathOptions:
           autoRotate: false
-
-    @marker_1Animation_1.on Events.AnimationEnd, =>
-      @marker_1Animation_2.start()
-    @marker_1Animation_1.start()
 
 
     @marker_2 = new markerModule.Marker("Roland", "./images/roland.png", x:140, y:170)
@@ -162,7 +154,7 @@ exports.Radar = class Radar extends Layer
     # Create a new Slider
     @sliderA = new SliderComponent
       knobSize: 50
-      min: 0
+      min: 1
       max: 10
       value: 1
       height: 8
@@ -199,7 +191,7 @@ exports.Radar = class Radar extends Layer
 
     sliderLayer.addSubLayer(@sliderA);
 
-    remainingDistanceLayer = new Layer
+    @remainingDistanceLayer = new Layer
       x:0
       y:Screen.height - 1260
       width: Screen.width
@@ -219,7 +211,7 @@ exports.Radar = class Radar extends Layer
       fontSize: 50
       fontFamily: "Calibri"
 
-    remainingDistanceLayer.addSubLayer(remainingDistanceLabel)
+    @remainingDistanceLayer.addSubLayer(remainingDistanceLabel)
 
     remainingDistanceValue = new textLayer
       x:0
@@ -233,7 +225,45 @@ exports.Radar = class Radar extends Layer
       fontSize: 50
       fontFamily: "Calibri"
 
-    remainingDistanceLayer.addSubLayer(remainingDistanceValue)
+    @remainingDistanceLayer.addSubLayer(remainingDistanceValue)
+
+    @exploredPopupLayer = new Layer
+      x:1500
+      y:0
+      width:Screen.width
+      height:260
+      opacity:0
+      backgroundColor: "transparent"
+      superLayer: this
+
+    @exploredPopup = new Layer
+      width:393
+      height:82
+      image: "./images/ueberseemuseum-entdeckt-nachricht.png"
+      superLayer : @exploredPopupLayer
+    @exploredPopup.center()
+
+    @exploredPopupLayer.states.add
+      on: opacity: 1
+      off: opacity: 0
+
+    @exploredPopupLayer.states.animationOptions =
+      curve: "ease-out"
+      time: 0.3
+
+
+    @marker_1Animation_1.on Events.AnimationEnd, =>
+      #@marker_1Animation_2.start()
+      @remainingDistanceLayer.x = 1500
+      @exploredPopupLayer.x = 0
+      @exploredPopupLayer.states.switch("on")
+
+      Utils.delay 6, => @exploredPopupLayer.states.switch("off")
+      Utils.delay 6, => @remainingDistanceLayer.x = 0
+      Utils.delay 6, => @exploredPopupLayer.x = 1500
+
+
+    @marker_1Animation_1.start()
 
 
   getRadarLayer: () ->
@@ -253,27 +283,33 @@ exports.Radar = class Radar extends Layer
         marker.setNormal()
 
 
-  bindEvents: ->
+  bindEvents: =>
+    @exploredPopup.on Events.Click , =>
+      @exploredPopupLayer.x = 1500
+      @pageComponent.x = 1500
+      @backIcon.opacity = 1
+      @listView.detailSightView1.x = 0
+      @remainingDistanceLayer.x = 0
 
     @sliderA.on "change:value", =>
       roundedValue =  Utils.round(@sliderA.value, 0)
 
       if roundedValue > @sliderValue and roundedValue <= 10 and roundedValue != @sliderValue
-        @marker_1.x = @marker_1.x + 18.5
-        @marker_1.y = @marker_1.y - 18.5
+        @marker_1.x = @marker_1.x + 17.5
+        @marker_1.y = @marker_1.y - 17.5
 
-        @marker_2.x = @marker_2.x - 8
-        @marker_2.y = @marker_2.y - 8
+        @marker_2.x = @marker_2.x - 8.5
+        @marker_2.y = @marker_2.y - 8.5
 
         @marker_3.x = @marker_3.x + 14
         @marker_3.y = @marker_3.y + 14
 
       else if roundedValue < @sliderValue and roundedValue >= 0 and roundedValue != @sliderValue
-        @marker_1.x = @marker_1.x - 18.5
-        @marker_1.y = @marker_1.y + 18.5
+        @marker_1.x = @marker_1.x - 17.5
+        @marker_1.y = @marker_1.y + 17.5
 
-        @marker_2.x = @marker_2.x + 8
-        @marker_2.y = @marker_2.y + 8
+        @marker_2.x = @marker_2.x + 8.5
+        @marker_2.y = @marker_2.y + 8.5
 
         @marker_3.x = @marker_3.x - 14
         @marker_3.y = @marker_3.y - 14
@@ -281,10 +317,16 @@ exports.Radar = class Radar extends Layer
       @sliderValue = roundedValue
 
     @plusIcon.on Events.Click, =>
-      @sliderA.value  = @sliderA.value + 1
+      roundedValue = Utils.round(@sliderA.value + 1, 0)
+      if roundedValue < 11 and roundedValue != @sliderValue
+        @sliderA.value  = roundedValue
+        @sliderValue = roundedValue
 
     @minusIcon.on Events.Click, =>
-      @sliderA.value = @sliderA.value - 1
+      roundedValue = Utils.round(@sliderA.value - 1, 0)
+      if roundedValue > 0 and roundedValue != @sliderValue
+        @sliderA.value = roundedValue
+        @sliderValue = roundedValue
 
     @marker_1.getEmitter().on 'selected', =>
       this.deSelectAllSelectedMarkers(@marker_1)

@@ -66,12 +66,13 @@ backgroundLayer = new BackgroundLayer
 @pageComponent.addPage @rankingView
 
 # ---- Radar -----
-@radarView = new radarModule.Radar(x:@pageSize.width,width: @pageSize.width, height:@pageSize.height)
+@radarView = new radarModule.Radar(this, x:@pageSize.width,width: @pageSize.width, height:@pageSize.height)
 @pageComponent.addPage @radarView
 
 @listView = new listModule.List(this, x:@pageSize.width * 2, y:0, width: @pageSize.width, height:@pageSize.height)
 @pageComponent.addPage @listView
 
+@radarView.listView = @listView
 
 @profileView = new Layer
   x: 2500

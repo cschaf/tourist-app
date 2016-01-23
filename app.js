@@ -97,7 +97,7 @@ this.rankingView = new rankingListModule.RankingList({
 
 this.pageComponent.addPage(this.rankingView);
 
-this.radarView = new radarModule.Radar({
+this.radarView = new radarModule.Radar(this, {
   x: this.pageSize.width,
   width: this.pageSize.width,
   height: this.pageSize.height
@@ -113,6 +113,8 @@ this.listView = new listModule.List(this, {
 });
 
 this.pageComponent.addPage(this.listView);
+
+this.radarView.listView = this.listView;
 
 this.profileView = new Layer({
   x: 2500,
@@ -246,8 +248,8 @@ exports.Marker = Marker = (function(superClass) {
 
   Marker.prototype.initControls = function() {
     this.popupLayer = new Layer({
-      x: this.x - 138,
-      y: this.y + 55,
+      x: this.x - 126,
+      y: this.y + 35,
       width: 350,
       height: 350,
       image: this.popupBackground,
@@ -305,7 +307,7 @@ exports.Marker = Marker = (function(superClass) {
     this._isExplored = false;
     this._isSelected = false;
     this._isNormal = true;
-    return this.image = "./images/icons/marker-einfach.png";
+    return this.image = "./images/icons/_marker-einfach.png";
   };
 
   Marker.prototype.hidePopup = function() {
@@ -1079,12 +1081,17 @@ EventEmitter = require('events').EventEmitter;
 exports.Radar = Radar = (function(superClass) {
   extend(Radar, superClass);
 
-  function Radar(options) {
+  function Radar(mainContext, options) {
     var ref, ref1, ref2, ref3;
+    this.mainContext = mainContext;
     if (options == null) {
       options = {};
     }
+    this.bindEvents = bind(this.bindEvents, this);
     this.deSelectAllSelectedMarkers = bind(this.deSelectAllSelectedMarkers, this);
+    this.pageComponent = this.mainContext.pageComponent;
+    this.ListView = this.mainContext.ListView;
+    this.backIcon = this.mainContext.backIcon;
     options.width = (ref = options.width) != null ? ref : Screen.width;
     options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 220;
     options.opacity = (ref2 = options.opacity) != null ? ref2 : 1;
@@ -1100,7 +1107,7 @@ exports.Radar = Radar = (function(superClass) {
   }
 
   Radar.prototype.initControls = function() {
-    var kmMax, kmMin, remainingDistanceLabel, remainingDistanceLayer, remainingDistanceValue, sliderLayer;
+    var kmMax, kmMin, remainingDistanceLabel, remainingDistanceValue, sliderLayer;
     this.radarLayer = new Layer({
       x: 25,
       y: Screen.height - 1070,
@@ -1137,23 +1144,11 @@ exports.Radar = Radar = (function(superClass) {
         return _this.swingAnimation.start();
       };
     })(this));
+    this.zoomOut = null;
+    this.zoomIn = null;
     this.marker_1 = new markerModule.Marker("Uebersee-Museum", "./images/uebersee-museum.png", {
       x: 400,
       y: 200
-    });
-    this.zoomOut = new Animation({
-      layer: this.marker_1,
-      properties: {
-        x: this.marker_1.x + (Utils.round(this.sliderValue, 0) * 16.8),
-        y: this.marker_1.y - (Utils.round(this.sliderValue, 0) * 16.8)
-      }
-    });
-    this.zoomIn = new Animation({
-      layer: this.marker_1,
-      properties: {
-        x: this.marker_1.x - (this.sliderValue * 16.8),
-        y: this.marker_1.y + (this.sliderValue * 16.8)
-      }
     });
     this.marker_1Animation_1 = new Animation({
       layer: this.marker_1,
@@ -1173,12 +1168,6 @@ exports.Radar = Radar = (function(superClass) {
         autoRotate: false
       }
     });
-    this.marker_1Animation_1.on(Events.AnimationEnd, (function(_this) {
-      return function() {
-        return _this.marker_1Animation_2.start();
-      };
-    })(this));
-    this.marker_1Animation_1.start();
     this.marker_2 = new markerModule.Marker("Roland", "./images/roland.png", {
       x: 140,
       y: 170
@@ -1246,7 +1235,7 @@ exports.Radar = Radar = (function(superClass) {
     sliderLayer.addSubLayer(kmMin);
     this.sliderA = new SliderComponent({
       knobSize: 50,
-      min: 0,
+      min: 1,
       max: 10,
       value: 1,
       height: 8,
@@ -1278,7 +1267,7 @@ exports.Radar = Radar = (function(superClass) {
       });
     });
     sliderLayer.addSubLayer(this.sliderA);
-    remainingDistanceLayer = new Layer({
+    this.remainingDistanceLayer = new Layer({
       x: 0,
       y: Screen.height - 1260,
       width: Screen.width,
@@ -1298,7 +1287,7 @@ exports.Radar = Radar = (function(superClass) {
       fontSize: 50,
       fontFamily: "Calibri"
     });
-    remainingDistanceLayer.addSubLayer(remainingDistanceLabel);
+    this.remainingDistanceLayer.addSubLayer(remainingDistanceLabel);
     remainingDistanceValue = new textLayer({
       x: 0,
       y: 60,
@@ -1311,7 +1300,52 @@ exports.Radar = Radar = (function(superClass) {
       fontSize: 50,
       fontFamily: "Calibri"
     });
-    return remainingDistanceLayer.addSubLayer(remainingDistanceValue);
+    this.remainingDistanceLayer.addSubLayer(remainingDistanceValue);
+    this.exploredPopupLayer = new Layer({
+      x: 1500,
+      y: 0,
+      width: Screen.width,
+      height: 260,
+      opacity: 0,
+      backgroundColor: "transparent",
+      superLayer: this
+    });
+    this.exploredPopup = new Layer({
+      width: 393,
+      height: 82,
+      image: "./images/ueberseemuseum-entdeckt-nachricht.png",
+      superLayer: this.exploredPopupLayer
+    });
+    this.exploredPopup.center();
+    this.exploredPopupLayer.states.add({
+      on: {
+        opacity: 1
+      },
+      off: {
+        opacity: 0
+      }
+    });
+    this.exploredPopupLayer.states.animationOptions = {
+      curve: "ease-out",
+      time: 0.3
+    };
+    this.marker_1Animation_1.on(Events.AnimationEnd, (function(_this) {
+      return function() {
+        _this.remainingDistanceLayer.x = 1500;
+        _this.exploredPopupLayer.x = 0;
+        _this.exploredPopupLayer.states["switch"]("on");
+        Utils.delay(6, function() {
+          return _this.exploredPopupLayer.states["switch"]("off");
+        });
+        Utils.delay(6, function() {
+          return _this.remainingDistanceLayer.x = 0;
+        });
+        return Utils.delay(6, function() {
+          return _this.exploredPopupLayer.x = 1500;
+        });
+      };
+    })(this));
+    return this.marker_1Animation_1.start();
   };
 
   Radar.prototype.getRadarLayer = function() {
@@ -1344,22 +1378,31 @@ exports.Radar = Radar = (function(superClass) {
   };
 
   Radar.prototype.bindEvents = function() {
+    this.exploredPopup.on(Events.Click, (function(_this) {
+      return function() {
+        _this.exploredPopupLayer.x = 1500;
+        _this.pageComponent.x = 1500;
+        _this.backIcon.opacity = 1;
+        _this.listView.detailSightView1.x = 0;
+        return _this.remainingDistanceLayer.x = 0;
+      };
+    })(this));
     this.sliderA.on("change:value", (function(_this) {
       return function() {
         var roundedValue;
         roundedValue = Utils.round(_this.sliderA.value, 0);
         if (roundedValue > _this.sliderValue && roundedValue <= 10 && roundedValue !== _this.sliderValue) {
-          _this.marker_1.x = _this.marker_1.x + 18.5;
-          _this.marker_1.y = _this.marker_1.y - 18.5;
-          _this.marker_2.x = _this.marker_2.x - 8;
-          _this.marker_2.y = _this.marker_2.y - 8;
+          _this.marker_1.x = _this.marker_1.x + 17.5;
+          _this.marker_1.y = _this.marker_1.y - 17.5;
+          _this.marker_2.x = _this.marker_2.x - 8.5;
+          _this.marker_2.y = _this.marker_2.y - 8.5;
           _this.marker_3.x = _this.marker_3.x + 14;
           _this.marker_3.y = _this.marker_3.y + 14;
         } else if (roundedValue < _this.sliderValue && roundedValue >= 0 && roundedValue !== _this.sliderValue) {
-          _this.marker_1.x = _this.marker_1.x - 18.5;
-          _this.marker_1.y = _this.marker_1.y + 18.5;
-          _this.marker_2.x = _this.marker_2.x + 8;
-          _this.marker_2.y = _this.marker_2.y + 8;
+          _this.marker_1.x = _this.marker_1.x - 17.5;
+          _this.marker_1.y = _this.marker_1.y + 17.5;
+          _this.marker_2.x = _this.marker_2.x + 8.5;
+          _this.marker_2.y = _this.marker_2.y + 8.5;
           _this.marker_3.x = _this.marker_3.x - 14;
           _this.marker_3.y = _this.marker_3.y - 14;
         }
@@ -1368,12 +1411,22 @@ exports.Radar = Radar = (function(superClass) {
     })(this));
     this.plusIcon.on(Events.Click, (function(_this) {
       return function() {
-        return _this.sliderA.value = _this.sliderA.value + 1;
+        var roundedValue;
+        roundedValue = Utils.round(_this.sliderA.value + 1, 0);
+        if (roundedValue < 11 && roundedValue !== _this.sliderValue) {
+          _this.sliderA.value = roundedValue;
+          return _this.sliderValue = roundedValue;
+        }
       };
     })(this));
     this.minusIcon.on(Events.Click, (function(_this) {
       return function() {
-        return _this.sliderA.value = _this.sliderA.value - 1;
+        var roundedValue;
+        roundedValue = Utils.round(_this.sliderA.value - 1, 0);
+        if (roundedValue > 0 && roundedValue !== _this.sliderValue) {
+          _this.sliderA.value = roundedValue;
+          return _this.sliderValue = roundedValue;
+        }
       };
     })(this));
     this.marker_1.getEmitter().on('selected', (function(_this) {
