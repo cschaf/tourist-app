@@ -215,6 +215,8 @@ exports.Marker = Marker = (function(superClass) {
     this.enablePopup = true;
     this.popupBackground = "./images/popup-ohne-bild.png";
     this.emitter = new EventEmitter;
+    this.isMoveToMeSlow = false;
+    this.isMoveToMeFast = false;
     Marker.__super__.constructor.call(this, options);
     this.initControls();
     this.on(Events.TouchStart, function() {
@@ -1177,7 +1179,9 @@ exports.Radar = Radar = (function(superClass) {
     });
     this.marker_1Animation_slowWalk.on(Events.AnimationEnd, (function(_this) {
       return function() {
-        return _this.marker_1Animation_quickWalk.start();
+        _this.marker_1.isMoveToMeSlow = false;
+        _this.marker_1Animation_quickWalk.start();
+        return _this.marker_1.isMoveToMeFast = true;
       };
     })(this));
     this.marker_1Animation_quickWalk = new Animation({
@@ -1237,14 +1241,38 @@ exports.Radar = Radar = (function(superClass) {
       return function() {
         _this.marker_2Animation_Turn_2.start();
         _this.marker_3Animation_Turn_2.start();
-        return _this.marker_1Animation_slowWalk.start();
+        _this.marker_1Animation_slowWalk.start();
+        return _this.marker_1.isMoveToMeSlow = true;
       };
     })(this));
-    this.marker_1Animation_slowWalk.on(Events.AnimationLoop, (function(_this) {
+    this.lastPoint = {
+      x: 0,
+      y: 0
+    };
+    this.marker_1.on("change:point", (function(_this) {
       return function() {
-        print("isLoop");
-        _this.currentRemainingValue = _this.currentRemainingValue - 25;
-        return _this.remainingDistanceValue.text = _this.currentRemainingValue + " m";
+        var newX, newY;
+        newX = Utils.round(_this.radarLayer.midX - _this.marker_1.x, 0);
+        newY = Utils.round(_this.radarLayer.midY - _this.marker_1.y, 0);
+        if (_this.marker_1.isMoveToMeSlow) {
+          if (newX !== _this.lastPoint.x && newY !== _this.lastPoint.y) {
+            _this.currentRemainingValue = _this.currentRemainingValue - 20;
+            _this.remainingDistanceValue.text = _this.currentRemainingValue + " m";
+            return _this.lastPoint = {
+              x: newX,
+              y: newY
+            };
+          }
+        } else if (_this.marker_1.isMoveToMeFast) {
+          if (newX !== _this.lastPoint.x && newY !== _this.lastPoint.y) {
+            _this.currentRemainingValue = _this.currentRemainingValue - 30;
+            _this.remainingDistanceValue.text = _this.currentRemainingValue + " m";
+            return _this.lastPoint = {
+              x: newX,
+              y: newY
+            };
+          }
+        }
       };
     })(this));
     this.markers.push(this.marker_1);
@@ -1402,6 +1430,7 @@ exports.Radar = Radar = (function(superClass) {
     };
     return this.marker_1Animation_quickWalk.on(Events.AnimationEnd, (function(_this) {
       return function() {
+        _this.marker_1.isMoveToMeFast = false;
         _this.remainingDistanceLayer.x = 1500;
         _this.exploredPopupLayer.x = 0;
         _this.exploredPopupLayer.states["switch"]("on");

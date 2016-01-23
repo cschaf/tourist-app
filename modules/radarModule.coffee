@@ -91,7 +91,9 @@ exports.Radar = class Radar extends Layer
         autoRotate: false
 
     @marker_1Animation_slowWalk.on Events.AnimationEnd, =>
+      @marker_1.isMoveToMeSlow = false
       @marker_1Animation_quickWalk.start()
+      @marker_1.isMoveToMeFast = true
 
     @marker_1Animation_quickWalk = new Animation
       layer: @marker_1
@@ -143,12 +145,24 @@ exports.Radar = class Radar extends Layer
       @marker_3Animation_Turn_2.start()
 
       @marker_1Animation_slowWalk.start()
+      @marker_1.isMoveToMeSlow = true
 
+    @lastPoint = {x:0, y:0}
 
-    @marker_1Animation_slowWalk.on Events.AnimationLoop, =>
-      print "isLoop"
-      @currentRemainingValue = @currentRemainingValue - 25
-      @remainingDistanceValue.text = @currentRemainingValue + " m"
+    @marker_1.on "change:point", =>
+      newX = Utils.round(@radarLayer.midX - @marker_1.x, 0)
+      newY = Utils.round(@radarLayer.midY - @marker_1.y, 0)
+      if @marker_1.isMoveToMeSlow
+        if newX != @lastPoint.x and newY != @lastPoint.y
+          @currentRemainingValue = @currentRemainingValue - 20
+          @remainingDistanceValue.text = @currentRemainingValue + " m"
+          @lastPoint = {x:newX, y:newY}
+
+      else if @marker_1.isMoveToMeFast
+        if newX != @lastPoint.x and newY != @lastPoint.y
+          @currentRemainingValue = @currentRemainingValue - 30
+          @remainingDistanceValue.text = @currentRemainingValue + " m"
+          @lastPoint = {x:newX, y:newY}
 
     @markers.push(@marker_1)
     @markers.push(@marker_2)
@@ -311,6 +325,7 @@ exports.Radar = class Radar extends Layer
       time: 0.3
 
     @marker_1Animation_quickWalk.on Events.AnimationEnd, =>
+      @marker_1.isMoveToMeFast = false
       @remainingDistanceLayer.x = 1500
       @exploredPopupLayer.x = 0
       @exploredPopupLayer.states.switch("on")
