@@ -431,6 +431,18 @@ exports.Radar = class Radar extends Layer
         @remainingDistanceLayer.x = 0
         @remainingDistanceValue.opacity = 0
         @remainingDistanceLayer.opacity = 1
+        @exploredPopup.image = "./images/roland_entdeckt.png"
+
+        @marker_1.x = 170
+        @marker_1.y = 14
+
+        @marker_2.x = 325
+        @marker_2.y = 304
+
+        @marker_3.x = 506
+        @marker_3.y = 168
+
+        @marker_2.setExplored()
 
   getDistanceOfPoints: (p1, p2) =>
     xs = 0
@@ -533,10 +545,20 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_2)
       if @marker_2.isNormal()
         @marker_2.setSelected()
-        #Hier Wert f�r Entfernung bis zum Ziel �ndern
+
       else
         if !@marker_2.isExplored() and not @marker_2.isNormal()
           @marker_2.setNormal()
+
+        @marker_1.isMoveToMeFast = false
+        @remainingDistanceLayer.x = 1500
+        @exploredPopupLayer.x = 0
+        @exploredPopupLayer.states.switch("on")
+        @marker_2.setExplored()
+        Utils.delay 4, =>
+          @exploredPopupLayer.states.switch("off")
+          @remainingDistanceLayer.x = 0
+          @remainingDistanceValue.opacity = 0
 
     @marker_3.getEmitter().on 'selected', =>
       this.deSelectAllSelectedMarkers(@marker_3)

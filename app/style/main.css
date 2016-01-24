@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: transparent;
+    background-color: black;
     font: 28px/1em "Calibri";
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     cursor: url("../images/cursor.png") 39 39, auto;
