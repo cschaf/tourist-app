@@ -183,7 +183,7 @@ exports.Radar = class Radar extends Layer
       layer: @marker_3
       path: Path.fromString("M334.5,239.5c0,0 -0.229767,0.026749 0,1c0.513733,2.176254 2,3 2,4c0,1 1.61731,6.076126 2,7c0.541199,1.306564 1.917603,1.386871 3,4c0.38269,0.923889 -1.051453,2.298706 0,4c1.175568,1.9021 2,3 2,4c0,1 0,2 0,3c0,1 0,2 0,4c0,1 1,5 1,6c0,3 0,5 0,7c0,1 0,4 0,6c0,1 0.458801,1.693451 1,3c1.148041,2.771637 0.173096,3.852722 1,5c1.307465,1.813995 1.486267,3.823761 2,6c0.229767,0.973236 1.486267,2.823761 2,5c0.229767,0.973236 0,2 0,4c0,1 1,1 1,3c0,1 -0.160187,2.012909 0,3c0.506531,3.121429 1.917603,3.386871 3,6c0.765381,1.847748 0,3 0,4c0,2 0,3 0,4c0,1 0.38269,4.076111 0,5c-1.082397,2.613129 -2,5 -3,5l-1,1")
       curve: 'linear'
-      time: 24
+      time: 2
       pathOptions:
         autoRotate: false
 
@@ -191,7 +191,7 @@ exports.Radar = class Radar extends Layer
       layer: @marker_2
       path: Path.fromString("M505.5,220.5c0,0 0,1 0,2c0,1 1,2 1,2c1,1 0.292908,2.292892 1,3c0.707092,0.707108 0.540497,2.053497 1,4c0.513733,2.176254 1,3 1,4c0,3 0,5 0,6c0,1 0,3 0,4c0,1 0,2 0,3c0,2 0,3 0,5c0,3 0,4 0,5c0,1 0,3 0,4c0,2 0,3 0,5c0,1 0,2 0,3c0,3 0,4 0,5c0,2 0,4 0,6c0,1 -0.38269,2.076111 0,3c0.541199,1.306549 1.292908,1.292908 2,2c1.414185,1.414215 2.458801,4.693451 3,6c0.765381,1.847748 0,3 0,4l0,4l0,2l0,1")
       curve: 'linear'
-      time: 24
+      time: 2
       pathOptions:
         autoRotate: false
 
@@ -218,16 +218,7 @@ exports.Radar = class Radar extends Layer
       @marker_3Animation_moveMusikanten.start()
       @marker_2Animation_moveMusikanten.start()
 
-    @marker_3Animation_moveMusikanten.on Events.AnimationEnd, =>
-      @marker_1.isMoveToMeFast = false
-      @exploredPopupLayer.x = 0
-      @exploredPopupLayer.states.switch("on")
-      @marker_3.setExplored()
-      @marker_3_animated = true
-      Utils.delay 2, =>
-        @exploredPopupLayer.states.switch("off")
-        @remainingDistanceLayer.x = 0
-        @remainingDistanceValue.opacity = 0
+
 
     @marker_1Animation_moveAwaySlow.on Events.AnimationEnd, =>
       @marker_1.isMoveToMeSlow = false
@@ -400,7 +391,6 @@ exports.Radar = class Radar extends Layer
       superLayer: this
 
     @exploredPopup = new Layer
-
       width:700
       height:260
       image: "./images/ueberseemuseum-entdeckt-nachricht.png"
@@ -422,13 +412,25 @@ exports.Radar = class Radar extends Layer
       @exploredPopupLayer.states.switch("on")
       @marker_1.setExplored()
       @marker_1_animated = true
-      @exploredPopup.image = "./images/ueberseemuseum-entdeckt-nachricht.png"
       Utils.delay 2, =>
         @exploredPopupLayer.states.switch("off")
         @remainingDistanceLayer.x = 0
         @remainingDistanceValue.opacity = 0
+        @exploredPopup.image = "./images/stadtmusikanten_entdeckt.png"
 
 
+    @marker_3Animation_moveMusikanten.on Events.AnimationEnd, =>
+      @marker_1.isMoveToMeFast = false
+      @remainingDistanceLayer.opacity = 0
+      @exploredPopupLayer.x = 0
+      @exploredPopupLayer.states.switch("on")
+      @marker_3.setExplored()
+      @marker_3_animated = true
+      Utils.delay 2, =>
+        @exploredPopupLayer.states.switch("off")
+        @remainingDistanceLayer.x = 0
+        @remainingDistanceValue.opacity = 0
+        @remainingDistanceLayer.opacity = 1
 
   getDistanceOfPoints: (p1, p2) =>
     xs = 0
@@ -463,6 +465,13 @@ exports.Radar = class Radar extends Layer
       @exploredPopupLayer.x = 1500
       @pageComponent.x = 1500
       @backIcon.opacity = 1
+      if @exploredPopup.image == "./images/ueberseemuseum-entdeckt-nachricht.png"
+        @listView.detailSightView1.x = 0
+      else if @exploredPopup.image == "./images/stadtmusikanten_entdeckt.png"
+        @listView.detailSightView3.x = 0
+      else
+        @listView.detailSightView2.x = 0
+
       @listView.detailSightView1.x = 0
       @remainingDistanceValue.opacity = 0
       @remainingDistanceLayer.x = 0
