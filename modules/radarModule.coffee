@@ -5,7 +5,7 @@ markerModule = require('MarkerModule')
 exports.Radar = class Radar extends Layer
   constructor: (@mainContext, options = {}) ->
     @pageComponent =  @mainContext.pageComponent
-    @ListView =  @mainContext.ListView
+    @listView =  @mainContext.ListView
     @backIcon = @mainContext.backIcon
 
     options.width= options.width ? Screen.width
@@ -88,7 +88,7 @@ exports.Radar = class Radar extends Layer
       layer: @marker_1
       path: Path.fromString( "M349,119.5c0,0 0,1 0,2c0,1 1,1 1,2c0,1 0,2 0,3c0,0 0,1 0,2c0,1 0,2 0,3c0,1 -0.707092,2.292892 0,3c0.707092,0.707108 1,1 1,2c0,1 0,2 0,3c0,1 -0.707092,2.292892 0,3c0.707092,0.707108 1,1 1,2c0,1 0,2 0,3c0,1 0.707092,2.292892 0,3c-0.707092,0.707108 -1,1 -1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.707092,2.292892 0,3c0.707092,0.707108 1,1 1,2c0,1 0,2 0,3l0,1l0,1l0,1")
       curve: 'linear'
-      time: 8
+      time: 6
       pathOptions:
         autoRotate: false
 
@@ -107,7 +107,7 @@ exports.Radar = class Radar extends Layer
       layer: @marker_1
       path: Path.fromString( "M350,175.5c0,0 0.292908,0.292892 1,1c0.707092,0.707108 1,0 1,1c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0.292908,1.292892 1,2c0.707092,0.707108 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.458801,1.693436 -1,3c-0.38269,0.923874 0,2 0,3c0,1 -1,1 -1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 1,1 1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,4c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -1,1 -1,2c0,1 0,2 0,3c0,1 0.707092,2.292908 0,3c-0.707092,0.707092 -1,1 -1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.292908,1.292908 -1,2c-0.707092,0.707092 0,2 0,3c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2l1,0")
       curve: 'linear'
-      time: 6
+      time: 8
       pathOptions:
         autoRotate: false
 
@@ -115,7 +115,7 @@ exports.Radar = class Radar extends Layer
       layer: @marker_1
       path: Path.fromString( "M350,344.5c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 1,3 1,4c0,1 0.292908,2.292908 1,3c0.707092,0.707092 1,1 1,2c0,1 0.292908,1.292908 1,2c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1,1 1,2c0,1 0.292908,1.292908 1,2c0.707092,0.707092 1,1 1,2c0,1 0.292908,2.292908 1,3c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1.292908,0.292908 2,1c0.707092,0.707092 0,2 0,3c0,1 1.486267,0.823761 2,3c0.229767,0.973236 1,2 1,3c0,1 1.458801,0.693451 2,2c0.38269,0.923889 0.292908,2.292908 1,3c0.707092,0.707092 0.61731,1.076111 1,2c0.541199,1.306549 2,2 2,4c0,1 1,3 1,4c0,1 -0.414215,1.585785 1,3c0.707092,0.707092 1,1 1,2c0,1 0.458801,1.693451 1,3c0.765381,1.847748 0.292908,2.292908 1,3c0.707092,0.707092 -0.707092,2.292908 0,3c0.707092,0.707092 1.486267,0.823761 2,3c0.229767,0.973236 1,1 1,2c0,1 0,2 0,3c0,1 1,2 1,3c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2c0,1 1,2 1,3c0,1 0.458801,1.693451 1,3c0.765381,1.847748 -0.765381,3.152252 0,5c0.541199,1.306549 1,3 1,4c0,1 -0.38269,2.076111 0,3c0.541199,1.306549 1,3 1,4c0,1 0.458801,1.693451 1,3c0.38269,0.923889 0.458801,1.693451 1,3c0.38269,0.923889 0.486267,1.823761 1,4c0.229767,0.973236 0,3 0,4c0,2 1,4 1,6c0,1 1.458801,1.693451 2,3c0.38269,0.923889 0.292908,1.292908 1,2c0.707092,0.707092 0,2 1,3c1,1 0.292908,2.292908 1,3c0.707092,0.707092 1,2 2,3c1,1 1.486267,1.823761 2,4c0.229767,0.973236 -0.414215,1.585785 1,3c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1.292908,0.292908 2,1c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1,1 2,4l0,1l1,1")
       curve: 'linear'
-      time: 13
+      time: 1
       pathOptions:
         autoRotate: false
 
@@ -123,7 +123,7 @@ exports.Radar = class Radar extends Layer
       @startTime = new Date
       @lastTime = @startTime
       @lastAnimationTime = 13
-      @lastMaxDistance = 500
+      @lastMaxDistance = 1500
       @currentRemainingValue = 1500
 
 
@@ -141,7 +141,7 @@ exports.Radar = class Radar extends Layer
       layer: @marker_2
       path: Path.fromString("M21,337.5c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 0.458803,1.693451 1,3c0.382683,0.923889 0.458803,1.693451 1,3c0.382683,0.923889 0.292892,1.292908 1,2c0.707108,0.707092 0,2 0,3c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 0,2 0,3c0,1 0.292892,1.292908 1,2c0.707108,0.707092 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 0,2 0,3c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 0.617317,1.076111 1,2c0.541197,1.306549 1,2 1,3c0,1 0,2 0,3c0,1 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 1,1 1,2c0,1 1,1 1,2c0,1 1,2 1,3c0,1 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0,2 0,3c0,1 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1,2 1,3c0,1 1.292892,0.292908 2,1c0.707108,0.707092 -0.707108,2.292908 0,3c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.617317,1.076111 1,2c0.541195,1.306549 1.617317,2.076111 2,3c0.541195,1.306549 2,2 3,3c1,1 0.693436,2.458801 2,3c0.923878,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.877655,1.065979 2,3c1.809723,3.118469 2.692551,4.186035 4,6c0.826904,1.147278 1.292892,2.292908 2,3c0.707108,0.707092 1.292892,1.292908 2,2c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 0,2 1,2c1,0 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.693436,1.458801 2,2c0.923882,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 1.292892,0.292908 2,1c0.707108,0.707092 0,2 0,3c0,1 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 2,1l0,1l0,1l1,0")
       curve: 'linear'
-      time: 14
+      time: 8
       pathOptions:
         autoRotate: false
 
@@ -167,7 +167,7 @@ exports.Radar = class Radar extends Layer
       layer: @marker_3
       path: Path.fromString("M43,488.5c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 2,0 2,1c0,1 0.617317,1.076111 1,2c0.541195,1.306549 1.292892,1.292908 2,2c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 1,1 1,2c0,1 0.617317,1.076111 1,2c0.541195,1.30658 1.292892,1.292908 2,2c0.707108,0.707092 -0.306564,2.458801 1,3c0.923882,0.38269 0.292892,1.292908 1,2c0.707108,0.707092 0.617317,1.076111 1,2c0.541199,1.30658 1.458801,1.69342 2,3c0.382683,0.923889 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 0.474266,1.149353 1,2c1.175568,1.9021 1.617317,2.076111 2,3c0.541199,1.30658 1,2 2,2c1,0 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.617317,1.076111 1,2c0.541199,1.30658 1.292892,1.292908 2,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.617317,1.076111 1,2c0.541199,1.30658 0.292892,2.292908 1,3c0.707108,0.707092 2.458801,0.69342 3,2c0.382683,0.923889 0.292892,1.292908 1,2c0.707108,0.707092 2,0 2,1c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.458801,0.69342 2,2c0.382683,0.923889 1.458801,0.69342 2,2c0.382683,0.923889 1,1 2,2c1,1 1.292892,2.292908 2,3c0.707108,0.707092 1.292892,1.292908 2,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,2.292908 1,3c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 -0.306564,2.458801 1,3c0.923882,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.693436,1.458801 2,2c0.923874,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 1.076126,0.61731 2,1c1.306564,0.541199 2,2 3,3c1,1 3.076126,1.61731 4,2c1.306564,0.541199 2.186005,1.692566 4,3c1.147263,0.826904 2,2 3,2c1,0 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 2.292892,-0.707092 3,0c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1.61731,0.076111 2,1c0.541199,1.30658 1.076126,1.61731 2,2c1.306564,0.541199 1.292892,1.292908 2,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.61731,1.076111 1,2c0.541199,1.30658 1.292892,1.292908 2,2c0.707108,0.707092 1,1 2,1c1,0 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 2,1c1,0 1.292892,0.292908 2,1c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1,1 2,1l1,0l1,0")
       curve: 'linear'
-      time: 14
+      time: 8
       pathOptions:
         autoRotate: false
 
@@ -179,15 +179,28 @@ exports.Radar = class Radar extends Layer
       pathOptions:
         autoRotate: false
 
+    @marker_3Animation_moveMusikanten = new Animation
+      layer: @marker_3
+      path: Path.fromString("M334.5,239.5c0,0 -0.229767,0.026749 0,1c0.513733,2.176254 2,3 2,4c0,1 1.61731,6.076126 2,7c0.541199,1.306564 1.917603,1.386871 3,4c0.38269,0.923889 -1.051453,2.298706 0,4c1.175568,1.9021 2,3 2,4c0,1 0,2 0,3c0,1 0,2 0,4c0,1 1,5 1,6c0,3 0,5 0,7c0,1 0,4 0,6c0,1 0.458801,1.693451 1,3c1.148041,2.771637 0.173096,3.852722 1,5c1.307465,1.813995 1.486267,3.823761 2,6c0.229767,0.973236 1.486267,2.823761 2,5c0.229767,0.973236 0,2 0,4c0,1 1,1 1,3c0,1 -0.160187,2.012909 0,3c0.506531,3.121429 1.917603,3.386871 3,6c0.765381,1.847748 0,3 0,4c0,2 0,3 0,4c0,1 0.38269,4.076111 0,5c-1.082397,2.613129 -2,5 -3,5l-1,1")
+      curve: 'linear'
+      time: 24
+      pathOptions:
+        autoRotate: false
+
+    @marker_2Animation_moveMusikanten = new Animation
+      layer: @marker_2
+      path: Path.fromString("M505.5,220.5c0,0 0,1 0,2c0,1 1,2 1,2c1,1 0.292908,2.292892 1,3c0.707092,0.707108 0.540497,2.053497 1,4c0.513733,2.176254 1,3 1,4c0,3 0,5 0,6c0,1 0,3 0,4c0,1 0,2 0,3c0,2 0,3 0,5c0,3 0,4 0,5c0,1 0,3 0,4c0,2 0,3 0,5c0,1 0,2 0,3c0,3 0,4 0,5c0,2 0,4 0,6c0,1 -0.38269,2.076111 0,3c0.541199,1.306549 1.292908,1.292908 2,2c1.414185,1.414215 2.458801,4.693451 3,6c0.765381,1.847748 0,3 0,4l0,4l0,2l0,1")
+      curve: 'linear'
+      time: 24
+      pathOptions:
+        autoRotate: false
 
     @marker_3Animation_Turn_3.on Events.AnimationEnd, =>
       @remainingDistanceValue.opacity = 1
-      @remainingDistanceValue.text = 1500 + " m"
+      @remainingDistanceValue.text = 150 + " m"
       @marker_3_animated = true
       @marker_1.isMoveToMeSlow = true
       @marker_1Animation_moveAwaySlow.start()
-
-
 
     @marker_1Animation_moveAwaySlow.on Events.AnimationEnd, =>
       @marker_1.isMoveToMeSlow = false
@@ -201,6 +214,20 @@ exports.Radar = class Radar extends Layer
     @lastValue = 0
 
     @marker_1.on "change:point", =>
+      now = new Date
+      sec = Utils.round(((now - @startTime) / 1000),0)
+      lastSec =  Utils.round(((now - @lastTime) / 1000),0)
+
+      if sec <= @lastAnimationTime
+        if lastSec == 1 and @lastValue != sec
+          @currentRemainingValue = Utils.round(@currentRemainingValue - Utils.round((@lastMaxDistance / @lastAnimationTime), 0), 0)
+          if @currentRemainingValue < 0
+            @currentRemainingValue = 0
+          @remainingDistanceValue.text = @currentRemainingValue + " m"
+          @lastTime = now
+          @lastValue = sec
+
+    @marker_2.on "change:point", =>
       now = new Date
       sec = Utils.round(((now - @startTime) / 1000),0)
       lastSec =  Utils.round(((now - @lastTime) / 1000),0)
@@ -360,7 +387,6 @@ exports.Radar = class Radar extends Layer
       superLayer: this
 
     @exploredPopup = new Layer
-
       width:700
       height:260
       image: "./images/ueberseemuseum-entdeckt-nachricht.png"
@@ -377,17 +403,71 @@ exports.Radar = class Radar extends Layer
 
     @marker_1Animation_quickWalk.on Events.AnimationEnd, =>
       @marker_1.isMoveToMeFast = false
-      @remainingDistanceLayer.x = 1500
+      @remainingDistanceLayer.x = 150
       @exploredPopupLayer.x = 0
       @exploredPopupLayer.states.switch("on")
       @marker_1.setExplored()
+
+      #@listView.item_1.marker_1.setExplored()
+      @listView.setMarker1Explored()
       @marker_1_animated = true
-      Utils.delay 6, =>
+      Utils.delay 2, =>
         @exploredPopupLayer.states.switch("off")
         @remainingDistanceLayer.x = 0
         @remainingDistanceValue.opacity = 0
+        @exploredPopup.image = "./images/stadtmusikanten_entdeckt.png"
 
 
+    @marker_3Animation_moveMusikanten.on Events.AnimationEnd, =>
+      @marker_1.isMoveToMeFast = false
+      @remainingDistanceLayer.opacity = 0
+      @exploredPopupLayer.x = 0
+      @exploredPopupLayer.states.switch("on")
+      @marker_3.setExplored()
+      @marker_3_animated = true
+      Utils.delay 2, =>
+        @exploredPopupLayer.states.switch("off")
+        @remainingDistanceLayer.x = 0
+        @remainingDistanceValue.opacity = 0
+        @remainingDistanceLayer.opacity = 1
+        @exploredPopup.image = "./images/roland_entdeckt.png"
+
+        @marker_1.x = 170
+        @marker_1.y = 14
+
+        @marker_2.x = 325
+        @marker_2.y = 304
+
+        @marker_3.x = 506
+        @marker_3.y = 168
+
+        @marker_2.setExplored()
+
+    @marker_1Animation_moveAwaySlow.on Events.AnimationEnd, =>
+# hier jetzt erstmal weiter nach der smartwatch
+      @marker_1.x = 393
+      @marker_1.y = 638
+
+      @marker_2.x = 482
+      @marker_2.y = 171
+
+      @marker_3.x = 310
+      @marker_3.y = 188
+
+      @startTime = new Date
+
+      @lastTime = @startTime
+
+      @lastAnimationTime = 24
+
+      @lastMaxDistance = 150
+      @currentRemainingValue = 150
+
+      @remainingDistanceValue.text = 150 + " m"
+      @lastValue = 0
+
+      @marker_3Animation_moveMusikanten.start()
+      @marker_2Animation_moveMusikanten.start()
 
   getDistanceOfPoints: (p1, p2) =>
     xs = 0
@@ -417,38 +497,26 @@ exports.Radar = class Radar extends Layer
       if myMarker != marker and !marker.isExplored()
         marker.setNormal()
 
+    @listView.deSelectAllSelectedMarkers()
+
   bindEvents: =>
     @exploredPopup.on Events.Click , =>
-      @exploredPopupLayer.x = 1500
-      @pageComponent.x = 1500
+      @exploredPopupLayer.x = 150
+      @pageComponent.x = 150
       @backIcon.opacity = 1
+      if @exploredPopup.image == "./images/ueberseemuseum-entdeckt-nachricht.png"
+        @listView.detailSightView1.x = 0
+      else if @exploredPopup.image == "./images/stadtmusikanten_entdeckt.png"
+        @listView.detailSightView3.x = 0
+      else
+        @listView.detailSightView2.x = 0
+
       @listView.detailSightView1.x = 0
       @remainingDistanceValue.opacity = 0
       @remainingDistanceLayer.x = 0
 
     @sliderA.on "change:value", =>
       roundedValue =  Utils.round(@sliderA.value, 0)
-
-      if roundedValue > @sliderValue and roundedValue <= 10 and roundedValue != @sliderValue
-        @marker_1.x = @marker_1.x + 17.5
-        @marker_1.y = @marker_1.y - 17.5
-
-        @marker_2.x = @marker_2.x - 8.5
-        @marker_2.y = @marker_2.y - 8.5
-
-        @marker_3.x = @marker_3.x + 14
-        @marker_3.y = @marker_3.y + 14
-
-      else if roundedValue < @sliderValue and roundedValue >= 0 and roundedValue != @sliderValue
-        @marker_1.x = @marker_1.x - 17.5
-        @marker_1.y = @marker_1.y + 17.5
-
-        @marker_2.x = @marker_2.x + 8.5
-        @marker_2.y = @marker_2.y + 8.5
-
-        @marker_3.x = @marker_3.x - 14
-        @marker_3.y = @marker_3.y - 14
-
       @sliderValue = roundedValue
 
     @plusIcon.on Events.Click, =>
@@ -467,8 +535,10 @@ exports.Radar = class Radar extends Layer
       this.deSelectAllSelectedMarkers(@marker_1)
       if @marker_1.isNormal()
         @marker_1.setSelected()
-        #Hier Wert für Entfernung bis zum Ziel ändern
+        @listView.setMarker1Selected()
+
         if !@marker_1_animated and !@marker_1.isAnimating
+          @remainingDistanceValue.text = "500 m"
           @remainingDistanceValue.opacity = 1
 
           @marker_1Animation_Turn.start()
@@ -478,31 +548,33 @@ exports.Radar = class Radar extends Layer
       else
         if !@marker_1.isExplored() and not @marker_1.isNormal()
           @marker_1.setNormal()
+          @listView.setMarker1Normal()
 
     @marker_2.getEmitter().on 'selected', =>
       this.deSelectAllSelectedMarkers(@marker_2)
       if @marker_2.isNormal()
         @marker_2.setSelected()
-        #Hier Wert für Entfernung bis zum Ziel ändern
+        @listView.setMarker2Selected()
+        @remainingDistanceValue.text = "1700 m"
+        @remainingDistanceValue.opacity = 1
+
       else
         if !@marker_2.isExplored() and not @marker_2.isNormal()
           @marker_2.setNormal()
+          @listView.setMarker2Normal()
+
 
     @marker_3.getEmitter().on 'selected', =>
       this.deSelectAllSelectedMarkers(@marker_3)
       if @marker_3.isNormal()
         @marker_3.setSelected()
-        #Hier Wert für Entfernung bis zum Ziel ändern
-        if !@marker_3_animated and @marker_1_animated
-          @marker_3Animation_Turn_3.start()
-          @marker_2Animation_Turn_3.start()
-          @remainingDistanceValue.opacity = 1
-          @currentRemainingValue = 1500
-          @remainingDistanceValue.text = 1500 + " m"
-
+        @listView.setMarker3Selected()
+        @remainingDistanceValue.text = "1500 m"
+        @remainingDistanceValue.opacity = 1
       else
         if !@marker_3.isExplored() and not @marker_3.isNormal()
           @marker_3.setNormal()
+          @listView.setMarker3Normal()
 
     @radarLayer.on Events.Click, =>
       this.hideAllMarkers()

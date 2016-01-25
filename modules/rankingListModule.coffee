@@ -7,6 +7,7 @@ exports.RankingList = class RankingList extends Layer
     options.height= options.height ? Screen.height - 215
     options.opacity= options.opacity ? 1
     options.backgroundColor = "white"
+    @nameList = ["Rebbecca","Lucille","Terica","Marion","Francie","Nina","Karrie","Sonny","Thomasina","Shantae","Lyndia","Robby","Branden","Trevor","Forrest","Fransisca","Joeann","Seymour","Karin","Ozella","Clara","Tory","Kristina","Hong","Leone","Lawanna","Evelyne","Angelena","Delmar","Eartha","Christy","Lakenya","Bernita","Fernanda","Archie","Joella","Jordon","Tresa","Stephan","Cherilyn","Carry","Mui","Arnulfo","Zack","Patria","Rico","Caroline","Raymonde","Euna","Julie","Rebbecca","Lucille","Terica","Marion","Francie","Nina","Karrie","Sonny","Thomasina","Shantae","Lyndia","Robby","Branden","Trevor","Forrest","Fransisca","Joeann","Seymour","Karin","Ozella","Clara","Tory","Kristina","Hong","Leone","Lawanna","Evelyne","Angelena","Delmar","Eartha","Christy","Lakenya","Bernita","Fernanda","Archie","Joella","Jordon","Tresa","Stephan","Cherilyn","Carry","Mui","Arnulfo","Zack","Patria","Rico","Caroline","Raymonde","Euna","Julie","Rebbecca","Lucille","Terica","Marion","Francie","Nina","Karrie","Sonny","Thomasina","Shantae","Lyndia","Robby","Branden","Trevor","Forrest","Fransisca","Joeann","Seymour","Karin","Ozella","Clara","Tory","Kristina","Hong","Leone","Lawanna","Evelyne","Angelena","Delmar","Eartha","Christy","Lakenya","Bernita","Fernanda","Archie","Joella","Jordon","Tresa","Stephan","Cherilyn","Carry","Mui","Arnulfo","Zack","Patria","Rico","Caroline","Raymonde","Euna"]
     super options
     this.initControls()
 
@@ -77,11 +78,12 @@ exports.RankingList = class RankingList extends Layer
 
     @items.content.draggable.overdrag = false
     counter = 0
+    maxScore = 9999
     for num in [1..99]
-      new rankingRow.RankingRow(@items, num + ".", " Nickname", "9999", x:0, y:(100) * counter)
+      new rankingRow.RankingRow(@items, num + ".", @nameList[counter], maxScore / (counter + 1), x:0, y:(100) * counter)
       counter++
 
-    new rankingRow.RankingRow(@items, 100 + ".", " Volker", "120", x:0, y:(100) * counter)
+    new rankingRow.RankingRow(@items, 100 + ".", " Volker", "10", x:0, y:(100) * counter)
     ownRankLayer = new Layer
       x:0
       y: this.height - 100
@@ -137,7 +139,7 @@ exports.RankingList = class RankingList extends Layer
       y: 20
       width: 140
       height: 150
-      text: "120"
+      text: "10"
       color: "rgb(0,0,0)"
       fontSize: 50
       fontFamily: "Calibri"

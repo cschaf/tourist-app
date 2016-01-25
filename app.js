@@ -909,6 +909,7 @@ triggerLongHold = function() {
 
 },{"MarkerModule":2,"TextLayer":4,"events":12}],8:[function(require,module,exports){
 var List, detailSightModule, listItemModule, textLayer,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -927,7 +928,9 @@ exports.List = List = (function(superClass) {
     if (options == null) {
       options = {};
     }
+    this.deSelectAllSelectedMarkers = bind(this.deSelectAllSelectedMarkers, this);
     this.pageComponent = this.mainContext.pageComponent;
+    this.radar = this.mainContext.radarView;
     this.backIcon = this.mainContext.backIcon;
     this.tabBarLayer = this.mainContext.tabBarLayer;
     this.backIcon.on(Events.Click, (function(_this) {
@@ -946,7 +949,7 @@ exports.List = List = (function(superClass) {
   }
 
   List.prototype.initControls = function() {
-    var btnExploredLabel, btnUnexploreddLabel, commonText, historyText, item_1, item_2, item_3;
+    var btnExploredLabel, btnUnexploreddLabel, commonText, historyText;
     this.btnExplored = new Layer({
       x: -1,
       y: 0,
@@ -1005,7 +1008,7 @@ exports.List = List = (function(superClass) {
       width: this.width,
       height: this.height + 120
     });
-    commonText = "Das Uebersee-Museum Bremen ist ein ueber 100 Jahre altes bedeutendes Museum in der Bremer Innenstadt direkt am Hauptbahnhof am Bahnhofsplatz. Das Gebaeude steht seit 1993 unter Denkmalschutz. In einer integrierten Ausstellung ueber Natur, Kultur und Handel praesentiert es Aspekte ueberseeischer Lebensraeume mit Dauerausstellungen zu Asien, Suedsee/Ozeanien, Amerika, Afrika und zu Globalisierungsthemen. Das Museum gehoert nach eigenen Angaben zu den meistbesuchten Museen in Deutschland.";
+    commonText = "Der Roland ist ein ueber 100 Jahre altes bedeutendes Museum in der Bremer Innenstadt direkt am Hauptbahnhof am Bahnhofsplatz. Das Gebaeude steht seit 1993 unter Denkmalschutz. In einer integrierten Ausstellung ueber Natur, Kultur und Handel praesentiert es Aspekte ueberseeischer Lebensraeume mit Dauerausstellungen zu Asien, Suedsee/Ozeanien, Amerika, Afrika und zu Globalisierungsthemen. Das Museum gehoert nach eigenen Angaben zu den meistbesuchten Museen in Deutschland.";
     historyText = "Unter dem Namen 'Staedtische Sammlungen fuer Naturgeschichte und Ethnographie' gingen 1875 die Sammlungen des ''Naturwissenschaftlichen Vereins'', einer Gruendung der ''Gesellschaft Museum'', und Sammlungen einer 1872 gegruendeten ''Anthropologischen Kommission'' in das Eigentum der Stadt Bremen ueber.";
     this.detailSightView2 = new detailSightModule.DetailSight("Roland", "./images/roland.png", commonText, historyText, {
       x: 1500,
@@ -1013,7 +1016,7 @@ exports.List = List = (function(superClass) {
       width: this.width,
       height: this.height + 120
     });
-    commonText = "Das Uebersee-Museum Bremen ist ein ueber 100 Jahre altes bedeutendes Museum in der Bremer Innenstadt direkt am Hauptbahnhof am Bahnhofsplatz. Das Gebaeude steht seit 1993 unter Denkmalschutz. In einer integrierten Ausstellung ueber Natur, Kultur und Handel praesentiert es Aspekte ueberseeischer Lebensraeume mit Dauerausstellungen zu Asien, Suedsee/Ozeanien, Amerika, Afrika und zu Globalisierungsthemen. Das Museum gehoert nach eigenen Angaben zu den meistbesuchten Museen in Deutschland.";
+    commonText = "Die Bremer - Stadtmusikanten sind ein ueber 100 Jahre altes bedeutendes Museum in der Bremer Innenstadt direkt am Hauptbahnhof am Bahnhofsplatz. Das Gebaeude steht seit 1993 unter Denkmalschutz. In einer integrierten Ausstellung ueber Natur, Kultur und Handel praesentiert es Aspekte ueberseeischer Lebensraeume mit Dauerausstellungen zu Asien, Suedsee/Ozeanien, Amerika, Afrika und zu Globalisierungsthemen. Das Museum gehoert nach eigenen Angaben zu den meistbesuchten Museen in Deutschland.";
     historyText = "Unter dem Namen 'Staedtische Sammlungen fuer Naturgeschichte und Ethnographie' gingen 1875 die Sammlungen des ''Naturwissenschaftlichen Vereins'', einer Gruendung der ''Gesellschaft Museum'', und Sammlungen einer 1872 gegruendeten ''Anthropologischen Kommission'' in das Eigentum der Stadt Bremen ueber.";
     this.detailSightView3 = new detailSightModule.DetailSight("Bremer-Stadtmusikanten", "./images/stadtmusikanten.png", commonText, historyText, {
       x: 1500,
@@ -1021,11 +1024,11 @@ exports.List = List = (function(superClass) {
       width: this.width,
       height: this.height + 120
     });
-    item_1 = new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "5km", {
+    this.item_1 = new listItemModule.ListItem(this.items, "./images/uebersee-museum_item.png", "Uebersee-Museum", "0 m", {
       x: 0,
       y: 0
     });
-    item_1.getEmitter().on('selected', (function(_this) {
+    this.item_1.getEmitter().on('selected', (function(_this) {
       return function() {
         _this.resetViews();
         _this.detailSightView1.x = 0;
@@ -1033,11 +1036,11 @@ exports.List = List = (function(superClass) {
         return _this.mainContext.title.text = "Detail";
       };
     })(this));
-    item_2 = new listItemModule.ListItem(this.items, "./images/roland_item.png", "Roland", "2km", {
+    this.item_2 = new listItemModule.ListItem(this.items, "./images/roland_item.png", "Roland", "1700 m", {
       x: 0,
       y: 200
     });
-    item_2.getEmitter().on('selected', (function(_this) {
+    this.item_2.getEmitter().on('selected', (function(_this) {
       return function() {
         _this.resetViews();
         _this.detailSightView2.x = 0;
@@ -1045,11 +1048,11 @@ exports.List = List = (function(superClass) {
         return _this.mainContext.title.text = "Detail";
       };
     })(this));
-    item_3 = new listItemModule.ListItem(this.items, "./images/stadtmusikanten_item.png", "Stadtmusikanten", "3km", {
+    this.item_3 = new listItemModule.ListItem(this.items, "./images/stadtmusikanten_item.png", "Stadtmusikanten", "1500 m", {
       x: 0,
       y: 400
     });
-    return item_3.getEmitter().on('selected', (function(_this) {
+    return this.item_3.getEmitter().on('selected', (function(_this) {
       return function() {
         _this.resetViews();
         _this.detailSightView3.x = 0;
@@ -1065,6 +1068,54 @@ exports.List = List = (function(superClass) {
     this.detailSightView1.x = 1500;
     this.detailSightView2.x = 1500;
     return this.detailSightView3.x = 1500;
+  };
+
+  List.prototype.setMarker1Explored = function() {
+    return this.item_1.marker_1.setExplored();
+  };
+
+  List.prototype.setMarker2Explored = function() {
+    return this.item_2.marker_1.setExplored();
+  };
+
+  List.prototype.setMarker3Explored = function() {
+    return this.item_3.marker_1.setExplored();
+  };
+
+  List.prototype.setMarker1Selected = function() {
+    return this.item_1.marker_1.setSelected();
+  };
+
+  List.prototype.setMarker2Selected = function() {
+    return this.item_2.marker_1.setSelected();
+  };
+
+  List.prototype.setMarker3Selected = function() {
+    return this.item_3.marker_1.setSelected();
+  };
+
+  List.prototype.setMarker1Normal = function() {
+    return this.item_1.marker_1.setNormal();
+  };
+
+  List.prototype.setMarker2Normal = function() {
+    return this.item_2.marker_1.setNormal();
+  };
+
+  List.prototype.setMarker3Normal = function() {
+    return this.item_3.marker_1.setNormal();
+  };
+
+  List.prototype.deSelectAllSelectedMarkers = function() {
+    if (!this.item_1.marker_1.isExplored()) {
+      this.item_1.marker_1.setNormal();
+    }
+    if (!this.item_2.marker_1.isExplored()) {
+      this.item_2.marker_1.setNormal();
+    }
+    if (!this.item_3.marker_1.isExplored()) {
+      return this.item_3.marker_1.setNormal();
+    }
   };
 
   return List;
@@ -1097,7 +1148,7 @@ exports.Radar = Radar = (function(superClass) {
     this.deSelectAllSelectedMarkers = bind(this.deSelectAllSelectedMarkers, this);
     this.getDistanceOfPoints = bind(this.getDistanceOfPoints, this);
     this.pageComponent = this.mainContext.pageComponent;
-    this.ListView = this.mainContext.ListView;
+    this.listView = this.mainContext.ListView;
     this.backIcon = this.mainContext.backIcon;
     options.width = (ref = options.width) != null ? ref : Screen.width;
     options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 220;
@@ -1173,7 +1224,7 @@ exports.Radar = Radar = (function(superClass) {
       layer: this.marker_1,
       path: Path.fromString("M349,119.5c0,0 0,1 0,2c0,1 1,1 1,2c0,1 0,2 0,3c0,0 0,1 0,2c0,1 0,2 0,3c0,1 -0.707092,2.292892 0,3c0.707092,0.707108 1,1 1,2c0,1 0,2 0,3c0,1 -0.707092,2.292892 0,3c0.707092,0.707108 1,1 1,2c0,1 0,2 0,3c0,1 0.707092,2.292892 0,3c-0.707092,0.707108 -1,1 -1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.707092,2.292892 0,3c0.707092,0.707108 1,1 1,2c0,1 0,2 0,3l0,1l0,1l0,1"),
       curve: 'linear',
-      time: 8,
+      time: 6,
       pathOptions: {
         autoRotate: false
       }
@@ -1197,7 +1248,7 @@ exports.Radar = Radar = (function(superClass) {
       layer: this.marker_1,
       path: Path.fromString("M350,175.5c0,0 0.292908,0.292892 1,1c0.707092,0.707108 1,0 1,1c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0.292908,1.292892 1,2c0.707092,0.707108 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.458801,1.693436 -1,3c-0.38269,0.923874 0,2 0,3c0,1 -1,1 -1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 1,1 1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,4c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -1,1 -1,2c0,1 0,2 0,3c0,1 0.707092,2.292908 0,3c-0.707092,0.707092 -1,1 -1,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 -0.292908,1.292908 -1,2c-0.707092,0.707092 0,2 0,3c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2l1,0"),
       curve: 'linear',
-      time: 6,
+      time: 8,
       pathOptions: {
         autoRotate: false
       }
@@ -1206,7 +1257,7 @@ exports.Radar = Radar = (function(superClass) {
       layer: this.marker_1,
       path: Path.fromString("M350,344.5c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 1,3 1,4c0,1 0.292908,2.292908 1,3c0.707092,0.707092 1,1 1,2c0,1 0.292908,1.292908 1,2c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1,1 1,2c0,1 0.292908,1.292908 1,2c0.707092,0.707092 1,1 1,2c0,1 0.292908,2.292908 1,3c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1.292908,0.292908 2,1c0.707092,0.707092 0,2 0,3c0,1 1.486267,0.823761 2,3c0.229767,0.973236 1,2 1,3c0,1 1.458801,0.693451 2,2c0.38269,0.923889 0.292908,2.292908 1,3c0.707092,0.707092 0.61731,1.076111 1,2c0.541199,1.306549 2,2 2,4c0,1 1,3 1,4c0,1 -0.414215,1.585785 1,3c0.707092,0.707092 1,1 1,2c0,1 0.458801,1.693451 1,3c0.765381,1.847748 0.292908,2.292908 1,3c0.707092,0.707092 -0.707092,2.292908 0,3c0.707092,0.707092 1.486267,0.823761 2,3c0.229767,0.973236 1,1 1,2c0,1 0,2 0,3c0,1 1,2 1,3c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2c0,1 -0.707092,2.292908 0,3c0.707092,0.707092 1,1 1,2c0,1 1,2 1,3c0,1 0.458801,1.693451 1,3c0.765381,1.847748 -0.765381,3.152252 0,5c0.541199,1.306549 1,3 1,4c0,1 -0.38269,2.076111 0,3c0.541199,1.306549 1,3 1,4c0,1 0.458801,1.693451 1,3c0.38269,0.923889 0.458801,1.693451 1,3c0.38269,0.923889 0.486267,1.823761 1,4c0.229767,0.973236 0,3 0,4c0,2 1,4 1,6c0,1 1.458801,1.693451 2,3c0.38269,0.923889 0.292908,1.292908 1,2c0.707092,0.707092 0,2 1,3c1,1 0.292908,2.292908 1,3c0.707092,0.707092 1,2 2,3c1,1 1.486267,1.823761 2,4c0.229767,0.973236 -0.414215,1.585785 1,3c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1.292908,0.292908 2,1c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 0.292908,1.292908 1,2c0.707092,0.707092 1,1 2,4l0,1l1,1"),
       curve: 'linear',
-      time: 13,
+      time: 1,
       pathOptions: {
         autoRotate: false
       }
@@ -1216,7 +1267,7 @@ exports.Radar = Radar = (function(superClass) {
         _this.startTime = new Date;
         _this.lastTime = _this.startTime;
         _this.lastAnimationTime = 13;
-        _this.lastMaxDistance = 500;
+        _this.lastMaxDistance = 1500;
         return _this.currentRemainingValue = 1500;
       };
     })(this));
@@ -1237,7 +1288,7 @@ exports.Radar = Radar = (function(superClass) {
       layer: this.marker_2,
       path: Path.fromString("M21,337.5c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,3c0,1 0,2 0,2c0,1 0,2 0,3c0,1 0,2 0,3c0,1 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 0.458803,1.693451 1,3c0.382683,0.923889 0.458803,1.693451 1,3c0.382683,0.923889 0.292892,1.292908 1,2c0.707108,0.707092 0,2 0,3c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 0,2 0,3c0,1 0.292892,1.292908 1,2c0.707108,0.707092 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 0,2 0,3c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 0.617317,1.076111 1,2c0.541197,1.306549 1,2 1,3c0,1 0,2 0,3c0,1 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 1,1 1,2c0,1 -0.707108,2.292908 0,3c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 1,1 1,2c0,1 1,1 1,2c0,1 1,2 1,3c0,1 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0,2 0,3c0,1 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1,2 1,3c0,1 1.292892,0.292908 2,1c0.707108,0.707092 -0.707108,2.292908 0,3c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.617317,1.076111 1,2c0.541195,1.306549 1.617317,2.076111 2,3c0.541195,1.306549 2,2 3,3c1,1 0.693436,2.458801 2,3c0.923878,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.877655,1.065979 2,3c1.809723,3.118469 2.692551,4.186035 4,6c0.826904,1.147278 1.292892,2.292908 2,3c0.707108,0.707092 1.292892,1.292908 2,2c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 0,2 1,2c1,0 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.693436,1.458801 2,2c0.923882,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 1.292892,0.292908 2,1c0.707108,0.707092 0,2 0,3c0,1 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 2,1l0,1l0,1l1,0"),
       curve: 'linear',
-      time: 14,
+      time: 8,
       pathOptions: {
         autoRotate: false
       }
@@ -1268,7 +1319,7 @@ exports.Radar = Radar = (function(superClass) {
       layer: this.marker_3,
       path: Path.fromString("M43,488.5c0,1 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 2,0 2,1c0,1 0.617317,1.076111 1,2c0.541195,1.306549 1.292892,1.292908 2,2c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 1,1 1,2c0,1 0.617317,1.076111 1,2c0.541195,1.30658 1.292892,1.292908 2,2c0.707108,0.707092 -0.306564,2.458801 1,3c0.923882,0.38269 0.292892,1.292908 1,2c0.707108,0.707092 0.617317,1.076111 1,2c0.541199,1.30658 1.458801,1.69342 2,3c0.382683,0.923889 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1,1 1,2c0,1 1,1 1,2c0,1 0.474266,1.149353 1,2c1.175568,1.9021 1.617317,2.076111 2,3c0.541199,1.30658 1,2 2,2c1,0 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.617317,1.076111 1,2c0.541199,1.30658 1.292892,1.292908 2,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.617317,1.076111 1,2c0.541199,1.30658 0.292892,2.292908 1,3c0.707108,0.707092 2.458801,0.69342 3,2c0.382683,0.923889 0.292892,1.292908 1,2c0.707108,0.707092 2,0 2,1c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.458801,0.69342 2,2c0.382683,0.923889 1.458801,0.69342 2,2c0.382683,0.923889 1,1 2,2c1,1 1.292892,2.292908 2,3c0.707108,0.707092 1.292892,1.292908 2,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,2.292908 1,3c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 -0.306564,2.458801 1,3c0.923882,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 0.693436,1.458801 2,2c0.923874,0.38269 1.292892,0.292908 2,1c0.707108,0.707092 1.076126,0.61731 2,1c1.306564,0.541199 2,2 3,3c1,1 3.076126,1.61731 4,2c1.306564,0.541199 2.186005,1.692566 4,3c1.147263,0.826904 2,2 3,2c1,0 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 2.292892,-0.707092 3,0c0.707108,0.707092 1,1 1,2c0,1 0.292892,1.292908 1,2c0.707108,0.707092 1.61731,0.076111 2,1c0.541199,1.30658 1.076126,1.61731 2,2c1.306564,0.541199 1.292892,1.292908 2,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.61731,1.076111 1,2c0.541199,1.30658 1.292892,1.292908 2,2c0.707108,0.707092 1,1 2,1c1,0 0.292892,1.292908 1,2c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 0.292892,1.292908 1,2c0.707108,0.707092 1,1 2,1c1,0 1.292892,0.292908 2,1c0.707108,0.707092 1.292892,0.292908 2,1c0.707108,0.707092 1,1 2,1l1,0l1,0"),
       curve: 'linear',
-      time: 14,
+      time: 8,
       pathOptions: {
         autoRotate: false
       }
@@ -1282,10 +1333,28 @@ exports.Radar = Radar = (function(superClass) {
         autoRotate: false
       }
     });
+    this.marker_3Animation_moveMusikanten = new Animation({
+      layer: this.marker_3,
+      path: Path.fromString("M334.5,239.5c0,0 -0.229767,0.026749 0,1c0.513733,2.176254 2,3 2,4c0,1 1.61731,6.076126 2,7c0.541199,1.306564 1.917603,1.386871 3,4c0.38269,0.923889 -1.051453,2.298706 0,4c1.175568,1.9021 2,3 2,4c0,1 0,2 0,3c0,1 0,2 0,4c0,1 1,5 1,6c0,3 0,5 0,7c0,1 0,4 0,6c0,1 0.458801,1.693451 1,3c1.148041,2.771637 0.173096,3.852722 1,5c1.307465,1.813995 1.486267,3.823761 2,6c0.229767,0.973236 1.486267,2.823761 2,5c0.229767,0.973236 0,2 0,4c0,1 1,1 1,3c0,1 -0.160187,2.012909 0,3c0.506531,3.121429 1.917603,3.386871 3,6c0.765381,1.847748 0,3 0,4c0,2 0,3 0,4c0,1 0.38269,4.076111 0,5c-1.082397,2.613129 -2,5 -3,5l-1,1"),
+      curve: 'linear',
+      time: 24,
+      pathOptions: {
+        autoRotate: false
+      }
+    });
+    this.marker_2Animation_moveMusikanten = new Animation({
+      layer: this.marker_2,
+      path: Path.fromString("M505.5,220.5c0,0 0,1 0,2c0,1 1,2 1,2c1,1 0.292908,2.292892 1,3c0.707092,0.707108 0.540497,2.053497 1,4c0.513733,2.176254 1,3 1,4c0,3 0,5 0,6c0,1 0,3 0,4c0,1 0,2 0,3c0,2 0,3 0,5c0,3 0,4 0,5c0,1 0,3 0,4c0,2 0,3 0,5c0,1 0,2 0,3c0,3 0,4 0,5c0,2 0,4 0,6c0,1 -0.38269,2.076111 0,3c0.541199,1.306549 1.292908,1.292908 2,2c1.414185,1.414215 2.458801,4.693451 3,6c0.765381,1.847748 0,3 0,4l0,4l0,2l0,1"),
+      curve: 'linear',
+      time: 24,
+      pathOptions: {
+        autoRotate: false
+      }
+    });
     this.marker_3Animation_Turn_3.on(Events.AnimationEnd, (function(_this) {
       return function() {
         _this.remainingDistanceValue.opacity = 1;
-        _this.remainingDistanceValue.text = 1500 + " m";
+        _this.remainingDistanceValue.text = 150 + " m";
         _this.marker_3_animated = true;
         _this.marker_1.isMoveToMeSlow = true;
         return _this.marker_1Animation_moveAwaySlow.start();
@@ -1306,6 +1375,25 @@ exports.Radar = Radar = (function(superClass) {
     })(this));
     this.lastValue = 0;
     this.marker_1.on("change:point", (function(_this) {
+      return function() {
+        var lastSec, now, sec;
+        now = new Date;
+        sec = Utils.round((now - _this.startTime) / 1000, 0);
+        lastSec = Utils.round((now - _this.lastTime) / 1000, 0);
+        if (sec <= _this.lastAnimationTime) {
+          if (lastSec === 1 && _this.lastValue !== sec) {
+            _this.currentRemainingValue = Utils.round(_this.currentRemainingValue - Utils.round(_this.lastMaxDistance / _this.lastAnimationTime, 0), 0);
+            if (_this.currentRemainingValue < 0) {
+              _this.currentRemainingValue = 0;
+            }
+            _this.remainingDistanceValue.text = _this.currentRemainingValue + " m";
+            _this.lastTime = now;
+            return _this.lastValue = sec;
+          }
+        }
+      };
+    })(this));
+    this.marker_2.on("change:point", (function(_this) {
       return function() {
         var lastSec, now, sec;
         now = new Date;
@@ -1477,19 +1565,64 @@ exports.Radar = Radar = (function(superClass) {
       curve: "ease-out",
       time: 0.3
     };
-    return this.marker_1Animation_quickWalk.on(Events.AnimationEnd, (function(_this) {
+    this.marker_1Animation_quickWalk.on(Events.AnimationEnd, (function(_this) {
       return function() {
         _this.marker_1.isMoveToMeFast = false;
-        _this.remainingDistanceLayer.x = 1500;
+        _this.remainingDistanceLayer.x = 150;
         _this.exploredPopupLayer.x = 0;
         _this.exploredPopupLayer.states["switch"]("on");
         _this.marker_1.setExplored();
+        _this.listView.setMarker1Explored();
         _this.marker_1_animated = true;
-        return Utils.delay(6, function() {
+        return Utils.delay(2, function() {
           _this.exploredPopupLayer.states["switch"]("off");
           _this.remainingDistanceLayer.x = 0;
-          return _this.remainingDistanceValue.opacity = 0;
+          _this.remainingDistanceValue.opacity = 0;
+          return _this.exploredPopup.image = "./images/stadtmusikanten_entdeckt.png";
         });
+      };
+    })(this));
+    this.marker_3Animation_moveMusikanten.on(Events.AnimationEnd, (function(_this) {
+      return function() {
+        _this.marker_1.isMoveToMeFast = false;
+        _this.remainingDistanceLayer.opacity = 0;
+        _this.exploredPopupLayer.x = 0;
+        _this.exploredPopupLayer.states["switch"]("on");
+        _this.marker_3.setExplored();
+        _this.marker_3_animated = true;
+        return Utils.delay(2, function() {
+          _this.exploredPopupLayer.states["switch"]("off");
+          _this.remainingDistanceLayer.x = 0;
+          _this.remainingDistanceValue.opacity = 0;
+          _this.remainingDistanceLayer.opacity = 1;
+          _this.exploredPopup.image = "./images/roland_entdeckt.png";
+          _this.marker_1.x = 170;
+          _this.marker_1.y = 14;
+          _this.marker_2.x = 325;
+          _this.marker_2.y = 304;
+          _this.marker_3.x = 506;
+          _this.marker_3.y = 168;
+          return _this.marker_2.setExplored();
+        });
+      };
+    })(this));
+    return this.marker_1Animation_moveAwaySlow.on(Events.AnimationEnd, (function(_this) {
+      return function() {
+        _this.marker_1.x = 393;
+        _this.marker_1.y = 638;
+        _this.marker_2.x = 482;
+        _this.marker_2.y = 171;
+        _this.marker_3.x = 310;
+        _this.marker_3.y = 188;
+        _this.startTime = new Date;
+        _this.lastTime = _this.startTime;
+        _this.lastAnimationTime = 24;
+        _this.lastMaxDistance = 150;
+        _this.currentRemainingValue = 150;
+        _this.remainingDistanceValue.text = 150 + " m";
+        _this.lastValue = 0;
+        _this.marker_3Animation_moveMusikanten.start();
+        return _this.marker_2Animation_moveMusikanten.start();
       };
     })(this));
   };
@@ -1520,26 +1653,30 @@ exports.Radar = Radar = (function(superClass) {
   };
 
   Radar.prototype.deSelectAllSelectedMarkers = function(myMarker) {
-    var i, len, marker, ref, results;
+    var i, len, marker, ref;
     ref = this.markers;
-    results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       marker = ref[i];
       if (myMarker !== marker && !marker.isExplored()) {
-        results.push(marker.setNormal());
-      } else {
-        results.push(void 0);
+        marker.setNormal();
       }
     }
-    return results;
+    return this.listView.deSelectAllSelectedMarkers();
   };
 
   Radar.prototype.bindEvents = function() {
     this.exploredPopup.on(Events.Click, (function(_this) {
       return function() {
-        _this.exploredPopupLayer.x = 1500;
-        _this.pageComponent.x = 1500;
+        _this.exploredPopupLayer.x = 150;
+        _this.pageComponent.x = 150;
         _this.backIcon.opacity = 1;
+        if (_this.exploredPopup.image === "./images/ueberseemuseum-entdeckt-nachricht.png") {
+          _this.listView.detailSightView1.x = 0;
+        } else if (_this.exploredPopup.image === "./images/stadtmusikanten_entdeckt.png") {
+          _this.listView.detailSightView3.x = 0;
+        } else {
+          _this.listView.detailSightView2.x = 0;
+        }
         _this.listView.detailSightView1.x = 0;
         _this.remainingDistanceValue.opacity = 0;
         return _this.remainingDistanceLayer.x = 0;
@@ -1549,21 +1686,6 @@ exports.Radar = Radar = (function(superClass) {
       return function() {
         var roundedValue;
         roundedValue = Utils.round(_this.sliderA.value, 0);
-        if (roundedValue > _this.sliderValue && roundedValue <= 10 && roundedValue !== _this.sliderValue) {
-          _this.marker_1.x = _this.marker_1.x + 17.5;
-          _this.marker_1.y = _this.marker_1.y - 17.5;
-          _this.marker_2.x = _this.marker_2.x - 8.5;
-          _this.marker_2.y = _this.marker_2.y - 8.5;
-          _this.marker_3.x = _this.marker_3.x + 14;
-          _this.marker_3.y = _this.marker_3.y + 14;
-        } else if (roundedValue < _this.sliderValue && roundedValue >= 0 && roundedValue !== _this.sliderValue) {
-          _this.marker_1.x = _this.marker_1.x - 17.5;
-          _this.marker_1.y = _this.marker_1.y + 17.5;
-          _this.marker_2.x = _this.marker_2.x + 8.5;
-          _this.marker_2.y = _this.marker_2.y + 8.5;
-          _this.marker_3.x = _this.marker_3.x - 14;
-          _this.marker_3.y = _this.marker_3.y - 14;
-        }
         return _this.sliderValue = roundedValue;
       };
     })(this));
@@ -1592,7 +1714,9 @@ exports.Radar = Radar = (function(superClass) {
         _this.deSelectAllSelectedMarkers(_this.marker_1);
         if (_this.marker_1.isNormal()) {
           _this.marker_1.setSelected();
+          _this.listView.setMarker1Selected();
           if (!_this.marker_1_animated && !_this.marker_1.isAnimating) {
+            _this.remainingDistanceValue.text = "500 m";
             _this.remainingDistanceValue.opacity = 1;
             _this.marker_1Animation_Turn.start();
             _this.marker_2Animation_Turn.start();
@@ -1600,7 +1724,8 @@ exports.Radar = Radar = (function(superClass) {
           }
         } else {
           if (!_this.marker_1.isExplored() && !_this.marker_1.isNormal()) {
-            return _this.marker_1.setNormal();
+            _this.marker_1.setNormal();
+            return _this.listView.setMarker1Normal();
           }
         }
       };
@@ -1609,10 +1734,14 @@ exports.Radar = Radar = (function(superClass) {
       return function() {
         _this.deSelectAllSelectedMarkers(_this.marker_2);
         if (_this.marker_2.isNormal()) {
-          return _this.marker_2.setSelected();
+          _this.marker_2.setSelected();
+          _this.listView.setMarker2Selected();
+          _this.remainingDistanceValue.text = "1700 m";
+          return _this.remainingDistanceValue.opacity = 1;
         } else {
           if (!_this.marker_2.isExplored() && !_this.marker_2.isNormal()) {
-            return _this.marker_2.setNormal();
+            _this.marker_2.setNormal();
+            return _this.listView.setMarker2Normal();
           }
         }
       };
@@ -1622,16 +1751,13 @@ exports.Radar = Radar = (function(superClass) {
         _this.deSelectAllSelectedMarkers(_this.marker_3);
         if (_this.marker_3.isNormal()) {
           _this.marker_3.setSelected();
-          if (!_this.marker_3_animated && _this.marker_1_animated) {
-            _this.marker_3Animation_Turn_3.start();
-            _this.marker_2Animation_Turn_3.start();
-            _this.remainingDistanceValue.opacity = 1;
-            _this.currentRemainingValue = 1500;
-            return _this.remainingDistanceValue.text = 1500 + " m";
-          }
+          _this.listView.setMarker3Selected();
+          _this.remainingDistanceValue.text = "1500 m";
+          return _this.remainingDistanceValue.opacity = 1;
         } else {
           if (!_this.marker_3.isExplored() && !_this.marker_3.isNormal()) {
-            return _this.marker_3.setNormal();
+            _this.marker_3.setNormal();
+            return _this.listView.setMarker3Normal();
           }
         }
       };
@@ -1669,12 +1795,13 @@ exports.RankingList = RankingList = (function(superClass) {
     options.height = (ref1 = options.height) != null ? ref1 : Screen.height - 215;
     options.opacity = (ref2 = options.opacity) != null ? ref2 : 1;
     options.backgroundColor = "white";
+    this.nameList = ["Rebbecca", "Lucille", "Terica", "Marion", "Francie", "Nina", "Karrie", "Sonny", "Thomasina", "Shantae", "Lyndia", "Robby", "Branden", "Trevor", "Forrest", "Fransisca", "Joeann", "Seymour", "Karin", "Ozella", "Clara", "Tory", "Kristina", "Hong", "Leone", "Lawanna", "Evelyne", "Angelena", "Delmar", "Eartha", "Christy", "Lakenya", "Bernita", "Fernanda", "Archie", "Joella", "Jordon", "Tresa", "Stephan", "Cherilyn", "Carry", "Mui", "Arnulfo", "Zack", "Patria", "Rico", "Caroline", "Raymonde", "Euna", "Julie", "Rebbecca", "Lucille", "Terica", "Marion", "Francie", "Nina", "Karrie", "Sonny", "Thomasina", "Shantae", "Lyndia", "Robby", "Branden", "Trevor", "Forrest", "Fransisca", "Joeann", "Seymour", "Karin", "Ozella", "Clara", "Tory", "Kristina", "Hong", "Leone", "Lawanna", "Evelyne", "Angelena", "Delmar", "Eartha", "Christy", "Lakenya", "Bernita", "Fernanda", "Archie", "Joella", "Jordon", "Tresa", "Stephan", "Cherilyn", "Carry", "Mui", "Arnulfo", "Zack", "Patria", "Rico", "Caroline", "Raymonde", "Euna", "Julie", "Rebbecca", "Lucille", "Terica", "Marion", "Francie", "Nina", "Karrie", "Sonny", "Thomasina", "Shantae", "Lyndia", "Robby", "Branden", "Trevor", "Forrest", "Fransisca", "Joeann", "Seymour", "Karin", "Ozella", "Clara", "Tory", "Kristina", "Hong", "Leone", "Lawanna", "Evelyne", "Angelena", "Delmar", "Eartha", "Christy", "Lakenya", "Bernita", "Fernanda", "Archie", "Joella", "Jordon", "Tresa", "Stephan", "Cherilyn", "Carry", "Mui", "Arnulfo", "Zack", "Patria", "Rico", "Caroline", "Raymonde", "Euna"];
     RankingList.__super__.constructor.call(this, options);
     this.initControls();
   }
 
   RankingList.prototype.initControls = function() {
-    var counter, i, line1, line2, lineHead, nameLabel, nameLayer, num, ownRankLayer, rankLabel, rankLayer, scoreLabel, scoreLayer, tableHeaderLayer;
+    var counter, i, line1, line2, lineHead, maxScore, nameLabel, nameLayer, num, ownRankLayer, rankLabel, rankLayer, scoreLabel, scoreLayer, tableHeaderLayer;
     tableHeaderLayer = new Layer({
       x: 0,
       y: 0,
@@ -1741,14 +1868,15 @@ exports.RankingList = RankingList = (function(superClass) {
     });
     this.items.content.draggable.overdrag = false;
     counter = 0;
+    maxScore = 9999;
     for (num = i = 1; i <= 99; num = ++i) {
-      new rankingRow.RankingRow(this.items, num + ".", " Nickname", "9999", {
+      new rankingRow.RankingRow(this.items, num + ".", this.nameList[counter], maxScore / (counter + 1), {
         x: 0,
         y: 100. * counter
       });
       counter++;
     }
-    new rankingRow.RankingRow(this.items, 100 + ".", " Volker", "120", {
+    new rankingRow.RankingRow(this.items, 100 + ".", " Volker", "10", {
       x: 0,
       y: 100. * counter
     });
@@ -1805,7 +1933,7 @@ exports.RankingList = RankingList = (function(superClass) {
       y: 20,
       width: 140,
       height: 150,
-      text: "120",
+      text: "10",
       color: "rgb(0,0,0)",
       fontSize: 50,
       fontFamily: "Calibri",
