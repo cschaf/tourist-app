@@ -80,7 +80,7 @@ exports.RankingList = class RankingList extends Layer
     counter = 0
     maxScore = 9999
     for num in [1..99]
-      new rankingRow.RankingRow(@items, num + ".", @nameList[counter], maxScore / (counter + 1), x:0, y:(100) * counter)
+      new rankingRow.RankingRow(@items, num + ".", @nameList[counter], Utils.round(maxScore / (counter + 1),0), x:0, y:(100) * counter)
       counter++
 
     new rankingRow.RankingRow(@items, 100 + ".", " Volker", "10", x:0, y:(100) * counter)

@@ -1870,7 +1870,7 @@ exports.RankingList = RankingList = (function(superClass) {
     counter = 0;
     maxScore = 9999;
     for (num = i = 1; i <= 99; num = ++i) {
-      new rankingRow.RankingRow(this.items, num + ".", this.nameList[counter], maxScore / (counter + 1), {
+      new rankingRow.RankingRow(this.items, num + ".", this.nameList[counter], Utils.round(maxScore / (counter + 1), 0), {
         x: 0,
         y: 100. * counter
       });
